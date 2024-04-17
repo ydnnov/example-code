@@ -1,0 +1,23 @@
+{
+  "name": "back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "swc src -d dist",
+    "build-dev": "pnpm build && NODE_ENV=development node --inspect dist/src/index.js",
+    "dev": "nodemon --ext ts --exec \"npm run build-dev\"",
+    "start": "pnpm build && NODE_ENV=production node dist/src/index.js"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@swc/cli": "^0.3.12",
+    "@swc/core": "^1.4.14",
+    "@types/dotenv-parse-variables": "^2.0.3",
+    "@types/node": "^20.12.7",
+    "nodemon": "^3.1.0"
+  }
+}
