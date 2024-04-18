@@ -5,7 +5,7 @@ import { env } from './envconf.js';
 import { fastify } from './fastify.js';
 import { db } from './data-source.js';
 import { logger } from './logger.js';
-// import { helpers } from './helpers/index.js';
+import { helpers } from './helpers/helpers.js';
 import { routes } from './routes/routes.js';
 import { websocket } from './websocket.js';
 
@@ -30,9 +30,9 @@ process.on('unhandledRejection', (error) => {
         }
 
         websocket.on('connection', (socket) => {
-            // logger.verbose(`${
-            //     helpers.fmtDateTime(new Date())
-            // }: wss connected client id = ${socket.id}`);
+            logger.verbose(`${
+                helpers.fmtDateTime(new Date())
+            }: wss connected client id = ${socket.id}`);
         });
 
         console.log('='.repeat(100));
