@@ -7,6 +7,7 @@ const predefinedSites = reactive([
   ['google.com', 'GoogleCom'],
   ['yahoo.com', 'YahooCom'],
   ['2ust.arh.msudrf.ru', '2ust.arh.msudrf.ru'],
+  ['32.sar.msudrf.ru', '32.sar.msudrf.ru'],
 ]);
 const url = ref('https://google.com');
 const goto = (value: string) => {
