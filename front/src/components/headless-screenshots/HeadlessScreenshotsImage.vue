@@ -28,7 +28,7 @@ const showingScreenshotIndicator = ref(false);
 </script>
 
 <template>
-  <div style="position: relative;">
+  <div style="position: relative; overflow-y: scroll">
     <img
       :src="screenshot"
       alt=""

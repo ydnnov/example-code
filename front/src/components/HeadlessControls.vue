@@ -2,9 +2,20 @@
 import Button from 'primevue/button';
 import { headlessClient } from '~/client/headless.client.js';
 
+const predefinedSites = reactive([
+  ['yandex.ru', 'YandexRu'],
+  ['google.com', 'GoogleCom'],
+  ['yahoo.com', 'YahooCom'],
+  ['2ust.arh.msudrf.ru', '2ust.arh.msudrf.ru'],
+]);
 const url = ref('https://google.com');
 const goto = (value: string) => {
-  url.value = 'https://' + value.replace(/^https:\/\//, '');
+  console.log({ value });
+  if (value.match(/^https?:\/\//)) {
+    url.value = value;
+  } else {
+    url.value = 'https://' + value;
+  }
   headlessClient.goto(url.value);
 };
 const reloadPage = () => {
@@ -13,35 +24,43 @@ const reloadPage = () => {
 </script>
 
 <template>
-  <div class="goto-url">
-    <input
-      type="text"
-      v-model="url"
-      @keydown.enter="goto(url)"
-      style="border: 1px solid black; width: 100%;"
-    />
-    <div style="display: flex; margin: 7px 0 0 0;">
-      <div style="flex-grow: 1;">
-        <Button @click="reloadPage()" class="hlctl-btn" style="width: 36px;" icon="pi pi-refresh" />
-        <Button @click="goto(url)" class="hlctl-btn" label="Go" />
-        <Button @click="goto('yandex.ru')" class="hlctl-btn" label="YandexRu" />
-        <Button @click="goto('google.com')" class="hlctl-btn" label="GoogleCom" />
-        <Button @click="goto('yahoo.com')" class="hlctl-btn" label="YahooCom" />
+  <div class="">
+    <div class="mt-1">
+      <div class="mx-3">
+        <input
+            type="text"
+            v-model="url"
+            @keydown.enter="goto(url)"
+            class="w-full border-2 border-slate-300 h-8 px-3"
+        />
       </div>
-      <div style="flex-grow: 0;">
-        <HeadlessScreenshotsControls />
+      <div class="flex mt-2 justify-between">
+        <div class="ml-3">
+          <Button
+              @click="reloadPage()"
+              class="w-8 h-8 mr-1 mb-1"
+              icon="pi pi-refresh"
+          />
+          <Button
+              @click="goto(url)"
+              class="text-sm h-8 mr-1 mb-1"
+              label="Go"
+          />
+          <Button
+              v-for="(site, index) in predefinedSites"
+              :key="index"
+              @click="goto(site[0])"
+              class="text-sm h-8 mr-1 mb-1"
+              :label="site[1]"
+          />
+        </div>
+        <div>
+          <HeadlessScreenshotsControls />
+        </div>
       </div>
     </div>
-  </div>
-  <div>
-    <HeadlessScreenshotsImage />
+    <div class="mt-2">
+      <HeadlessScreenshotsImage />
+    </div>
   </div>
 </template>
-
-<style scoped lang="scss">
-.hlctl-btn {
-  font-size: 80%;
-  height: 32px;
-  margin: 0 4px 5px 0;
-}
-</style>

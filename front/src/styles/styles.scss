@@ -1,0 +1,17 @@
+@layer tailwind-base, primevue, primeicons, tailwind-utilities;
+
+@import 'primevue/resources/themes/aura-light-green/theme.css' layer(primevue);
+@import 'primeicons/primeicons.css' layer(primeicons);
+
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
+
+body {
+  //border: 10px dotted #0ea5e9;
+}

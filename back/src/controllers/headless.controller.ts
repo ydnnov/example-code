@@ -4,7 +4,7 @@ import {
     HeadlessOnClickBodyType,
     HeadlessOnKeypressBodyType,
 } from '../schemas/headless.schema.js';
-import { headlessService } from '../services/headless.service.js';
+import { services } from '../services/services.js';
 import { OperationResult } from '../types/common.js';
 
 class HeadlessController {
@@ -13,28 +13,28 @@ class HeadlessController {
         request: FastifyRequest<{ Body: HeadlessGotoBodyType }>,
         reply: FastifyReply,
     ): Promise<OperationResult<null>> {
-        return await headlessService.goto(request.body.url);
+        return await services.headless.goto(request.body.url);
     }
 
     public async reloadPage(
         request: FastifyRequest,
         reply: FastifyReply,
     ): Promise<OperationResult<null>> {
-        return await headlessService.reloadPage();
+        return await services.headless.reloadPage();
     }
 
     public async onClick(
         request: FastifyRequest<{ Body: HeadlessOnClickBodyType }>,
         reply: FastifyReply,
     ) {
-        return await headlessService.onClick(request.body.x, request.body.y);
+        return await services.headless.onClick(request.body.x, request.body.y);
     }
 
     public async onKeypress(
         request: FastifyRequest<{ Body: HeadlessOnKeypressBodyType }>,
         reply: FastifyReply,
     ) {
-        return await headlessService.onKeypress(request.body.code);
+        return await services.headless.onKeypress(request.body.code);
     }
 }
 

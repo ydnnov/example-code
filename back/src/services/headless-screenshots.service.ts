@@ -2,10 +2,10 @@ import gm from 'gm';
 import { websocket } from '../websocket.js';
 import { logger } from '../logger.js';
 import { helpers } from '../helpers/helpers.js';
-import { headlessService } from './headless.service.js';
 import { OperationResult } from '../types/common.js';
+import { services } from './services.js';
 
-class HeadlessScreenshotsService {
+export class HeadlessScreenshotsService {
 
     protected screenshotClickPoints = [];
     protected useClickPoints = false;  // TODO
@@ -60,7 +60,7 @@ class HeadlessScreenshotsService {
     public async sendScreenshot() {
         try {
             // console.log('capturing screenshot');
-            const page = await headlessService.getPage();
+            const page = await services.headless.getPage();
             if (!page) {
                 console.log('Page does not exist');
                 return;
@@ -101,5 +101,3 @@ class HeadlessScreenshotsService {
     };
 
 }
-
-export const headlessScreenshotsService = new HeadlessScreenshotsService();

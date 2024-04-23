@@ -9,9 +9,23 @@ import { helpers } from './helpers/helpers.js';
 import { routes } from './routes/routes.js';
 import { websocket } from './websocket.js';
 
-process.on('unhandledRejection', (error) => {
+process.on('uncaughtException', (error) => {
+    console.log(helpers.colorizeForConsole(31,
+        helpers.consoleHeaderText('uncaughtException ', '!'),
+    ));
     console.error(error);
-    throw error;
+    console.log(helpers.colorizeForConsole(31, '='.repeat(100)));
+    // throw error;
+});
+
+process.on('unhandledRejection', (error) => {
+    console.log(helpers.colorizeForConsole(31,
+        helpers.consoleHeaderText('unhandledRejection ', '!'),
+    ));
+    console.error(error);
+    console.log(helpers.colorizeForConsole(31, '+-'.repeat(50)));
+    // console.error(error);
+    // throw error;
 });
 
 (async () => {

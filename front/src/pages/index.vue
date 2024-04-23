@@ -16,27 +16,30 @@ const rightPanelComponent = computed(
 </script>
 
 <template>
-  <div>
-    <Button
-        @click="swapPanels = !swapPanels"
-        style="font-size: 80%; height: 32px;"
-        label="Swap panels"
-    />
-    <Splitter
-        style="height: calc(100vh - 15px)"
-        state-key="index-page:main-splitter-state"
-        state-storage="local"
-    >
-      <SplitterPanel style="">
-        <keep-alive>
-          <component :is="leftPanelComponent" />
-        </keep-alive>
-      </SplitterPanel>
-      <SplitterPanel style="display: flex; flex-direction: column">
-        <keep-alive>
-          <component :is="rightPanelComponent" />
-        </keep-alive>
-      </SplitterPanel>
-    </Splitter>
+  <div class="h-screen">
+    <div class="absolute">
+      <Button
+          @click="swapPanels = !swapPanels"
+          label="Swap panels"
+          class="py-2 px-10 ml-3 my-2"
+      />
+    </div>
+    <div class="pt-14">
+      <Splitter
+          state-key="index-page:main-splitter-state"
+          state-storage="local"
+      >
+        <SplitterPanel>
+          <keep-alive>
+            <component :is="leftPanelComponent" />
+          </keep-alive>
+        </SplitterPanel>
+        <SplitterPanel>
+          <keep-alive>
+            <component :is="rightPanelComponent" />
+          </keep-alive>
+        </SplitterPanel>
+      </Splitter>
+    </div>
   </div>
 </template>

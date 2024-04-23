@@ -3,9 +3,9 @@ import puppeteer, { Browser, ElementHandle, HTTPResponse, KeyInput, Page } from 
 import { config } from '../config.js';
 import { helpers } from '../helpers/helpers.js';
 import { OperationResult } from '../types/common.js';
-import { headlessScreenshotsService } from './headless-screenshots.service.js';
+import { services } from './services.js';
 
-class HeadlessService {
+export class HeadlessService {
 
     protected events = new EventEmitter2();
 
@@ -105,7 +105,7 @@ class HeadlessService {
     public async onClick(x: number, y: number) {
         const page = await this.getPage();
         await page.mouse.click(x, y);
-        headlessScreenshotsService.addClickPoint(x, y);
+        services.headlessScreenshots.addClickPoint(x, y);
         // console.log({ x, y });
         return {
             success: true,
@@ -117,7 +117,7 @@ class HeadlessService {
         const page = await this.getPage();
         await page.keyboard.press(<KeyInput>code);
         if (code === 'Escape') {
-            headlessScreenshotsService.deleteAllClickPoints();
+            services.headlessScreenshots.deleteAllClickPoints();
         }
         // console.log({ code });
         return {
@@ -136,5 +136,3 @@ class HeadlessService {
         this.isResponseFnBound = true;
     }
 }
-
-export const headlessService = new HeadlessService();

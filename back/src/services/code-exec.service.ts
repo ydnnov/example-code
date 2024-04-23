@@ -5,10 +5,9 @@ import { logger } from '../logger.js';
 import { bag as _bag } from '../bag.js';
 import { config as _config } from '../config.js';
 import { helpers as _helpers } from '../helpers/helpers.js';
-import { headlessService as _headlessService } from './headless.service.js';
-import { headlessScreenshotsService as _headlessScreenshotsService } from './headless-screenshots.service.js';
+import { services as _services } from './services.js';
 
-class CodeExecService {
+export class CodeExecService {
 
     public async exec(code: string) {
         const gm = _gm;
@@ -17,10 +16,9 @@ class CodeExecService {
         const websocket = _websocket;
         const bag = _bag;
         const config = _config;
-        const headlessService = _headlessService;
-        const headlessScreenshotsService = _headlessScreenshotsService;
-        const browser = await headlessService.getBrowser();
-        const page = await headlessService.getPage();
+        const services = _services;
+        const browser = await services.headless.getBrowser();
+        const page = await services.headless.getPage();
         try {
             eval(`(async () => {
                 try {
@@ -42,5 +40,3 @@ class CodeExecService {
         }
     }
 }
-
-export const codeExecService = new CodeExecService();

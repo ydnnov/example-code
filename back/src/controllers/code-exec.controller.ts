@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { CodeExecRequestType } from '../schemas/code-exec.schema.js';
-import { codeExecService } from '../services/code-exec.service.js';
+import { services } from '../services/services.js';
 
 class CodeExecController {
 
@@ -8,7 +8,7 @@ class CodeExecController {
         request: FastifyRequest<{ Body: CodeExecRequestType }>,
         reply: FastifyReply,
     ) {
-        return await codeExecService.exec(request.body);
+        return await services.codeExec.exec(request.body);
     }
 
 }

@@ -101,30 +101,32 @@ onMounted(() => {
 </script>
 
 <template>
-  <div style="display: flex; flex-wrap: wrap; margin: 3px 0 0 0;">
-    <div v-for="(tab, i) in srcTabs.items" :key="tab.id" class="tab-button-wrapper">
+  <div>
+    <div style="display: flex; flex-wrap: wrap; margin: 3px 0 0 0;">
+      <div v-for="(tab, i) in srcTabs.items" :key="tab.id" class="tab-button-wrapper">
+        <Button
+            :label="`Tab ${i + 1}`"
+            class="tab-button"
+            :severity="tab.id === srcTabs.currentId ? 'success' : 'secondary'"
+            @click="selectTab(tab)"
+        />
+      </div>
+      <div class="tab-button-wrapper">
+        <Button icon="pi pi-plus" class="tab-button" @click="addTab" />
+      </div>
+      <div style="flex-grow: 1"></div>
       <Button
-        :label="`Tab ${i + 1}`"
-        class="tab-button"
-        :severity="tab.id === srcTabs.currentId ? 'success' : 'secondary'"
-        @click="selectTab(tab)"
+          class="close-tab-button icon-button"
+          icon="pi pi-times"
+          severity="danger"
+          @click="closeCurrentTab"
       />
     </div>
-    <div class="tab-button-wrapper">
-      <Button icon="pi pi-plus" class="tab-button" @click="addTab" />
+    <div style="width: 100%; height: calc(100vh - 150px);">
+      <div ref="editorEl" style="width: 100%; height: 100%;"></div>
     </div>
-    <div style="flex-grow: 1"></div>
-    <Button
-      class="close-tab-button icon-button"
-      icon="pi pi-times"
-      severity="danger"
-      @click="closeCurrentTab"
-    />
+    <Button label="Execute (Ctrl+Enter)" @click="codeExecSend"></Button>
   </div>
-  <div style="width: 100%; height: calc(100vh - 150px);">
-    <div ref="editorEl" style="width: 100%; height: 100%;"></div>
-  </div>
-  <Button label="Execute (Ctrl+Enter)" @click="codeExecSend"></Button>
 </template>
 
 <style lang="scss">

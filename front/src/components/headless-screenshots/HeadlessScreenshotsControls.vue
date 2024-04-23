@@ -3,14 +3,14 @@
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import { headlessScreenshotsClient } from '~/client/headless-screenshots.client.js';
-import { useDebounceFn } from "@vueuse/core";
+import { useDebounceFn } from '@vueuse/core';
 import { useStorage } from '@vueuse/core';
 
 const screenshotSendInterval = useStorage('screenshot-interval', '1000');
 const screenshotSendIntervalValid = () => {
   return screenshotSendInterval.value.match(/^\d+$/) &&
-    (Number(screenshotSendInterval.value) >= 100) &&
-    (Number(screenshotSendInterval.value) <= 60000);
+      (Number(screenshotSendInterval.value) >= 100) &&
+      (Number(screenshotSendInterval.value) <= 60000);
 };
 const startSendingScreenshots = () => {
   headlessScreenshotsClient.startSending();
@@ -34,20 +34,18 @@ startSendingScreenshots();
 </script>
 
 <template>
-  <Button @click="startSendingScreenshots" class="hlctl-scr-btn" label="on" />
-  <Button @click="stopSendingScreenshots" class="hlctl-scr-btn" label="off" />
-  <InputText
-    type="text"
-    v-model="screenshotSendInterval"
-    :class="{'p-invalid': !screenshotSendIntervalValid()}"
-    style="width: 100px; height: 32px;"
-  />
+  <div class="flex flex-col items-end mr-3">
+    <div class="mb-2 flex">
+      <Button @click="startSendingScreenshots" class="text-sm h-8 mr-1" label="on" />
+      <Button @click="stopSendingScreenshots" class="text-sm h-8" label="off" />
+    </div>
+    <div>
+      <InputText
+          type="text"
+          v-model="screenshotSendInterval"
+          :class="{'p-invalid': !screenshotSendIntervalValid()}"
+          class="w-24 h-10"
+      />
+    </div>
+  </div>
 </template>
-
-<style scoped lang="scss">
-.hlctl-scr-btn {
-  font-size: 80%;
-  height: 32px;
-  margin: 0 2px 0 0;
-}
-</style>
