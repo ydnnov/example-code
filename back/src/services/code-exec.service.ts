@@ -19,6 +19,11 @@ export class CodeExecService {
         const services = _services;
         const browser = await services.headless.getBrowser();
         const page = await services.headless.getPage();
+        // console.log(page);
+        // console.log(code);
+        // code = this.stripImports(code);
+        // console.log('='.repeat(50));
+        // console.log(code);
         try {
             eval(`(async () => {
                 try {
@@ -38,5 +43,10 @@ export class CodeExecService {
             logger.error(err);
             console.log(helpers.colorizeForConsole(31, '!'.repeat(100)));
         }
+    }
+
+    protected stripImports(code: string): string {
+        code = code.replace(/import .+;\n/g, '');
+        return code;
     }
 }

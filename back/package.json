@@ -34,6 +34,7 @@
     "fastify": "^4.26.2",
     "gm": "^1.25.0",
     "pg": "^8.11.5",
+    "playwright": "^1.43.1",
     "puppeteer": "^22.6.5",
     "reflect-metadata": "^0.2.2",
     "socket.io": "^4.7.5",

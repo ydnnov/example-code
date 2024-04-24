@@ -22,7 +22,7 @@ const onScreenshotClick = (ev: PointerEvent) => {
   );
 };
 const onScreenshotType = (ev: KeyboardEvent) => {
-  headlessClient.screenshotType(ev.code);
+  headlessClient.screenshotType(ev.key);
 };
 const showingScreenshotIndicator = ref(false);
 </script>
