@@ -5,6 +5,7 @@ import '~/user-worker.js';
 import { codeExecClient } from '~/client/code-exec.client.js';
 import { useStorage } from '@vueuse/core';
 import axios from 'axios';
+import { tsDefinitionsClient } from '~/client/ts-definitions.client.js';
 
 let editor;
 const editorEl = ref();
@@ -74,7 +75,7 @@ const closeCurrentTab = () => {
   }
   editor?.focus();
 };
-onMounted(() => {
+onMounted(async () => {
   if (!editorEl.value) return;
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -97,10 +98,10 @@ onMounted(() => {
 //     noSyntaxValidation: false,
 //   });
 
-  // axios.get()
+  const tsDefinitions = await tsDefinitionsClient.all();
 
   monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      ``,
+      tsDefinitions,
       'file:///node_modules/@types/playwright/index.d.ts',
   );
 
@@ -109,8 +110,19 @@ onMounted(() => {
   //     'file:///node_modules/@types/math/index.d.ts'
   // );
 
+  let code = getCurrentTab()?.code;
+  console.log(code);
+  if (!code) {
+    code = `import * as playwright from 'playwright';
+import { Browser, Page } from 'playwright';
+
+declare const page: Page, browser: Browser;
+
+`;
+  }
+
   const model = monaco.editor.createModel(
-      `import * as playwright from 'playwright';\n`,
+      code,
       'typescript',
       monaco.Uri.parse('file:///main.tsx'),
   );

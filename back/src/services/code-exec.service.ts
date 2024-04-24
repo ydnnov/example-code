@@ -6,10 +6,13 @@ import { bag as _bag } from '../bag.js';
 import { config as _config } from '../config.js';
 import { helpers as _helpers } from '../helpers/helpers.js';
 import { services as _services } from './services.js';
+import { parsers as _parsers } from '../parsers/parsers.js';
+import * as _playwright from 'playwright';
+import { transform, Options } from '@swc/core';
 
 export class CodeExecService {
 
-    public async exec(code: string) {
+    public async exec(tsCode: string) {
         const gm = _gm;
         const env = _env;
         const helpers = _helpers;
@@ -17,12 +20,23 @@ export class CodeExecService {
         const bag = _bag;
         const config = _config;
         const services = _services;
+        const parsers = _parsers;
+        const playwright = _playwright;
         const browser = await services.headless.getBrowser();
         const page = await services.headless.getPage();
         // console.log(page);
         // console.log(code);
-        // code = this.stripImports(code);
+        tsCode = this.stripImports(tsCode);
+        tsCode = this.stripDeclares(tsCode);
         // console.log('='.repeat(50));
+        // console.log(code);
+        const { code } = await transform(tsCode, {
+            jsc: {
+                parser: {
+                    syntax: 'typescript',
+                },
+            },
+        });
         // console.log(code);
         try {
             eval(`(async () => {
@@ -47,6 +61,11 @@ export class CodeExecService {
 
     protected stripImports(code: string): string {
         code = code.replace(/import .+;\n/g, '');
+        return code;
+    }
+
+    protected stripDeclares(code: string): string {
+        code = code.replace(/declare .+;\n/g, '');
         return code;
     }
 }
