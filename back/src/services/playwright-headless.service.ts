@@ -95,15 +95,17 @@ export class PlaywrightHeadlessService extends HeadlessService {
         };
     }
 
-    public async onKeypress(code: string) {
+    public async onKeypress(key: string, code: string) {
+        // console.log({ key, code });
         const page = await this.getPage();
-        console.log(code);
-        await page.keyboard.type(code);
-        // await page.keyboard.press(<KeyInput>code);
-        if (code === 'Escape') {
-            services.headlessScreenshots.deleteAllClickPoints();
+        if(key.length === 1){
+            await page.keyboard.type(key);
+        }else{
+            await page.keyboard.press(key);
         }
-        // console.log({ code });
+        // if (code === 'Escape') {
+        //     services.headlessScreenshots.deleteAllClickPoints();
+        // }
         return {
             success: true,
             resultData: null,

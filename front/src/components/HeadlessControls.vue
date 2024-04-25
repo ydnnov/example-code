@@ -32,7 +32,7 @@ const reloadPage = () => {
             type="text"
             v-model="url"
             @keydown.enter="goto(url)"
-            class="w-full border-2 border-slate-300 h-8 px-3"
+            class="w-full border border-slate-300 h-8 px-3"
         />
       </div>
       <div class="flex mt-2 justify-between">

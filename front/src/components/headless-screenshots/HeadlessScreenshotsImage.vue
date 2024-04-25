@@ -17,12 +17,12 @@ const onScreenshotClick = (ev: PointerEvent) => {
   }
   const img = screenshotImg.value;
   headlessClient.screenshotClick(
-    ev.offsetX / img?.clientWidth * img?.naturalWidth,
-    ev.offsetY / img?.clientHeight * img?.naturalHeight,
+      ev.offsetX / img?.clientWidth * img?.naturalWidth,
+      ev.offsetY / img?.clientHeight * img?.naturalHeight,
   );
 };
 const onScreenshotType = (ev: KeyboardEvent) => {
-  headlessClient.screenshotType(ev.key);
+  headlessClient.screenshotType(ev.key, ev.code);
 };
 const showingScreenshotIndicator = ref(false);
 </script>
@@ -30,16 +30,16 @@ const showingScreenshotIndicator = ref(false);
 <template>
   <div style="position: relative; overflow-y: scroll">
     <img
-      :src="screenshot"
-      alt=""
-      ref="screenshotImg"
-      @click="onScreenshotClick"
-      @keyup="onScreenshotType"
-      tabindex="0"
-      style="border: 1px solid black; width: 100%; height: 100%; -webkit-user-drag: none"
+        :src="screenshot"
+        alt=""
+        ref="screenshotImg"
+        @click="onScreenshotClick"
+        @keyup="onScreenshotType"
+        tabindex="0"
+        style="border: 1px solid black; width: 100%; height: 100%; -webkit-user-drag: none"
     />
     <div
-      style="
+        style="
           position: absolute;
           right: 5px;
           top: 5px;
@@ -48,7 +48,7 @@ const showingScreenshotIndicator = ref(false);
           background: deepskyblue;
           border-radius: 50%;
       "
-      v-show="showingScreenshotIndicator"
+        v-show="showingScreenshotIndicator"
     ></div>
   </div>
 </template>

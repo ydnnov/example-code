@@ -28,7 +28,7 @@ export abstract class HeadlessService {
 
     public abstract onClick(x: number, y: number);
 
-    public abstract onKeypress(code: string);
+    public abstract onKeypress(key: string, code: string);
 
     // public abstract getFreshPage();
 

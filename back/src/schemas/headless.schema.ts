@@ -12,6 +12,7 @@ export const headlessOnClickBodySchema = Type.Object({
 export type HeadlessOnClickBodyType = Static<typeof headlessOnClickBodySchema>
 ////////////////////////////////////////////////////////////////////////////////
 export const headlessOnKeypressBodySchema = Type.Object({
+    key: Type.String(),
     code: Type.String(),
 });
 export type HeadlessOnKeypressBodyType = Static<typeof headlessOnKeypressBodySchema>

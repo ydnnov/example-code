@@ -34,7 +34,7 @@ class HeadlessController {
         request: FastifyRequest<{ Body: HeadlessOnKeypressBodyType }>,
         reply: FastifyReply,
     ) {
-        return await services.headless.onKeypress(request.body.code);
+        return await services.headless.onKeypress(request.body.key, request.body.code);
     }
 }
 
