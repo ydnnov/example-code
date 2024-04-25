@@ -24,12 +24,8 @@ export class CodeExecService {
         const playwright = _playwright;
         const browser = await services.headless.getBrowser();
         const page = await services.headless.getPage();
-        // console.log(page);
-        // console.log(code);
         tsCode = this.stripImports(tsCode);
         tsCode = this.stripDeclares(tsCode);
-        // console.log('='.repeat(50));
-        // console.log(code);
         const { code } = await transform(tsCode, {
             jsc: {
                 parser: {
@@ -37,7 +33,6 @@ export class CodeExecService {
                 },
             },
         });
-        // console.log(code);
         try {
             eval(`(async () => {
                 try {
@@ -60,12 +55,12 @@ export class CodeExecService {
     }
 
     protected stripImports(code: string): string {
-        code = code.replace(/import .+;\n/g, '');
+        code = code.replace(/import .+;[\n\r]*/g, '');
         return code;
     }
 
     protected stripDeclares(code: string): string {
-        code = code.replace(/declare .+;\n/g, '');
+        code = code.replace(/declare .+;[\n\r]*/g, '');
         return code;
     }
 }

@@ -17,6 +17,7 @@ const playwrightLaunchOptions: PlaywrightLaunchOptions = {
 };
 
 export const config: ConfigType = {
+    autoSendScreenshots: true,
     browserParams: {
         // type: 'puppeteer',
         // launchOptions: puppeteerLaunchOptions,

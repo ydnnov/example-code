@@ -12,5 +12,6 @@ export type PlaywrightBrowserParams = {
 }
 
 export type ConfigType = {
+    autoSendScreenshots: boolean
     browserParams: PuppeteerBrowserParams | PlaywrightBrowserParams
 };

@@ -49,7 +49,7 @@ importers:
         version: 1.43.1
       puppeteer:
         specifier: ^22.6.5
-        version: 22.6.5
+        version: 22.6.5(typescript@5.4.5)
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -84,6 +84,9 @@ importers:
       nodemon:
         specifier: ^3.1.0
         version: 3.1.0
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
 
 packages:
 
@@ -1696,6 +1699,11 @@ packages:
       typeorm-aurora-data-api-driver:
         optional: true
 
+  typescript@5.4.5:
+    resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   unbzip2-stream@1.4.3:
     resolution: {integrity: sha512-mlExGW4w71ebDJviH16lQLtZS32VKqsSfk80GCfUlwT/4/hNRFsoscrF/c++9xinkMzECL1uL9DDwXqFWkruPg==}
 
@@ -2327,12 +2335,14 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  cosmiconfig@9.0.0:
+  cosmiconfig@9.0.0(typescript@5.4.5):
     dependencies:
       env-paths: 2.2.1
       import-fresh: 3.3.0
       js-yaml: 4.1.0
       parse-json: 5.2.0
+    optionalDependencies:
+      typescript: 5.4.5
 
   cross-spawn@4.0.2:
     dependencies:
@@ -3136,10 +3146,10 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  puppeteer@22.6.5:
+  puppeteer@22.6.5(typescript@5.4.5):
     dependencies:
       '@puppeteer/browsers': 2.2.2
-      cosmiconfig: 9.0.0
+      cosmiconfig: 9.0.0(typescript@5.4.5)
       devtools-protocol: 0.0.1262051
       puppeteer-core: 22.6.5
     transitivePeerDependencies:
@@ -3449,6 +3459,8 @@ snapshots:
       pg: 8.11.5
     transitivePeerDependencies:
       - supports-color
+
+  typescript@5.4.5: {}
 
   unbzip2-stream@1.4.3:
     dependencies:

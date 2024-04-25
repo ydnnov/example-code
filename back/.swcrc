@@ -16,7 +16,7 @@
       "decoratorMetadata": true
     },
     "keepClassNames": true,
-    "baseUrl": "./"
+    "baseUrl": "./",
   },
-  "minify": false
+  "minify": false,
 }

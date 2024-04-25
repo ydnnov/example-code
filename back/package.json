@@ -19,7 +19,8 @@
     "@types/dotenv-parse-variables": "^2.0.3",
     "@types/gm": "^1.25.4",
     "@types/node": "^20.12.7",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "typescript": "^5.4.5"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.1",

@@ -102,12 +102,12 @@ onMounted(async () => {
 
   monaco.languages.typescript.typescriptDefaults.addExtraLib(
       tsDefinitions,
-      'file:///node_modules/@types/playwright/index.d.ts',
+      'file:///node_modules/@types/types/index.d.ts',
   );
 
   // monaco.languages.typescript.typescriptDefaults.addExtraLib(
-  //     'export declare function add(a: number, b: number): number',
-  //     'file:///node_modules/@types/math/index.d.ts'
+  //     tsDefinitions,
+  //     'file:///node_modules/@types/playwright/index.d.ts',
   // );
 
   let code = getCurrentTab()?.code;

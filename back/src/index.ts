@@ -8,6 +8,8 @@ import { logger } from './logger.js';
 import { helpers } from './helpers/helpers.js';
 import { routes } from './routes/routes.js';
 import { websocket } from './websocket.js';
+import { config } from './config.js';
+import { services } from './services/services.js';
 
 process.on('uncaughtException', (error) => {
     console.log(helpers.colorizeForConsole(31,
@@ -47,6 +49,10 @@ process.on('unhandledRejection', (error) => {
             logger.verbose(`${
                 helpers.fmtDateTime(new Date())
             }: wss connected client id = ${socket.id}`);
+
+            if (config.autoSendScreenshots) {
+                services.headlessScreenshots.startSendingScreenshots();
+            }
         });
 
         console.log('='.repeat(100));
