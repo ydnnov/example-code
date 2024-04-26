@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { CaptchaImageEntity } from './captcha-image.entity.js';
 
 @Entity({ name: 'captcha_answer_request' })
 export class CaptchaAnswerRequestEntity {
@@ -10,6 +11,15 @@ export class CaptchaAnswerRequestEntity {
 
     @Column()
     image_id: number;
+
+    @ManyToOne(
+        () => CaptchaImageEntity,
+        (image) => image.answerRequests, {
+            eager: true,
+        },
+    )
+    @JoinColumn({ name: 'image_id' })
+    image: () => CaptchaImageEntity;
 
     @Column({ nullable: true })
     answer: string;

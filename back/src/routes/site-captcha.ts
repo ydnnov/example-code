@@ -12,5 +12,9 @@ export async function siteCaptchaRoutes(fastify: FastifyInstance) {
         '/site-captcha/answer-request/:id',
         siteCaptchaController.getAnswerRequest.bind(siteCaptchaController),
     );
+    fastify.get(
+        '/site-captcha/captcha-image/:id',
+        siteCaptchaController.getCaptchaImage.bind(siteCaptchaController),
+    );
 
 }

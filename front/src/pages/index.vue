@@ -6,6 +6,8 @@ import CodeExecControls from '~/components/CodeExecControls.vue';
 import Button from 'primevue/button';
 import { useStorage } from '@vueuse/core';
 
+const showCaptcha = ref(false);
+
 const swapPanels = useStorage('index:swapPanels', false);
 
 const splitterHorizontal =
@@ -21,23 +23,34 @@ const rightPanelComponent = computed(
 
 <template>
   <div class="fixed inset-x-0 inset-y-0">
-    <div class="absolute">
-      <Button
-          @click="swapPanels = !swapPanels"
-          label="Swap panels"
-          class="py-2 px-10 ml-3 my-2"
-      />
-      <Button
-          @click="splitterHorizontal = !splitterHorizontal"
-          :label="splitterHorizontal ? 'Set vertical':'Set horizontal'"
-          class="py-2 px-10 ml-3 my-2"
+    <div class="absolute inset-x-0 top-0">
+      <div class="absolute">
+        <Button
+            @click="swapPanels = !swapPanels"
+            :icon="`pi pi-arrows-${splitterHorizontal ? 'h' : 'v'}`"
+            class="w-[40px] h-[40px] ml-3 my-2"
+        />
+        <Button
+            @click="splitterHorizontal = !splitterHorizontal"
+            icon="`pi pi-desktop"
+            class="w-[40px] h-[40px] ml-3 my-2"
+            :class="splitterHorizontal ? '' : 'rotate-90'"
+        />
+      </div>
+      <CaptchaManualInput
+          class="absolute right-0 top-[8px]"
+          @image-received="showCaptcha = true"
       />
     </div>
-    <div class="top-14 absolute bottom-0 inset-x-0">
+    <div
+        class="absolute inset-x-0 bottom-0 border-t-[2px] border-cyan-500"
+        :class="showCaptcha||true ? 'top-[116px]' : 'top-[40px]'"
+    >
       <Splitter
-          class="h-screen"
+          class="absolute inset-x-0 inset-y-0 border-0"
           state-key="index-page:main-splitter-state"
           state-storage="local"
+          gutter-size="12"
           :layout="splitterHorizontal ? 'horizontal' : 'vertical'"
       >
         <SplitterPanel>

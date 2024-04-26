@@ -4,7 +4,6 @@ import Button from 'primevue/button';
 import '~/user-worker.js';
 import { codeExecClient } from '~/client/code-exec.client.js';
 import { useStorage } from '@vueuse/core';
-import axios from 'axios';
 import { tsDefinitionsClient } from '~/client/ts-definitions.client.js';
 
 let editor;
@@ -154,56 +153,45 @@ declare const page: Page, browser: Browser;
 </script>
 
 <template>
-  <div>
-    <div style="display: flex; flex-wrap: wrap; margin: 3px 0 0 0;">
-      <div v-for="(tab, i) in srcTabs.items" :key="tab.id" class="tab-button-wrapper">
+  <div class="absolute left-0 right-[5px] inset-y-0">
+    <div class="absolute left-[15px] right-0 top-0 h-[38px] flex bd">
+      <div
+          v-for="(tab, i) in srcTabs.items"
+          :key="tab.id"
+          class=""
+      >
         <Button
             :label="`Tab ${i + 1}`"
-            class="tab-button"
+            class="h-[32px] mr-[5px] text-[14px]"
             :severity="tab.id === srcTabs.currentId ? 'success' : 'secondary'"
             @click="selectTab(tab)"
         />
       </div>
-      <div class="tab-button-wrapper">
-        <Button icon="pi pi-plus" class="tab-button" @click="addTab" />
+      <div class="border-[0px] border-cyan-500 border-dashed">
+        <Button icon="pi pi-plus" class=" h-[32px]" @click="addTab" />
       </div>
       <div style="flex-grow: 1"></div>
-      <Button
-          class="close-tab-button icon-button"
-          icon="pi pi-times"
-          severity="danger"
-          @click="closeCurrentTab"
-      />
+      <div>
+        <Button
+            class="w-[32px] h-[32px]"
+            icon="pi pi-times"
+            severity="danger"
+            @click="closeCurrentTab"
+        />
+      </div>
     </div>
-    <div style="width: 100%; height: calc(100vh - 150px);">
+    <div class="absolute top-[38px] bottom-[60px] inset-x-0">
       <div ref="editorEl" style="width: 100%; height: 100%;"></div>
     </div>
-    <Button label="Execute (Ctrl+Enter)" @click="codeExecSend"></Button>
+    <div class="absolute left-[15px] bottom-0 h-[52px]">
+      <Button label="Execute (Ctrl+Enter)" @click="codeExecSend"></Button>
+    </div>
   </div>
 </template>
 
 <style lang="scss">
-.tab-button-wrapper {
-  margin: 0 3px 3px 0;
-}
-
-.tab-button.p-button {
-  height: 32px;
-  padding: 0 10px;
-  font-size: 75%;
-
-  span {
-    font-weight: normal;
-  }
-}
-
-.icon-button {
-  width: 32px !important;
-  height: 32px !important;
-}
-
-.close-tab-button {
-  margin: 0 15px 3px 0 !important;
+.p-splitter-panel {
+  position: relative;
 }
 
 .monaco-editor, .overflow-guard {

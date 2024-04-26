@@ -28,7 +28,7 @@ const showingScreenshotIndicator = ref(false);
 </script>
 
 <template>
-  <div style="position: relative; overflow-y: scroll">
+  <div class="relative overflow-y-scroll ml-[12px] mr-[12px]">
     <img
         :src="screenshot"
         alt=""
@@ -36,19 +36,9 @@ const showingScreenshotIndicator = ref(false);
         @click="onScreenshotClick"
         @keyup="onScreenshotType"
         tabindex="0"
-        style="border: 1px solid black; width: 100%; height: 100%; -webkit-user-drag: none"
+        class="border-[1px] border-black"
     />
-    <div
-        style="
-          position: absolute;
-          right: 5px;
-          top: 5px;
-          width: 15px;
-          height: 15px;
-          background: deepskyblue;
-          border-radius: 50%;
-      "
-        v-show="showingScreenshotIndicator"
-    ></div>
+    <div class="absolute top-[5px] right-[5px] w-[20px] h-[20px] bg-blue-400 rounded-[50%]"
+         v-show="showingScreenshotIndicator"></div>
   </div>
 </template>

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { CaptchaAnswerRequestEntity } from './captcha-answer-request.entity.js';
 
 @Entity({ name: 'captcha_image' })
 export class CaptchaImageEntity {
@@ -13,5 +14,11 @@ export class CaptchaImageEntity {
 
     @Column({ nullable: true })
     accepted_answer: string;
+
+    @OneToMany(
+        () => CaptchaAnswerRequestEntity,
+        (answerRequest) => answerRequest.image,
+    )
+    answerRequests: CaptchaAnswerRequestEntity[];
 
 }
