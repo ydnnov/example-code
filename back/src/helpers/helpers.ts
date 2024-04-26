@@ -1,3 +1,6 @@
+import { Page } from 'playwright';
+import { ElementHandle } from 'playwright';
+
 const helpers = {
     fmtDateTime: (d: Date): string => {
         const lz = num => ('0' + num).slice(-2);
@@ -63,6 +66,22 @@ const helpers = {
             chunks.push(arr.slice(i, i + chunkSize));
         }
         return chunks;
+    },
+
+    async getImageBase64(
+        page: Page,
+        element: ElementHandle,
+    ): Promise<string> {
+        const result = await page.evaluate((elem) => {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = elem.width;
+            canvas.height = elem.height;
+            context.drawImage(elem, 0, 0);
+            const base64Data = canvas.toDataURL('image/png');
+            return base64Data;
+        }, element);
+        return result;
     },
 };
 

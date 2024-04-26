@@ -1,4 +1,5 @@
 import { services } from '../services/services.js';
+import { helpers } from '../helpers/helpers.js';
 
 export class MsudrfSudDeloParser {
     public async openStartPage() {
@@ -9,20 +10,12 @@ export class MsudrfSudDeloParser {
 
     public async solveCaptcha() {
         const page = await services.headless.getPage();
+        const imageElem = await page.$('img[src="/captcha.php"]');
+        const imageBase64 = await helpers.getImageBase64(
+            page,
+            imageElem,
+        );
+        console.log(imageBase64);
     }
 
-    public async getImageBase64(selector: string): Promise<string> {
-        const page = await services.headless.getPage();
-        const result = await page.evaluate((s) => {
-            const captchaImg = $(s)[0];
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.width = captchaImg.width;
-            canvas.height = captchaImg.height;
-            context.drawImage(captchaImg, 0, 0);
-            const base64Data = canvas.toDataURL('image/png');
-            return base64Data;
-        }, selector);
-        return result;
-    }
 }
