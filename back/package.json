@@ -4,10 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "swc src -d dist",
+    "build": "swc src -d dist & pnpm migrate-build",
     "build-dev": "pnpm build && NODE_ENV=development node --inspect dist/src/index.js",
     "dev": "nodemon --ext ts --exec \"npm run build-dev\"",
-    "start": "pnpm build && NODE_ENV=production node dist/src/index.js"
+    "start": "pnpm build && NODE_ENV=production node dist/src/index.js",
+    "dts": "npx tsc -p declarations-build/tsconfig.json",
+    "migrate-build": "swc migrations -d dist",
+    "migrate-revert-no-rebuild": "npx typeorm migration:revert -d ./dist/src/data-source.js",
+    "migrate-revert": "pnpm build & pnpm migrate-build & pnpm migrate-revert-no-rebuild",
+    "migrate-no-rebuild": "npx typeorm migration:run -d ./dist/src/data-source.js",
+    "migrate": "pnpm build & pnpm migrate-no-rebuild"
   },
   "type": "module",
   "keywords": [],

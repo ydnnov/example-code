@@ -46,6 +46,7 @@ process.on('unhandledRejection', (error) => {
         }
 
         websocket.on('connection', (socket) => {
+
             logger.verbose(`${
                 helpers.fmtDateTime(new Date())
             }: wss connected client id = ${socket.id}`);
@@ -53,6 +54,14 @@ process.on('unhandledRejection', (error) => {
             if (config.autoSendScreenshots) {
                 services.headlessScreenshots.startSendingScreenshots();
             }
+
+            socket.on('disconnect', () => {
+                services.headlessScreenshots.stopSendingScreenshots();
+
+                logger.verbose(`${
+                    helpers.fmtDateTime(new Date())
+                }: wss disconnected client id = ${socket.id}`);
+            });
         });
 
         console.log('='.repeat(100));

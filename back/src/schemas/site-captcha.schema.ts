@@ -1,0 +1,8 @@
+import { Static, Type } from '@sinclair/typebox';
+
+////////////////////////////////////////////////////////////////////////////////
+export const siteCaptchaRequestAnswerSchema = Type.Object({
+    imageBase64: Type.String(),
+});
+export type SiteCaptchaRequestAnswerType = Static<typeof siteCaptchaRequestAnswerSchema>
+////////////////////////////////////////////////////////////////////////////////

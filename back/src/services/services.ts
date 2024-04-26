@@ -3,6 +3,7 @@ import { HeadlessScreenshotsService } from './headless-screenshots.service.js';
 import { HeadlessServiceFactory } from '../factories/headless-service.factory.js';
 import { config } from '../config.js';
 import { TsDefinitionsService } from './ts-definitions.service.js';
+import { SiteCaptchaService } from './site-captcha.service.js';
 
 const headlessServiceFactory = new HeadlessServiceFactory();
 
@@ -11,4 +12,5 @@ export const services = {
     headless: headlessServiceFactory.create(config.browserParams),
     headlessScreenshots: new HeadlessScreenshotsService(),
     tsDefinitions: new TsDefinitionsService(),
+    siteCaptcha: new SiteCaptchaService(),
 };
