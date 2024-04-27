@@ -3,6 +3,9 @@ POST http://127.0.0.1:5000/parser/start
 Content-Type: application/json
 
 {
-  "parserName": "msudrf/sud-delo"
+  "parserName": "msudrf/sud-delo",
+  "inputData": {
+    "searchText": "qwe"
+  }
 }
 

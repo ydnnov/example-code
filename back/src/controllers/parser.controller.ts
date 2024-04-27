@@ -10,7 +10,7 @@ export class ParserController {
     ): Promise<ParseUnitEntity> {
         // TODO: Надо возвращать код 201
         // TODO: настроить чтобы fastify автоматом это делал
-        return services.parser.startParser(request.body.parserName);
+        return services.parser.startParser(request.body);
     }
 
 }

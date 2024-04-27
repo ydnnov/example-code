@@ -8,6 +8,9 @@ export type ParserNameType = Static<typeof parserNameSchema>
 ////////////////////////////////////////////////////////////////////////////////
 export const parserStartBodySchema = Type.Object({
     parserName: parserNameSchema,
+    inputData: Type.Object({
+        searchText: Type.String(),
+    }),
 });
 export type ParserStartBodyType = Static<typeof parserStartBodySchema>
 ////////////////////////////////////////////////////////////////////////////////

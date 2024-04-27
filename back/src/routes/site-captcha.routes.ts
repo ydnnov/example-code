@@ -1,25 +1,27 @@
 import { FastifyInstance } from 'fastify';
-import { siteCaptchaAcceptAnswerSchema, siteCaptchaRequestAnswerSchema } from '../schemas/site-captcha.schema.js';
-import { siteCaptchaController } from '../controllers/site-captcha.controller.js';
+import {
+    siteCaptchaRequestAnswerSchema, siteCaptchaSetAnswerSchema,
+} from '../schemas/site-captcha.schema.js';
+import { controllers } from '../controllers/controllers.js';
 
 export async function siteCaptchaRoutes(fastify: FastifyInstance) {
     fastify.post(
         '/site-captcha/request-answer',
         { schema: { body: siteCaptchaRequestAnswerSchema } },
-        siteCaptchaController.requestAnswer.bind(siteCaptchaController),
+        controllers.siteCaptcha.requestAnswer.bind(controllers.siteCaptcha),
     );
     fastify.get(
         '/site-captcha/answer-request/:id',
-        siteCaptchaController.getAnswerRequest.bind(siteCaptchaController),
+        controllers.siteCaptcha.getAnswerRequest.bind(controllers.siteCaptcha),
     );
     fastify.get(
         '/site-captcha/captcha-image/:id',
-        siteCaptchaController.getCaptchaImage.bind(siteCaptchaController),
+        controllers.siteCaptcha.getCaptchaImage.bind(controllers.siteCaptcha),
     );
     fastify.post(
-        '/site-captcha/accept-answer',
-        { schema: { body: siteCaptchaAcceptAnswerSchema } },
-        siteCaptchaController.acceptAnswer.bind(siteCaptchaController),
+        '/site-captcha/set-answer',
+        { schema: { body: siteCaptchaSetAnswerSchema } },
+        controllers.siteCaptcha.setAnswer.bind(controllers.siteCaptcha),
     );
 
 }

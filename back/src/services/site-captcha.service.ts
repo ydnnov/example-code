@@ -2,7 +2,7 @@ import { db } from '../data-source.js';
 import { CaptchaAnswerRequestEntity } from '../entities/captcha-answer-request.entity.js';
 import { CaptchaImageEntity } from '../entities/captcha-image.entity.js';
 import EventEmitter2 from 'eventemitter2';
-import { SiteCaptchaAcceptAnswerType } from '../schemas/site-captcha.schema.js';
+import { SiteCaptchaAcceptAnswerType, SiteCaptchaSetAnswerType } from '../schemas/site-captcha.schema.js';
 
 export class SiteCaptchaService {
 
@@ -10,47 +10,48 @@ export class SiteCaptchaService {
 
     public async createAnswerRequest(imageBase64: string): Promise<CaptchaAnswerRequestEntity> {
 
-        let answerRequest;
+        let ansrecEnt;
 
-        await db.transaction(async (manager) => {
+        await db.transaction(async (mgr) => {
 
             let image;
 
             const emitResult = await this.events.emitAsync(
                 'createAnswerRequest::imageFindOrCreate',
-                manager,
+                mgr,
                 imageBase64,
             );
 
             if (emitResult.length && emitResult[0]) {
                 image = emitResult[0];
             } else {
-                image = await manager.findOneBy(CaptchaImageEntity, {
+                image = await mgr.findOneBy(CaptchaImageEntity, {
                     base64: imageBase64,
                 });
                 if (!image) {
                     image = new CaptchaImageEntity();
                     image.base64 = imageBase64;
-                    const result = await manager.insert(CaptchaImageEntity, image);
-                    const id = result.identifiers[0].id;
-                    image = await manager.findOneBy(CaptchaImageEntity, { id });
+                    const { id } = await mgr.save(CaptchaImageEntity, image);
+                    image = await mgr.findOneBy(CaptchaImageEntity, { id });
+                    // delete image.base64;
+                    // console.log({ image });
                 }
             }
 
-            answerRequest = new CaptchaAnswerRequestEntity();
-            answerRequest.image_id = image.id;
-            const result = await manager.insert(CaptchaAnswerRequestEntity, answerRequest);
-            const id = result.identifiers[0].id;
-            answerRequest = await manager.findOneBy(CaptchaAnswerRequestEntity, { id });
-
+            ansrecEnt = new CaptchaAnswerRequestEntity();
+            ansrecEnt.image_id = image.id;
+            const { id } = await mgr.save(CaptchaAnswerRequestEntity, ansrecEnt);
+            ansrecEnt = await mgr.findOneBy(CaptchaAnswerRequestEntity, { id });
             await this.events.emitAsync(
                 'createAnswerRequest::success',
-                manager,
-                answerRequest,
+                mgr,
+                ansrecEnt,
             );
+            // delete ansrecEnt.image['base64'];
+            // console.log({ ansrecEnt });
         });
 
-        return answerRequest;
+        return ansrecEnt;
     }
 
     public async getAnswerRequest(id: number): Promise<CaptchaAnswerRequestEntity | null> {
@@ -63,10 +64,17 @@ export class SiteCaptchaService {
             .findOneBy(CaptchaImageEntity, { id });
     }
 
-    public async acceptAnswer({ answerRequestId, answer }: SiteCaptchaAcceptAnswerType) {
-        const answerRequest = await db.createEntityManager()
-            .findOneBy(CaptchaAnswerRequestEntity, { id: answerRequestId });
+    public async setAnswer({ answerRequestId, answer }: SiteCaptchaSetAnswerType) {
 
-        console.log({ answerRequest });
+        const mgr = db.createEntityManager();
+        const ansrecEnt = await mgr
+            .findOneBy(CaptchaAnswerRequestEntity, { id: answerRequestId });
+        delete ansrecEnt.image['base64'];
+        console.log({ ansrecEnt });
+        ansrecEnt.answer = answer;
+        const result = await mgr.save(CaptchaAnswerRequestEntity, ansrecEnt);
+        console.log({ result });
+        // this.events
+
     }
 }

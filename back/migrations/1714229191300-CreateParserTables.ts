@@ -13,14 +13,15 @@ export class CreateParserTables1714229191300 implements MigrationInterface {
                 name text default ''::text not null
             );
 
-            create table public.parse_unit
+            create table if not exists public.parse_unit
             (
-                id         serial constraint parse_unit_pk primary key,
-                parser_id  integer                                      not null
+                id          serial constraint parse_unit_pk primary key,
+                parser_id   integer                                      not null
                     constraint parse_unit_parser_id_fk references public.parser,
-                created_at timestamp with time zone default now()       not null,
-                status     text                     default 'new'::text not null,
-                input_data jsonb                    default '{}'::jsonb not null
+                created_at  timestamp with time zone default now()       not null,
+                status      text                     default 'new'::text not null,
+                input_data  jsonb                    default '{}'::jsonb not null,
+                result_data jsonb
             );
 
             insert into parser (name)
