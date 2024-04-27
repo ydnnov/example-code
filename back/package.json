@@ -13,7 +13,8 @@
     "migrate-revert-no-rebuild": "npx typeorm migration:revert -d ./dist/src/data-source.js",
     "migrate-revert": "pnpm build & pnpm migrate-build & pnpm migrate-revert-no-rebuild",
     "migrate-no-rebuild": "npx typeorm migration:run -d ./dist/src/data-source.js",
-    "migrate": "pnpm build & pnpm migrate-no-rebuild"
+    "migrate": "pnpm build & pnpm migrate-no-rebuild",
+    "migrate-reset": "pnpm migrate-revert & pnpm migrate"
   },
   "type": "module",
   "keywords": [],
