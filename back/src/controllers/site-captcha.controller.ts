@@ -1,10 +1,10 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { services } from '../services/services.js';
-import { SiteCaptchaRequestAnswerType } from '../schemas/site-captcha.schema.js';
+import { SiteCaptchaAcceptAnswerType, SiteCaptchaRequestAnswerType } from '../schemas/site-captcha.schema.js';
 import { CaptchaAnswerRequestEntity } from '../entities/captcha-answer-request.entity.js';
 import { CaptchaImageEntity } from '../entities/captcha-image.entity.js';
 
-class SiteCaptchaController {
+export class SiteCaptchaController {
     public async requestAnswer(
         request: FastifyRequest<{ Body: SiteCaptchaRequestAnswerType }>,
         reply: FastifyReply,
@@ -32,6 +32,12 @@ class SiteCaptchaController {
         return services.siteCaptcha.getCaptchaImage(request.params.id);
     }
 
+    public async acceptAnswer(
+        request: FastifyRequest<{ Body: SiteCaptchaAcceptAnswerType }>,
+        reply: FastifyReply,
+    ){
+        return services.siteCaptcha.acceptAnswer(request.body);
+    }
 }
 
 export const siteCaptchaController = new SiteCaptchaController();

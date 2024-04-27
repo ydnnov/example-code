@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { siteCaptchaRequestAnswerSchema } from '../schemas/site-captcha.schema.js';
+import { siteCaptchaAcceptAnswerSchema, siteCaptchaRequestAnswerSchema } from '../schemas/site-captcha.schema.js';
 import { siteCaptchaController } from '../controllers/site-captcha.controller.js';
 
 export async function siteCaptchaRoutes(fastify: FastifyInstance) {
@@ -15,6 +15,11 @@ export async function siteCaptchaRoutes(fastify: FastifyInstance) {
     fastify.get(
         '/site-captcha/captcha-image/:id',
         siteCaptchaController.getCaptchaImage.bind(siteCaptchaController),
+    );
+    fastify.post(
+        '/site-captcha/accept-answer',
+        { schema: { body: siteCaptchaAcceptAnswerSchema } },
+        siteCaptchaController.acceptAnswer.bind(siteCaptchaController),
     );
 
 }

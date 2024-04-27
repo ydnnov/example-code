@@ -28,12 +28,12 @@ const rightPanelComponent = computed(
         <Button
             @click="swapPanels = !swapPanels"
             :icon="`pi pi-arrows-${splitterHorizontal ? 'h' : 'v'}`"
-            class="w-[40px] h-[40px] ml-3 my-2"
+            class="w-[40px] h-[40px] ml-3 my-2 hover:bg-cyan-400"
         />
         <Button
             @click="splitterHorizontal = !splitterHorizontal"
             icon="`pi pi-desktop"
-            class="w-[40px] h-[40px] ml-3 my-2"
+            class="w-[40px] h-[40px] ml-3 my-2 hover:bg-cyan-400"
             :class="splitterHorizontal ? '' : 'rotate-90'"
         />
       </div>

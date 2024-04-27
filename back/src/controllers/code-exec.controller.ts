@@ -2,7 +2,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { CodeExecRequestType } from '../schemas/code-exec.schema.js';
 import { services } from '../services/services.js';
 
-class CodeExecController {
+export class CodeExecController {
 
     public async exec(
         request: FastifyRequest<{ Body: CodeExecRequestType }>,

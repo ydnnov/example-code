@@ -28,7 +28,7 @@ export class MsudrfSudDeloParser {
         services.siteCaptcha.events.on(
             'createAnswerRequest::success',
             (manager: EntityManager, answerRequest: CaptchaAnswerRequestEntity) => {
-                console.log(answerRequest);
+                // console.log(answerRequest);
                 const result = websocket.emit(
                     'createAnswerRequest::success',
                     answerRequest,
@@ -45,7 +45,7 @@ export class MsudrfSudDeloParser {
         const answerRequest = await services.siteCaptcha
             .createAnswerRequest(imageBase64);
 
-        console.log(answerRequest);
+        // console.log(answerRequest);
     }
 
 }

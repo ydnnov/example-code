@@ -7,7 +7,7 @@ import {
 import { services } from '../services/services.js';
 import { OperationResult } from '../types/common.js';
 
-class HeadlessController {
+export class HeadlessController {
 
     public async goto(
         request: FastifyRequest<{ Body: HeadlessGotoBodyType }>,

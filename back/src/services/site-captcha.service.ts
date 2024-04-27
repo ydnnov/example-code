@@ -2,6 +2,7 @@ import { db } from '../data-source.js';
 import { CaptchaAnswerRequestEntity } from '../entities/captcha-answer-request.entity.js';
 import { CaptchaImageEntity } from '../entities/captcha-image.entity.js';
 import EventEmitter2 from 'eventemitter2';
+import { SiteCaptchaAcceptAnswerType } from '../schemas/site-captcha.schema.js';
 
 export class SiteCaptchaService {
 
@@ -45,7 +46,7 @@ export class SiteCaptchaService {
             await this.events.emitAsync(
                 'createAnswerRequest::success',
                 manager,
-                answerRequest
+                answerRequest,
             );
         });
 
@@ -60,5 +61,12 @@ export class SiteCaptchaService {
     public async getCaptchaImage(id: number): Promise<CaptchaImageEntity | null> {
         return db.createEntityManager()
             .findOneBy(CaptchaImageEntity, { id });
+    }
+
+    public async acceptAnswer({ answerRequestId, answer }: SiteCaptchaAcceptAnswerType) {
+        const answerRequest = await db.createEntityManager()
+            .findOneBy(CaptchaAnswerRequestEntity, { id: answerRequestId });
+
+        console.log({ answerRequest });
     }
 }

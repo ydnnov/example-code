@@ -2,7 +2,7 @@ import { FastifyReply, type FastifyRequest } from 'fastify';
 import { HeadlessScreenshotsSetIntervalBodyType } from '../schemas/headless-screenshots.schema.js';
 import { services } from '../services/services.js';
 
-class HeadlessScreenshotsController {
+export class HeadlessScreenshotsController {
 
     public async startSending() {
         return await services.headlessScreenshots.startSendingScreenshots();
