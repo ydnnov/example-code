@@ -13,6 +13,7 @@ const envconfSchema = Type.Object({
     PG_USER: Type.String(),
     PG_PASS: Type.String(),
 
+    ROOT_PATH: Type.String(),
     STORAGE_PATH: Type.String(),
 
     LOG_LEVEL_FILE: Type.String(),

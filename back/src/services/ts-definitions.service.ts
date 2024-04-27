@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { env } from '../envconf.js';
 
 export class TsDefinitionsService {
 
@@ -9,8 +10,8 @@ export class TsDefinitionsService {
         ];
 
         const appFileNames = [
-            'declarations-build/dist/types/parsers/parsers.d.ts',
-            'declarations-build/dist/types/parsers/msudrf-sud-delo.parser.d.ts',
+            `${env.ROOT_PATH}/back/declarations-build/dist/types/src/parsers/parsers.d.ts`,
+            `${env.ROOT_PATH}/back/declarations-build/dist/types/src/parsers/msudrf-sud-delo.parser.d.ts`,
         ];
 
         const libCode = libFileNames
