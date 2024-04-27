@@ -5,37 +5,63 @@ import HeadlessControls from '~/components/HeadlessControls.vue';
 import CodeExecControls from '~/components/CodeExecControls.vue';
 import Button from 'primevue/button';
 import { useStorage } from '@vueuse/core';
+import MsudrfSudDeloParser from '~/components/parsers/MsudrfSudDeloParser.vue';
 
 const showCaptcha = ref(false);
 
 const swapPanels = useStorage('index:swapPanels', false);
+const componentA = useStorage('index:componentA', 'headless');
+const componentB = useStorage('index:componentB', 'code-exec');
+const componentByKey = (key: string) => {
+  switch (key) {
+    case 'headless':
+      return HeadlessControls;
+    case 'code-exec':
+      return CodeExecControls;
+    case 'msudrf-sud-delo':
+      return MsudrfSudDeloParser;
+  }
+};
+const panelAComponent = computed(
+    () => swapPanels.value ? componentByKey(componentA.value) : componentByKey(componentB.value),
+);
+const panelBComponent = computed(
+    () => !swapPanels.value ? componentByKey(componentA.value) : componentByKey(componentB.value),
+);
 
 const splitterHorizontal =
     useStorage('index:splitterHorizontal', false);
-
-const leftPanelComponent = computed(
-    () => swapPanels.value ? HeadlessControls : CodeExecControls,
-);
-const rightPanelComponent = computed(
-    () => !swapPanels.value ? HeadlessControls : CodeExecControls,
-);
 </script>
 
 <template>
-  <div class="fixed inset-x-0 inset-y-0">
+  <div class="fixed inset-x-0 inset-y-0 bg-red-00">
     <div class="absolute inset-x-0 top-0">
-      <div class="absolute">
-        <Button
-            @click="swapPanels = !swapPanels"
-            :icon="`pi pi-arrows-${splitterHorizontal ? 'h' : 'v'}`"
-            class="w-[40px] h-[40px] ml-3 my-2 hover:bg-cyan-400"
-        />
-        <Button
-            @click="splitterHorizontal = !splitterHorizontal"
-            icon="`pi pi-desktop"
-            class="w-[40px] h-[40px] ml-3 my-2 hover:bg-cyan-400"
-            :class="splitterHorizontal ? '' : 'rotate-90'"
-        />
+      <div class="absolute flex">
+        <div class="ml-[15px] mt-[10px]">
+          <Button
+              @click="swapPanels = !swapPanels"
+              :icon="`pi pi-arrows-${splitterHorizontal ? 'h' : 'v'}`"
+              class="w-[40px] h-[40px] hover:bg-cyan-400"
+          />
+          <Button
+              @click="splitterHorizontal = !splitterHorizontal"
+              icon="pi pi-desktop"
+              class="w-[40px] h-[40px] ml-3 hover:bg-cyan-400"
+              :class="splitterHorizontal ? '' : 'rotate-90'"
+          />
+        </div>
+        <div class="ml-[20px] pl-[20px] mt-[10px] border-l-[3px] border-black-500">
+          <Button
+              @click="componentB = 'code-exec'"
+              icon="pi pi-code"
+              class="w-[40px] h-[40px] hover:bg-cyan-400"
+          />
+          <Button
+              @click="componentB = 'msudrf-sud-delo'"
+              icon="pi pi-microchip"
+              class="w-[40px] h-[40px] ml-3 hover:bg-cyan-400"
+          />
+        </div>
       </div>
       <CaptchaManualInput
           class="absolute right-0 top-[8px]"
@@ -55,12 +81,12 @@ const rightPanelComponent = computed(
       >
         <SplitterPanel>
           <keep-alive>
-            <component :is="leftPanelComponent" />
+            <component :is="panelAComponent" />
           </keep-alive>
         </SplitterPanel>
         <SplitterPanel>
           <keep-alive>
-            <component :is="rightPanelComponent" />
+            <component :is="panelBComponent" />
           </keep-alive>
         </SplitterPanel>
       </Splitter>
