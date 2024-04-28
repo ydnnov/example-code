@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@sinclair/typebox':
+        specifier: ^0.32.26
+        version: 0.32.26
       '@vueuse/core':
         specifier: ^10.9.0
         version: 10.9.0(vue@3.4.23)
@@ -816,6 +819,9 @@ packages:
   '@sigstore/verify@1.2.0':
     resolution: {integrity: sha512-hQF60nc9yab+Csi4AyoAmilGNfpXT+EXdBgFkP9OgPwIBPwyqVf7JAWPtmqrrrneTmAT6ojv7OlH1f6Ix5BG4Q==}
     engines: {node: ^16.14.0 || >=18.0.0}
+
+  '@sinclair/typebox@0.32.26':
+    resolution: {integrity: sha512-enTSM8+gUGFsIPSnVU1ApmYd9IZZ8tjVIOB0/RUh0ufxDcRbZdWjElpKIXwpZ9yGXVO/eQTKchnbc+LgC0gfTw==}
 
   '@sindresorhus/merge-streams@2.3.0':
     resolution: {integrity: sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==}
@@ -4644,6 +4650,8 @@ snapshots:
       '@sigstore/bundle': 2.3.1
       '@sigstore/core': 1.1.0
       '@sigstore/protobuf-specs': 0.3.1
+
+  '@sinclair/typebox@0.32.26': {}
 
   '@sindresorhus/merge-streams@2.3.0': {}
 
