@@ -13,6 +13,7 @@
     "@sinclair/typebox": "^0.32.26",
     "@vueuse/core": "^10.9.0",
     "axios": "^1.6.8",
+    "eventemitter2": "^6.4.9",
     "monaco-editor": "^0.47.0",
     "nuxt": "^3.11.2",
     "primeicons": "^7.0.0",
