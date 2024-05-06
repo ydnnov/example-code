@@ -4,6 +4,10 @@ export const headlessClient = {
     goto: (url: string) => {
         request.post('headless/goto', { url });
     },
+    getUrl: async () => {
+        const response = await request.get('headless/get-url');
+        return response.data;
+    },
     reloadPage: () => {
         request.post('headless/reload-page');
     },

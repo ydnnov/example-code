@@ -12,6 +12,10 @@ export async function headlessRoutes(fastify: FastifyInstance) {
         { schema: { body: headlessGotoBodySchema } },
         headlessController.goto.bind(headlessController),
     );
+    fastify.get(
+        '/headless/get-url',
+        headlessController.getUrl.bind(headlessController),
+    );
     fastify.post(
         '/headless/reload-page',
         headlessController.reloadPage.bind(headlessController),

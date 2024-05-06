@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import { headlessClient } from '~/client/headless.client.js';
+import { client } from '~/client/client.js';
 
 const predefinedSites = reactive([
   ['yandex.ru', 'YandexRu'],
@@ -9,19 +10,23 @@ const predefinedSites = reactive([
   ['http://2ust.arh.msudrf.ru', '2ust.arh.msudrf.ru'],
   ['http://32.sar.msudrf.ru', '32.sar.msudrf.ru'],
 ]);
-const url = ref('https://google.com');
+const currentUrl = ref('');
 const goto = (value: string) => {
-  console.log({ value });
   if (value.match(/^https?:\/\//)) {
-    url.value = value;
+    currentUrl.value = value;
   } else {
-    url.value = 'https://' + value;
+    currentUrl.value = 'https://' + value;
   }
-  headlessClient.goto(url.value);
+  headlessClient.goto(currentUrl.value);
 };
 const reloadPage = () => {
   headlessClient.reloadPage();
 };
+
+onMounted(async () => {
+  const url = await client.headless.getUrl();
+  currentUrl.value = url;
+});
 </script>
 
 <template>
@@ -30,8 +35,8 @@ const reloadPage = () => {
       <div class="mx-3">
         <input
             type="text"
-            v-model="url"
-            @keydown.enter="goto(url)"
+            v-model="currentUrl"
+            @keydown.enter="goto(currentUrl)"
             class="w-full border border-slate-300 h-8 px-3"
         />
       </div>
@@ -43,7 +48,7 @@ const reloadPage = () => {
               icon="pi pi-refresh"
           />
           <Button
-              @click="goto(url)"
+              @click="goto(currentUrl)"
               class="text-sm h-8 mr-1 mb-1"
               label="Go"
           />

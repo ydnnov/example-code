@@ -65,6 +65,11 @@ export class PlaywrightHeadlessService extends HeadlessService {
         return page;
     }
 
+    public async getUrl(): Promise<string> {
+        const page = await this.getPage();
+        return page.url();
+    }
+
     public async goto(url: string): Promise<OperationResult<null>> {
         const page = await this.getPage();
         console.log(`Navigating to ${url}`);

@@ -22,6 +22,8 @@ export abstract class HeadlessService {
 
     public abstract getPage();
 
+    public abstract getUrl(): Promise<string>;
+
     public abstract goto(url: string): Promise<OperationResult<null>>;
 
     public abstract reloadPage(): Promise<OperationResult<null>>;

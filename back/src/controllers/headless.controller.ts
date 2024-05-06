@@ -16,6 +16,13 @@ export class HeadlessController {
         return await services.headless.goto(request.body.url);
     }
 
+    public async getUrl(
+        request: FastifyRequest,
+        reply: FastifyReply,
+    ): Promise<string> {
+        return services.headless.getUrl();
+    }
+
     public async reloadPage(
         request: FastifyRequest,
         reply: FastifyReply,
