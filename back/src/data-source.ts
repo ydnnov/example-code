@@ -2,11 +2,7 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { env } from './envconf.js';
 import * as migrations from '../migrations/migrations.js';
-import { CaptchaImageEntity } from './entities/captcha-image.entity.js';
-import { CaptchaAnswerRequestEntity } from './entities/captcha-answer-request.entity.js';
-import { ParseUnitEntity } from './entities/parse-unit.entity.js';
-import { ParserEntity } from './entities/parser.entity.js';
-// import * as entities from './entities/entities.js';
+import * as entities from './entities/entities.js';
 
 export const db = new DataSource({
     type: 'postgres',
@@ -19,13 +15,7 @@ export const db = new DataSource({
     logging: false,
     // logging: 'all',
     // logger: 'advanced-console',
-    // entities,
-    entities: [
-        CaptchaImageEntity,
-        CaptchaAnswerRequestEntity,
-        ParseUnitEntity,
-        ParserEntity,
-    ],
+    entities,
     migrations,
     subscribers: [],
 });
