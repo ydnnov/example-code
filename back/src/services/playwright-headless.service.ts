@@ -1,9 +1,6 @@
 import EventEmitter2 from 'eventemitter2';
-import { config } from '../config.js';
-import { helpers } from '../helpers/helpers.js';
 import { OperationResult } from '../types/common.js';
 import { services } from './services.js';
-// import playwright from 'playwright';
 import {
     firefox,
     Browser as PlaywrightBrowser,
@@ -12,6 +9,7 @@ import {
     LaunchOptions as PlaywrightLaunchOptions,
 } from 'playwright';
 import { HeadlessService } from './headless.service.js';
+import { bus } from '../bus.js';
 
 export class PlaywrightHeadlessService extends HeadlessService {
 
@@ -57,6 +55,9 @@ export class PlaywrightHeadlessService extends HeadlessService {
         if (!pages.length) {
             // console.log('No pages, creating new and returning it');
             page = await context.newPage();
+            page.on('domcontentloaded', (page: PlaywrightPage) => {
+                console.log('domcontentloaded: ' + page.url());
+            });
         } else {
             // console.log('Page exists, returning it');
             page = pages[0];
@@ -72,7 +73,8 @@ export class PlaywrightHeadlessService extends HeadlessService {
 
     public async goto(url: string): Promise<OperationResult<null>> {
         const page = await this.getPage();
-        console.log(`Navigating to ${url}`);
+        await bus.emitAsync('headless:navigation-started', { url });
+        // console.log(`Navigating to ${url}`);
         await page.goto(url);
         return {
             success: true,
@@ -103,9 +105,9 @@ export class PlaywrightHeadlessService extends HeadlessService {
     public async onKeypress(key: string, code: string) {
         // console.log({ key, code });
         const page = await this.getPage();
-        if(key.length === 1){
+        if (key.length === 1) {
             await page.keyboard.type(key);
-        }else{
+        } else {
             await page.keyboard.press(key);
         }
         // if (code === 'Escape') {
@@ -116,44 +118,4 @@ export class PlaywrightHeadlessService extends HeadlessService {
             resultData: null,
         };
     }
-
-    // public async getFreshPage() {
-    //     const browser = await this.browserPromise;
-    //     const pages = await browser.pages();
-    //     while(pages.length) {
-    //         await pages[0].close();
-    //     }
-    //     const page = await browser.newPage();
-    //     console.log({ page });
-    //     this.bindResponseFn(page);
-    //     return page;
-    // }
-
-    // public addResponseListener(callback: (response: HTTPResponse) => void) {
-    //     this.events.addListener('response', callback);
-    // }
-    //
-    // public removeResponseListener(callback: (response: HTTPResponse) => void) {
-    //     this.events.removeListener('response', callback);
-    // }
-    //
-    // public async waitForSelector(selector: string, pollDelay: number, timeout: number)
-    //     : Promise<ElementHandle> {
-    //     const page = await this.getPage();
-    //     return helpers.pollWait<ElementHandle>(
-    //         () => page.$(selector),
-    //         pollDelay,
-    //         timeout,
-    //     );
-    // }
-    //
-    // protected bindResponseFn(page: Page) {
-    //     if (this.isResponseFnBound) {
-    //         return;
-    //     }
-    //     page.on('response', (response: HTTPResponse) => {
-    //         this.events.emit('response', response);
-    //     });
-    //     this.isResponseFnBound = true;
-    // }
 }

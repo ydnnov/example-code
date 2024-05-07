@@ -10,6 +10,8 @@ import { routes } from './routes/routes.js';
 import { websocket } from './websocket.js';
 import { config } from './config.js';
 import { services } from './services/services.js';
+import { listeners } from './listeners/listeners.js';
+import { bus } from './bus.js';
 
 process.on('uncaughtException', (error) => {
     console.log(helpers.colorizeForConsole(31,
@@ -29,6 +31,8 @@ process.on('unhandledRejection', (error) => {
     // console.error(error);
     // throw error;
 });
+
+listeners.bindAll();
 
 (async () => {
 
@@ -54,6 +58,10 @@ process.on('unhandledRejection', (error) => {
             if (config.autoSendScreenshots) {
                 services.headlessScreenshots.startSendingScreenshots();
             }
+
+            socket.onAny((event, ...args) => {
+                bus.emit(event, ...args);
+            });
 
             socket.on('disconnect', () => {
                 services.headlessScreenshots.stopSendingScreenshots();

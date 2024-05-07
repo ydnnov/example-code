@@ -9,7 +9,6 @@
     "target": "ES2017"
   },
   "include": [
-    "../src/services/*",
-    "../src/parsers/*"
+    "../src/**/*"
   ]
 }

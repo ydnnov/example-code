@@ -4,8 +4,8 @@ pnpm i -D \
 @swc/cli \
 @swc/core \
 @types/node \
-@types/dotenv-parse-variables \
 nodemon \
+@types/dotenv-parse-variables \
 @types/gm
 ================================================================================
 == back ========================================================================

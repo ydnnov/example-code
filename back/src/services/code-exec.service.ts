@@ -1,4 +1,7 @@
+import * as _fs from 'fs';
 import _gm from 'gm';
+import * as _playwright from 'playwright';
+import { transform } from '@swc/core';
 import { env as _env } from '../envconf.js';
 import { websocket as _websocket } from '../websocket.js';
 import { logger } from '../logger.js';
@@ -7,13 +10,13 @@ import { config as _config } from '../config.js';
 import { helpers as _helpers } from '../helpers/helpers.js';
 import { services as _services } from './services.js';
 import { parsers as _parsers } from '../parsers/parsers.js';
-import * as _playwright from 'playwright';
-import { transform, Options } from '@swc/core';
 
 export class CodeExecService {
 
     public async exec(tsCode: string) {
+        const fs = _fs;
         const gm = _gm;
+        const playwright = _playwright;
         const env = _env;
         const helpers = _helpers;
         const websocket = _websocket;
@@ -21,7 +24,6 @@ export class CodeExecService {
         const config = _config;
         const services = _services;
         const parsers = _parsers;
-        const playwright = _playwright;
         const browser = await services.headless.getBrowser();
         const page = await services.headless.getPage();
         tsCode = this.stripImports(tsCode);
@@ -55,12 +57,12 @@ export class CodeExecService {
     }
 
     protected stripImports(code: string): string {
-        code = code.replace(/import .+;[\n\r]*/g, '');
+        code = code.replace(/(\/\/)?\s*import .+;[\n\r]*/g, '');
         return code;
     }
 
     protected stripDeclares(code: string): string {
-        code = code.replace(/declare .+;[\n\r]*/g, '');
+        code = code.replace(/(\/\/)?\s*declare .+;[\n\r]*/g, '');
         return code;
     }
 }

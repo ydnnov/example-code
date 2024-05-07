@@ -1,3 +1,4 @@
 *
 !.gitignore
 !logs
+!result_html

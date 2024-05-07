@@ -1,24 +1,87 @@
 import { services } from '../services/services.js';
 import { helpers } from '../helpers/helpers.js';
-import { CaptchaImageEntity } from '../entities/captcha-image.entity.js';
-import { CaptchaAnswerRequestEntity } from '../entities/captcha-answer-request.entity.js';
-import { EntityManager } from 'typeorm';
-import { websocket } from '../websocket.js';
+import { bus } from '../bus.js';
+import * as cheerio from 'cheerio';
+import { OperationResult } from '../types/common.js';
+import { env } from '../envconf.js';
+import fs from 'node:fs';
 
 export class MsudrfSudDeloParser {
 
-    public async run(): Promise<{ [k: string]: any }> {
-        await this.openStartPage();
-        await this.solveCaptcha();
+    public async run(fio: string)
+        : Promise<OperationResult<string>> {
+
+        const page = await services.headless.getPage();
+
+        const url = 'http://32.sar.msudrf.ru/modules.php?name=sud_delo&op=hl';
+        await page.goto(url);
+
+        // bus.emitAsync ('msudrf-sud-delo-parser:opened-start-page');
+
+        const captchaAnswerText = await this.solveCaptcha();
+
+        await this.inputCaptchaAnswer(captchaAnswerText);
+
+        const linkEl = await page.getByText('Гражданские и административные дела');
+        await linkEl.click();
+
+        const inputEl = await page.$('[name=G1_PARTS__NAMESS]');
+        await inputEl.scrollIntoViewIfNeeded();
+        await inputEl.focus();
+        await page.keyboard.type(fio);
+
+        const searchButtonEl = await page.$('#button_block .search');
+        await searchButtonEl.click();
+
+        await page.waitForSelector('#tablcont');
+
+        const resultData = await page.content();
+
+        // console.log(resultHtml);
+
         return {
-            qwe: 'asd',
+            success: true,
+            resultData,
         };
     }
 
-    public async openStartPage() {
+    public async extractJson(ptaskId: number) {
+
+        const filename = `${env.STORAGE_PATH}/result_html/${ptaskId}.html`;
+
+        if (!fs.existsSync(filename)) {
+            throw new Error(`Could not find html file`);
+        }
+
+        const html = fs.readFileSync(filename).toString();
+        const $ = cheerio.load(html);
+        const trElems = $('#tablcont tr');
+        const resultItems = [];
+        for (let i = 1; i < trElems.length; i++) {
+            const tdElems = $(trElems[i]).children('td');
+            const resultItem = {
+                caseNumber: $(tdElems[0]).text(),
+                receivedDate: $(tdElems[1]).text(),
+                caseInfo: $(tdElems[2]).text(),
+                judgeFio: $(tdElems[3]).text(),
+                decisionDate: $(tdElems[4]).text(),
+                decision: $(tdElems[5]).text(),
+                judicialActs: $(tdElems[6]).text(),
+            };
+            resultItems.push(resultItem);
+        }
+
+        // TODO
+        console.log(resultItems);
+    }
+
+    public async inputCaptchaAnswer(answerText) {
         const page = await services.headless.getPage();
-        const url = 'http://32.sar.msudrf.ru/modules.php?name=sud_delo&op=hl';
-        await page.goto(url);
+        const inputEl = await page.$('#kcaptchaForm [name=captcha-response]');
+        await inputEl.focus();
+        await page.keyboard.type(answerText);
+        const submitEl = await page.$('#kcaptchaForm button[type=submit]');
+        await submitEl.click();
     }
 
     public async solveCaptcha() {
@@ -26,24 +89,12 @@ export class MsudrfSudDeloParser {
         // Usage:
         //
         // services.siteCaptcha.events.on(
-        //     'createAnswerRequest::imageFindOrCreate',
+        //     'captcha:create-answer-request:image-find-or-create',
         //     (manager, imageBase64) => {
         //         return manager.findOneBy(CaptchaImageEntity, {
         //             id: 2,
         //         });
         //     });
-
-        services.siteCaptcha.events.on(
-            'createAnswerRequest::success',
-            (manager: EntityManager, ansreqEnt: CaptchaAnswerRequestEntity) => {
-                // delete ansreqEnt.image['base64'];
-                // console.log({ ansreqEnt });
-                const result = websocket.emit(
-                    'createAnswerRequest::success',
-                    ansreqEnt,
-                );
-                // console.log({ result });
-            });
 
         const page = await services.headless.getPage();
         const imageElem = await page.$('img[src="/captcha.php"]');
@@ -54,7 +105,11 @@ export class MsudrfSudDeloParser {
         const ansreqEnt = await services.siteCaptcha
             .createAnswerRequest(imageBase64);
 
-        // console.log(ansreqEnt);
+        return new Promise((resolve, reject) => {
+            bus.once('captcha:answer-received', (answerText) => {
+                resolve(answerText);
+            });
+        });
     }
 
 }

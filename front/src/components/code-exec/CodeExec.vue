@@ -99,6 +99,15 @@ onMounted(async () => {
 
   const tsDefinitions = await tsDefinitionsClient.all();
 
+  // monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+  //   target: monaco.languages.typescript.ScriptTarget.ES2016,
+  //   allowNonTsExtensions: true,
+  //   moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+  //   module: monaco.languages.typescript.ModuleKind.CommonJS,
+  //   noEmit: true,
+  //   typeRoots: ['node_modules/@types'],
+  // });
+
   monaco.languages.typescript.typescriptDefaults.addExtraLib(
       tsDefinitions,
       'file:///node_modules/@types/types/index.d.ts',
@@ -110,10 +119,9 @@ onMounted(async () => {
   // );
 
   let code = getCurrentTab()?.code;
-  console.log(code);
-  if (!code) {
-    code = `import * as playwright from 'playwright';
-import { Browser, Page } from 'playwright';
+  if (!code || !code.length) {
+    code = `import * as playwright from 'types';
+import { Browser, Page } from 'types';
 
 declare const page: Page, browser: Browser;
 

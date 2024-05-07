@@ -6,15 +6,13 @@ const emit = defineEmits(['image-received']);
 const imageBase64 = ref<string>('');
 const answer = ref<string>('');
 
-socket.on('createAnswerRequest::success', (captchaRequestAnswer) => {
+socket.on('captcha:create-answer-request:success', (captchaRequestAnswer) => {
   imageBase64.value = captchaRequestAnswer.image.base64;
-  console.log({ captchaRequestAnswer });
-  // screenshot.value = 'data:image/png;base64, ' + data;
-  // showingScreenshotIndicator.value = true;
-  // setTimeout(() => {
-  //   showingScreenshotIndicator.value = false;
-  // }, 200);
 });
+
+const sendCaptchaAnswer = () => {
+  socket.emit('captcha:answer-received', answer.value);
+};
 </script>
 
 <template>
@@ -23,8 +21,11 @@ socket.on('createAnswerRequest::success', (captchaRequestAnswer) => {
   >
     <img :src="imageBase64" />
     <div class="flex flex-col mx-[12px]">
-      <InputText type="text" v-model="captchaAnswer" class="h-[40px]" />
-      <Button label="Отправить" class="mt-[12px]"/>
+      <InputText type="text" v-model="answer" class="h-[40px]" />
+      <Button
+          label="Отправить"
+          class="mt-[12px]"
+          @click="sendCaptchaAnswer" />
     </div>
   </div>
 

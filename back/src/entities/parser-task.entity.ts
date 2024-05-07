@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'parse_unit' })
-export class ParseUnitEntity {
+@Entity({ name: 'parser_task' })
+export class ParserTaskEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -19,5 +19,4 @@ export class ParseUnitEntity {
 
     @Column({ type: 'jsonb', nullable: true })
     result_data: { [k: string]: any };
-
 }
