@@ -20,4 +20,7 @@ export default defineNuxtConfig({
             unstyled: false,
         },
     },
+    plugins: [
+        '~/init-nuxt-plugin.ts',
+    ],
 });
