@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { type GenericDictionary } from '../types/common.js';
 
 @Entity({ name: 'parser_task' })
 export class ParserTaskEntity {
@@ -15,8 +16,8 @@ export class ParserTaskEntity {
     status: 'new' | 'started' | 'success' | 'failed';
 
     @Column({ type: 'jsonb' })
-    input_data: { [k: string]: any };
+    input_data: GenericDictionary;
 
     @Column({ type: 'jsonb', nullable: true })
-    result_data: { [k: string]: any };
+    result_data: GenericDictionary;
 }

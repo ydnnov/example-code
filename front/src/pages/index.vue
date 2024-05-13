@@ -52,7 +52,7 @@ const ComponentB = computed(() => componentByKey(componentKeyB.value));
           class="absolute inset-x-0 inset-y-0 border-0"
           state-key="index-page:main-splitter-state"
           state-storage="local"
-          gutter-size="12"
+          :gutter-size="12"
           :layout="ui.mainSplitter.horizontal ? 'horizontal' : 'vertical'"
       >
         <SplitterPanel>

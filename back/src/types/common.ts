@@ -5,3 +5,7 @@ export type OperationResult<TData> = {
     success: false,
     err: string
 }
+
+export type GenericDictionary = {
+    [k: string]: any
+}

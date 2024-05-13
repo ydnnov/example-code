@@ -5,7 +5,6 @@ Content-Type: application/json
 {
   "parserName": "msudrf/sud-delo",
   "inputData": {
-    "searchText": "qwe"
+    "searchText": "фамилия имя отчество"
   }
 }
-
