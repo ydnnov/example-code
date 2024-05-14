@@ -12,7 +12,16 @@ export const busToWsListener = {
         // });
 
         bus.onAny((eventName: string, ...args) => {
-            websocket.sockets.emit(eventName, ...args);
+            const passArgs = [];
+            for (let i = 0; i < args.length; i++) {
+                try {
+                    JSON.stringify(args[i]);
+                    passArgs.push(args[i]);
+                } catch (err) {
+                    passArgs.push({});
+                }
+            }
+            websocket.sockets.emit(eventName, ...passArgs);
         });
 
     },

@@ -6,7 +6,7 @@ const emit = defineEmits(['image-received']);
 const imageBase64 = ref<string>('');
 const answer = ref<string>('');
 
-socket.on('captcha:create-answer-request:success', (captchaRequestAnswer) => {
+socket.on('captcha:create-answer-request:success', (mgr, captchaRequestAnswer) => {
   imageBase64.value = captchaRequestAnswer.image.base64;
 });
 

@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import Button from 'primevue/button';
 import { useUserStore } from '~/stores/user.store.js';
+import { client } from '~/client/client.js';
 
 const { user } = useUserStore();
 const { ui } = useUiStore();
@@ -61,6 +62,12 @@ const items = ref([
   //   badge: 3
   // }
 ]);
+
+const msudrfSudDeloStart = async () => {
+  const response = await client.parser.run('msudrf/sud-delo', {
+    searchText: 'глушаева ольга федоровна',
+  });
+};
 </script>
 
 <template>
@@ -109,6 +116,14 @@ const items = ref([
           </div>
           <div class="ml-2 border-l-[3px] border-black-500">
             <Button
+                @click="msudrfSudDeloStart"
+                icon="pi pi-microchip"
+                class="w-[40px] h-[40px] mx-4"
+            />
+          </div>
+<!--
+          <div class="ml-2 border-l-[3px] border-black-500">
+            <Button
                 @click="ui.mainSplitter.panels[1] = 'msudrf-sud-delo'"
                 icon="pi pi-microchip"
                 class="w-[40px] h-[40px] ml-4"
@@ -121,11 +136,12 @@ const items = ref([
                 class="w-[40px] h-[40px] ml-4"
             />
             <Button
-                @click=""
+                @click="msudrfSudDeloStart"
                 icon="pi pi-asterisk"
                 class="w-[40px] h-[40px] ml-2"
             />
           </div>
+-->
 
           <InputText placeholder="Search" type="text" class="" />
 

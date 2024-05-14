@@ -16,7 +16,7 @@ export class MsudrfSudDeloParser {
         const url = 'http://32.sar.msudrf.ru/modules.php?name=sud_delo&op=hl';
         await page.goto(url);
 
-        await bus.emitAsync('msudrf-sud-delo-parser:opened-start-page');
+        await bus.emitAsync('bk.parser.msudrf-sud-delo.opened-start-page');
 
         const captchaAnswerText = await this.solveCaptcha();
 
