@@ -1,0 +1,10 @@
+###
+POST http://127.0.0.1:5000/tests/event-bus
+Content-Type: application/json
+
+{
+  "eventName": "test123456",
+  "payload": {
+    "qwer": "asdf"
+  }
+}

@@ -16,19 +16,29 @@ export class MsudrfSudDeloParser {
         const url = 'http://32.sar.msudrf.ru/modules.php?name=sud_delo&op=hl';
         await page.goto(url);
 
-        // bus.emitAsync ('msudrf-sud-delo-parser:opened-start-page');
+        await bus.emitAsync('msudrf-sud-delo-parser:opened-start-page');
 
         const captchaAnswerText = await this.solveCaptcha();
 
-        await this.inputCaptchaAnswer(captchaAnswerText);
+        const captchaInputEl = await page.$('#kcaptchaForm [name=captcha-response]');
+        await captchaInputEl.focus();
+        await page.keyboard.type(captchaAnswerText);
+        const submitEl = await page.$('#kcaptchaForm button[type=submit]');
+        await submitEl.click();
 
-        const linkEl = await page.getByText('Гражданские и административные дела');
+        // const linkEl = await page.getByText('Гражданские и административные дела');
+        await helpers.sleep(1000);
+        const linkEl = await page.$('#type_1');
+        console.log(linkEl);
         await linkEl.click();
 
+        await helpers.sleep(1000);
         const inputEl = await page.$('[name=G1_PARTS__NAMESS]');
         await inputEl.scrollIntoViewIfNeeded();
         await inputEl.focus();
+        await helpers.sleep(1000);
         await page.keyboard.type(fio);
+        await helpers.sleep(1000);
 
         const searchButtonEl = await page.$('#button_block .search');
         await searchButtonEl.click();
@@ -45,7 +55,7 @@ export class MsudrfSudDeloParser {
         };
     }
 
-    public async extractJson(ptaskId: number) {
+    public extractJson(ptaskId: number) {
 
         const filename = `${env.STORAGE_PATH}/result_html/${ptaskId}.html`;
 
@@ -71,17 +81,7 @@ export class MsudrfSudDeloParser {
             resultItems.push(resultItem);
         }
 
-        // TODO
-        console.log(resultItems);
-    }
-
-    public async inputCaptchaAnswer(answerText) {
-        const page = await services.headless.getPage();
-        const inputEl = await page.$('#kcaptchaForm [name=captcha-response]');
-        await inputEl.focus();
-        await page.keyboard.type(answerText);
-        const submitEl = await page.$('#kcaptchaForm button[type=submit]');
-        await submitEl.click();
+        return resultItems;
     }
 
     public async solveCaptcha() {

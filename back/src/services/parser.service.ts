@@ -10,7 +10,7 @@ export class ParserService {
 
     public async startParser(
         { parserName, inputData }: ParserStartBodyType,
-    ): Promise<ParserTaskEntity> {
+    ): Promise<object> {
 
         const mgr = db.createEntityManager();
 
@@ -35,16 +35,18 @@ export class ParserService {
                     ptaskEnt.status = 'success';
                     ptaskEnt.result_data = { html: result.resultData };
                     // console.log({ result });
+                    await parserTaskRepo.save(ptaskEnt);
+                    const resultJson = parsers.msudrfSudDelo.extractJson(ptaskEnt.id);
+                    return resultJson;
                 } else {
                     ptaskEnt.status = 'failed';
                     ptaskEnt.result_data = { error: result.err };
+                    await parserTaskRepo.save(ptaskEnt);
+                    return { error: result.err };
                 }
-                await parserTaskRepo.save(ptaskEnt);
-                break;
             default:
                 throw new Error(`Unknown parser ${parserName}`);
         }
-
 
         // console.log({ ptaskEnt });
         //
