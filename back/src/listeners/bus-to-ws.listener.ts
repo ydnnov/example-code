@@ -16,5 +16,10 @@ export const busToWsListener = {
             websocket.sockets.emit(eventName, ...passArgs);
         });
 
+        websocket.on('connection', (socket) => {
+            socket.onAny((event, ...args) => {
+                bus.emit(event, ...args);
+            });
+        });
     },
 };

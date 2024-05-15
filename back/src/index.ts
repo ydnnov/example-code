@@ -7,13 +7,12 @@ import { db } from './data-source.js';
 import { logger } from './logger.js';
 import { helpers } from './helpers/helpers.js';
 import { routes } from './routes/routes.js';
-import { websocket } from './websocket.js';
-import { config } from './config.js';
-import { services } from './services/services.js';
 import { listeners } from './listeners/listeners.js';
-import { bus } from './bus.js';
 
-process.on('uncaughtException', (error) => {
+listeners.bindAll();
+
+process.on('uncaughtException', async (error) => {
+    // await bus.emitAsync('bk.uncaught-exception', error);
     console.log(helpers.colorizeForConsole(31,
         helpers.consoleHeaderText('uncaughtException ', '!'),
     ));
@@ -22,7 +21,8 @@ process.on('uncaughtException', (error) => {
     // throw error;
 });
 
-process.on('unhandledRejection', (error) => {
+process.on('unhandledRejection', async (error) => {
+    // await bus.emitAsync('bk.unhandled-rejection', error);
     console.log(helpers.colorizeForConsole(31,
         helpers.consoleHeaderText('unhandledRejection ', '!'),
     ));
@@ -31,8 +31,6 @@ process.on('unhandledRejection', (error) => {
     // console.error(error);
     // throw error;
 });
-
-listeners.bindAll();
 
 (async () => {
 
@@ -48,29 +46,6 @@ listeners.bindAll();
             console.error(err);
             process.exit(1);
         }
-
-        websocket.on('connection', (socket) => {
-
-            logger.verbose(`${
-                helpers.fmtDateTime(new Date())
-            }: wss connected client id = ${socket.id}`);
-
-            if (config.autoSendScreenshots) {
-                services.headlessScreenshots.startSendingScreenshots();
-            }
-
-            socket.onAny((event, ...args) => {
-                bus.emit(event, ...args);
-            });
-
-            socket.on('disconnect', () => {
-                services.headlessScreenshots.stopSendingScreenshots();
-
-                logger.verbose(`${
-                    helpers.fmtDateTime(new Date())
-                }: wss disconnected client id = ${socket.id}`);
-            });
-        });
 
         console.log('='.repeat(100));
         logger.info(`Server started at ${address}`);

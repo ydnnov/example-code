@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
+import { useUiStore } from '~/stores/ui.store.js';
 import MsudrfSudDeloParser from '~/components/parsers/MsudrfSudDeloParser.vue';
 import TopBar from '~/components/layout/TopBar.vue';
 import CodeExec from '~/components/code-exec/CodeExec.vue';
 import HeadlessControls from '~/components/headless/HeadlessControls.vue';
 import EventBus from '~/components/event-bus/EventBus.vue';
-import { useUiStore } from '~/stores/ui.store.js';
 
 const showCaptcha = ref(false);
 
@@ -34,6 +34,7 @@ const ComponentB = computed(() => componentByKey(componentKeyB.value));
 </script>
 
 <template>
+  <Toast />
   <TopBar />
   <div class="fixed inset-x-0 top-[50px] bottom-0 bg-red-00">
     <div class="absolute inset-x-0 top-[10px]">
