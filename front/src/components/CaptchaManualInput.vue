@@ -11,7 +11,7 @@ socket.on('captcha:create-answer-request:success', (mgr, captchaRequestAnswer) =
 });
 
 const sendCaptchaAnswer = () => {
-  socket.emit('captcha:answer-received', answer.value);
+  socket.emit('bk.captcha.answer-received', answer.value);
 };
 </script>
 

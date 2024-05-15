@@ -33,7 +33,7 @@ export class PlaywrightHeadlessService extends HeadlessService {
                     resolve(browser);
                 })
                 .catch(err => {
-                    console.log('Failed to launch puppeteer');
+                    console.log('Failed to launch playwright');
                     console.log(err);
                 });
         });
@@ -73,7 +73,7 @@ export class PlaywrightHeadlessService extends HeadlessService {
 
     public async goto(url: string): Promise<OperationResult<null>> {
         const page = await this.getPage();
-        await bus.emitAsync('headless:navigation-started', { url });
+        await bus.emitAsync('bk.headless.navigation-started', { url });
         // console.log(`Navigating to ${url}`);
         await page.goto(url);
         return {

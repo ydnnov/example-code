@@ -1,10 +1,10 @@
+import fs from 'node:fs';
+import * as cheerio from 'cheerio';
+import { env } from '../envconf.js';
+import { bus } from '../bus.js';
 import { services } from '../services/services.js';
 import { helpers } from '../helpers/helpers.js';
-import { bus } from '../bus.js';
-import * as cheerio from 'cheerio';
 import { OperationResult } from '../types/common.js';
-import { env } from '../envconf.js';
-import fs from 'node:fs';
 
 export class MsudrfSudDeloParser {
 
@@ -84,12 +84,12 @@ export class MsudrfSudDeloParser {
         return resultItems;
     }
 
-    public async solveCaptcha() {
+    protected async solveCaptcha() {
 
         // Usage:
         //
         // services.siteCaptcha.events.on(
-        //     'captcha:create-answer-request:image-find-or-create',
+        //     'bk.captcha.create-answer-request.image-find-or-create',
         //     (manager, imageBase64) => {
         //         return manager.findOneBy(CaptchaImageEntity, {
         //             id: 2,
@@ -105,11 +105,15 @@ export class MsudrfSudDeloParser {
         const ansreqEnt = await services.siteCaptcha
             .createAnswerRequest(imageBase64);
 
-        return new Promise((resolve, reject) => {
-            bus.once('captcha:answer-received', (answerText) => {
+        const result = new Promise((resolve, reject) => {
+            bus.once('bk.captcha.answer-received', (answerText) => {
                 resolve(answerText);
             });
         });
+
+        await services.siteCaptcha.getFromRucaptchaCom(imageBase64);
+
+        return result;
     }
 
 }

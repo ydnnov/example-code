@@ -16,7 +16,14 @@ const eventsStore = useEventsStore();
       >
         <th class="border-l-[1px] px-2 w-[25%]">eventName</th>
         <th class="border-x-[1px] px-2">payload</th>
-        <th class="border-x-[1px] w-[35px]"></th>
+        <th class="border-x-[1px] w-[35px]">
+          <Button
+              @click="eventsStore.events.splice(0)"
+              icon="pi pi-times"
+              severity="danger"
+              class="w-[30px] h-[30px]"
+          />
+        </th>
       </tr>
       <tr
           class="border-t-[1px] last:border-b-[1px]"

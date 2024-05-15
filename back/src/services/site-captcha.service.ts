@@ -1,21 +1,22 @@
+import Captcha from '2captcha-ts';
 import { db } from '../data-source.js';
+import { bus } from '../bus.js';
 import { CaptchaAnswerRequestEntity } from '../entities/captcha-answer-request.entity.js';
 import { CaptchaImageEntity } from '../entities/captcha-image.entity.js';
 import { SiteCaptchaSetAnswerType } from '../schemas/site-captcha.schema.js';
-import { bus } from '../bus.js';
 
 export class SiteCaptchaService {
 
     public async createAnswerRequest(imageBase64: string): Promise<CaptchaAnswerRequestEntity> {
 
-        let ansrecEnt;
+        let ansreqEnt;
 
         await db.transaction(async (mgr) => {
 
             let image;
 
             const emitResult = await bus.emitAsync(
-                'captcha:create-answer-request:image-find-or-create',
+                'bk.captcha.create-answer-request.image-find-or-create',
                 mgr,
                 imageBase64,
             );
@@ -36,20 +37,31 @@ export class SiteCaptchaService {
                 }
             }
 
-            ansrecEnt = new CaptchaAnswerRequestEntity();
-            ansrecEnt.image_id = image.id;
-            const { id } = await mgr.save(CaptchaAnswerRequestEntity, ansrecEnt);
-            ansrecEnt = await mgr.findOneBy(CaptchaAnswerRequestEntity, { id });
+            ansreqEnt = new CaptchaAnswerRequestEntity();
+            ansreqEnt.image_id = image.id;
+            const { id } = await mgr.save(CaptchaAnswerRequestEntity, ansreqEnt);
+            ansreqEnt = await mgr.findOneBy(CaptchaAnswerRequestEntity, { id });
             await bus.emitAsync(
                 'captcha:create-answer-request:success',
                 mgr,
-                ansrecEnt,
+                ansreqEnt,
             );
-            // delete ansrecEnt.image['base64'];
-            // console.log({ ansrecEnt });
+            // delete ansreqEnt.image['base64'];
+            // console.log({ ansreqEnt });
         });
 
-        return ansrecEnt;
+        return ansreqEnt;
+    }
+
+    public async getFromRucaptchaCom(imageBase64: string) {
+        const solver = new Captcha.Solver('0499f76849203ad92d5c3c642fde9d40');
+        const result = await solver.imageCaptcha({
+            body: imageBase64,
+            numeric: 0,
+            min_len: 3,
+            max_len: 10,
+        });
+        bus.emitAsync('bk.captcha.answer-received', result.data);
     }
 
     public async getAnswerRequest(id: number): Promise<CaptchaAnswerRequestEntity | null> {
