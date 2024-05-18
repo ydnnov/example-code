@@ -6,18 +6,13 @@ import Column from 'primevue/column';
 import { socket } from '~/socket-io.js';
 import { useEventBusStore } from '~/stores/event-bus.store.js';
 import { bus } from '~/bus.js';
+import { client } from '~/client/client.js';
 
 const eventBusStore = useEventBusStore();
 const toast = useToast();
 
 const send = (side: 'front' | 'back') => {
-  if (side === 'back') {
 
-  } else if (side === 'front') {
-
-  } else {
-    console.log('wrong side dude :-D');
-  }
   if (!eventBusStore.form.eventName.length) {
     toast.add({
       severity: 'error',
@@ -27,7 +22,15 @@ const send = (side: 'front' | 'back') => {
     });
     return;
   }
-  bus.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
+
+  if (side === 'back') {
+    client.eventBus.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
+  } else if (side === 'front') {
+    console.log('qwe', { side });
+  } else {
+    console.log('wrong side dude :-D');
+  }
+  // bus.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
   // socket.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
   toast.add({
     severity: 'secondary',
@@ -57,8 +60,17 @@ const send = (side: 'front' | 'back') => {
         />
       </div>
       <div class="w-full my-[10px]">
-        <Button @click="send('front')">send front</Button>
-        <Button @click="send('back')">send back</Button>
+        <Button
+            @click="send('front')"
+            label="send front"
+        >send front
+        </Button>
+        <Button
+            class="ml-2"
+            @click="send('back')"
+            label="send back"
+        >send back
+        </Button>
       </div>
     </div>
     <div class="flex-grow relative">
