@@ -1,3 +1,3 @@
-export type GenericDictionary = {
-    [k: string]: any
-}
+// export type GenericDictionary = {
+//     [k: string]: any
+// }

@@ -8,8 +8,18 @@ import { logger } from './logger.js';
 import { helpers } from './helpers/helpers.js';
 import { routes } from './routes/routes.js';
 import { listeners } from './listeners/listeners.js';
+import { bus } from './bus.js';
+import { backApp } from './shared/app.js';
+
+console.log(backApp);
+
+bus.on('app-starting', (...args) => {
+    console.log('app-starting', args);
+});
+bus.emit('app-starting');
 
 listeners.bindAll();
+
 
 process.on('uncaughtException', async (error) => {
     // await bus.emitAsync('bk.uncaught-exception', error);

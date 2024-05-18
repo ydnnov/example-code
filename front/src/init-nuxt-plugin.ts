@@ -10,10 +10,13 @@ export default defineNuxtPlugin(() => {
         if (eventName === 'update-screenshot') {
             return;
         }
-        await bus.emitAsync(eventName, payload);
+        console.log('From websocket:', { eventName, payload });
+        await bus.emit(eventName, payload);
+        // await bus.emitAsync(eventName, payload);
     });
 
     bus.onAny((eventName: string, payload) => {
+        socket.emit(eventName, payload);
         eventsStore.events.push({ eventName, payload });
     });
 });
