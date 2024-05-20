@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { bus } from '../bus.js';
-import { GenericDictionary } from '../types/common.js';
+import { type GenericDictionary } from '../shared/schemas/common.js';
 
 export async function testsRoutes(fastify: FastifyInstance) {
     fastify.post(
@@ -11,7 +11,7 @@ export async function testsRoutes(fastify: FastifyInstance) {
                 payload: GenericDictionary
             }
         }>) => {
-            await bus.emitAsync(body.eventName, body.payload);
+            await bus.emit(body.eventName, body.payload);
             return 'ok';
         },
     );

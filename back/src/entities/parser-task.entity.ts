@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { type GenericDictionary } from '../types/common.js';
+import { type GenericDictionary } from '../shared/schemas/common.js';
 
 @Entity({ name: 'parser_task' })
 export class ParserTaskEntity {

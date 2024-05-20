@@ -1,14 +1,14 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { CodeExecRequestType } from '../schemas/code-exec.schema.js';
+import { EventBusEmitRequestType } from '../shared/schemas/common.js';
 import { services } from '../services/services.js';
 
 export class EventBusController {
 
     public async emit(
-        request: FastifyRequest<{ Body: CodeExecRequestType }>,
+        request: FastifyRequest<{ Body: EventBusEmitRequestType }>,
         reply: FastifyReply,
     ) {
-        return await services.bus.exec(request.body);
+        return await services.bus.emit(request.body.eventName, request.body.payload);
     }
 
 }
