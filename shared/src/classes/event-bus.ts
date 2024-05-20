@@ -2,6 +2,7 @@ import EventEmitter2, {
     EventAndListener, eventNS, ListenerFn, OnOptions,
 } from 'eventemitter2';
 import { AppEvent } from './app-event.js';
+import { app } from '../app.js';
 
 export class EventBus {
 
@@ -18,6 +19,11 @@ export class EventBus {
         );
 
         return this.emitter.emitAsync(eventName, event);
+    }
+
+    public reemit<T>(appEvent: AppEvent<T>): Promise<any[]> {
+        console.log(`Reemitting on ${app.name} side`, appEvent);
+        return this.emitter.emitAsync(appEvent.eventName, appEvent);
     }
 
     public emitSync(

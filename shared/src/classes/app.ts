@@ -1,7 +1,7 @@
 export abstract class App {
 
-    public abstract getName(): 'front' | 'back';
-
     public abstract nextEventId(): number;
-    
+
+    constructor(public readonly name: 'front' | 'back') {
+    }
 }

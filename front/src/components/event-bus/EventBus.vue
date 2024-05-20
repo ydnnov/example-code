@@ -26,9 +26,10 @@ const send = (side: 'front' | 'back') => {
   if (side === 'back') {
     client.eventBus.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
   } else if (side === 'front') {
-    console.log('qwe', { side });
+    bus.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
+    // console.log('qwe', { side });
   } else {
-    console.log('wrong side dude :-D');
+    console.log(`Wrong side: "${side}"`);
   }
   // bus.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
   // socket.emit(eventBusStore.form.eventName, eventBusStore.form.payload);

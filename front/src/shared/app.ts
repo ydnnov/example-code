@@ -4,8 +4,12 @@ class FrontApp extends App {
 
     protected lastEventId: number = 0;
 
-    getName(): 'front' | 'back' {
-        return 'front';
+    // getName(): 'front' | 'back' {
+    //     return 'front';
+    // }
+
+    constructor() {
+        super('front');
     }
 
     nextEventId(): number {
@@ -14,6 +18,6 @@ class FrontApp extends App {
     }
 }
 
-const frontApp = new FrontApp();
+export const frontApp = new FrontApp();
 
 export const app = () => frontApp;

@@ -1,22 +1,27 @@
 import { bus } from '~/bus.js';
 import { socket } from '~/socket-io.js';
 import { useEventBusStore } from '~/stores/event-bus.store.js';
+import type { AppEvent } from '~/shared/classes/app-event.js';
 
 export default defineNuxtPlugin(() => {
 
     const eventsStore = useEventBusStore();
 
-    socket.onAny(async (eventName, payload) => {
+    socket.onAny(async (eventName, appEvent: AppEvent<any>) => {
         if (eventName === 'update-screenshot') {
             return;
         }
-        console.log('From websocket:', { eventName, payload });
-        await bus.emit(eventName, payload);
-        // await bus.emitAsync(eventName, payload);
+        console.log('From websocket:', { eventName, appEvent });
+        if (appEvent.app.name === 'back') {
+            console.log('Reemitting', { eventName, appEvent });
+            await bus.reemit(appEvent);
+        }
     });
 
-    bus.onAny((eventName: string, payload) => {
-        socket.emit(eventName, payload);
-        eventsStore.events.push({ eventName, payload });
+    bus.onAny((eventName: string, appEvent: AppEvent<any>) => {
+        console.log('Emitting:', { eventName, appEvent });
+        socket.emit(eventName, appEvent);
+        eventsStore.events.push(appEvent);
+        // eventsStore.events.push({ eventName, appEvent });
     });
 });
