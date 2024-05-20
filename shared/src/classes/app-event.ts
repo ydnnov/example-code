@@ -1,4 +1,4 @@
-import { GenericDictionary } from '../types/common.js';
+import { GenericDictionary } from '../schemas/common.js';
 import { App } from './app.js';
 import { app } from '../app.js';
 
