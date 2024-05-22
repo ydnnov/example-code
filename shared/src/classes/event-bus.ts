@@ -22,7 +22,7 @@ export class EventBus {
     }
 
     public reemit<T>(appEvent: AppEvent<T>): Promise<any[]> {
-        console.log(`Reemitting on ${app.name} side`, appEvent);
+        console.log(`Reemitting on ${app().name} side`, appEvent);
         return this.emitter.emitAsync(appEvent.eventName, appEvent);
     }
 
