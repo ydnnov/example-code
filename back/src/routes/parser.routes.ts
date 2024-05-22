@@ -8,5 +8,4 @@ export async function parserRoutes(fastify: FastifyInstance) {
         { schema: { body: parserStartBodySchema } },
         controllers.parser.start.bind(controllers.parser),
     );
-
 }

@@ -1,11 +1,20 @@
 import { request } from '~/axios.js';
-import type { GenericDictionary } from '~/types/common.types.js';
+import type { GenericDictionary } from '~/shared/schemas/common.js';
 
 export const parserClient = {
     run: async (parserName: string, inputData: GenericDictionary) => {
-        return request.post('parser/start', {
-            parserName,
-            inputData,
+        const response = new Promise((resolve, reject) => {
+            request.post('parser/start', {
+                parserName,
+                inputData,
+            })
+                .then(response => {
+                    console.log(response.data);
+                    resolve(response);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         });
     },
 };

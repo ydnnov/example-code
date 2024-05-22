@@ -4,10 +4,6 @@ class FrontApp extends App {
 
     protected lastEventId: number = 0;
 
-    // getName(): 'front' | 'back' {
-    //     return 'front';
-    // }
-
     constructor() {
         super('front');
     }

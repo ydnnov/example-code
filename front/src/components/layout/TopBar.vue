@@ -68,6 +68,12 @@ const msudrfSudDeloStart = async () => {
     searchText: 'глушаева ольга федоровна',
   });
 };
+
+const territorialnayaPodsudnostStart = async () => {
+  const response = await client.parser.run('msudrf/territorialnaya-podsudnost', {
+    searchText: 'Ульяновская обл, г Инза, ул Гагарина, д 2Б',
+  });
+};
 </script>
 
 <template>
@@ -117,8 +123,13 @@ const msudrfSudDeloStart = async () => {
           <div class="ml-2 border-l-[3px] border-black-500">
             <Button
                 @click="msudrfSudDeloStart"
-                icon="pi pi-microchip"
-                class="w-[40px] h-[40px] mx-4"
+                label="Судебное делопроизводство"
+                class="h-[40px] mx-4"
+            />
+            <Button
+                @click="territorialnayaPodsudnostStart"
+                label="Территориальная подсудность"
+                class="h-[40px] mx-4"
             />
           </div>
 <!--

@@ -26,9 +26,10 @@ export class ParserService {
         await parserTaskRepo.save(ptaskEnt);
         // console.log({ result });
 
+        let result;
         switch (parserName) {
             case 'msudrf/sud-delo':
-                const result = await parsers.msudrfSudDelo.run(inputData.searchText);
+                result = await parsers.msudrfSudDelo.run(inputData.searchText);
                 if (result.success === true) {
                     const filename = `${env.STORAGE_PATH}/result_html/${ptaskEnt.id}.html`;
                     fs.writeFileSync(filename, result.resultData);
@@ -44,6 +45,24 @@ export class ParserService {
                     await parserTaskRepo.save(ptaskEnt);
                     return { error: result.err };
                 }
+            case 'msudrf/territorialnaya-podsudnost':
+                result = await parsers.territorialnayaPodsudnost.run(inputData.searchText);
+                return result;
+                // if (result.success === true) {
+                //     const filename = `${env.STORAGE_PATH}/result_html/${ptaskEnt.id}.html`;
+                //     fs.writeFileSync(filename, result.resultData);
+                //     ptaskEnt.status = 'success';
+                //     ptaskEnt.result_data = { html: result.resultData };
+                //     // console.log({ result });
+                //     await parserTaskRepo.save(ptaskEnt);
+                //     const resultJson = parsers.msudrfSudDelo.extractJson(ptaskEnt.id);
+                //     return resultJson;
+                // } else {
+                //     ptaskEnt.status = 'failed';
+                //     ptaskEnt.result_data = { error: result.err };
+                //     await parserTaskRepo.save(ptaskEnt);
+                //     return { error: result.err };
+                // }
             default:
                 throw new Error(`Unknown parser ${parserName}`);
         }

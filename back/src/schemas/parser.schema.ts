@@ -7,7 +7,10 @@ export const parserNameSchema = Type.Union([
 export type ParserNameType = Static<typeof parserNameSchema>
 ////////////////////////////////////////////////////////////////////////////////
 export const parserMsudrfSudDeloBodySchema = Type.Object({
-    parserName: Type.Literal('msudrf/sud-delo'),
+    parserName: Type.Union([
+        Type.Literal('msudrf/sud-delo'),
+        Type.Literal('msudrf/territorialnaya-podsudnost'),
+    ]),
     inputData: Type.Object({
         searchText: Type.String(),
     }),
