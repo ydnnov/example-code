@@ -76,6 +76,12 @@ const send = (side: 'front' | 'back') => {
     </div>
     <div class="flex-grow relative">
       <div class="absolute inset-0">
+        <Button
+            @click="eventBusStore.events.splice(0)"
+            label="clear"
+            severity="danger"
+            class="absolute z-[999] right-[30px] h-[40px]"
+        />
         <DataTable
             :value="eventBusStore.events.slice().reverse()"
             paginator

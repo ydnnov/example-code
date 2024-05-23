@@ -5,6 +5,7 @@ import { ParserStartBodyType } from '../schemas/parser.schema.js';
 import { parsers } from '../parsers/parsers.js';
 import * as fs from 'node:fs';
 import { env } from '../envconf.js';
+import { TerritorialnayaPodsudnostParser } from '../parsers/territorialnaya-podsudnost.parser.js';
 
 export class ParserService {
 
@@ -46,7 +47,8 @@ export class ParserService {
                     return { error: result.err };
                 }
             case 'msudrf/territorialnaya-podsudnost':
-                result = await parsers.territorialnayaPodsudnost.run(inputData.searchText);
+                const parser = new TerritorialnayaPodsudnostParser(inputData.searchText);
+                result = await parser.run();
                 return result;
                 // if (result.success === true) {
                 //     const filename = `${env.STORAGE_PATH}/result_html/${ptaskEnt.id}.html`;
