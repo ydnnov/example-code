@@ -92,7 +92,16 @@ const send = (side: 'front' | 'back') => {
             scrollable
             scroll-height="flex"
         >
-          <Column field="eventName" header="Event" style="width: 35%"></Column>
+          <Column field="eventName"
+                  header="Event"
+                  style="width: 35%"
+          >
+            <template #body="{data}">
+              <div :style="data['eventName'].includes('.error.') ? 'color: red' : ''">
+                {{ data['eventName'] }}
+              </div>
+            </template>
+          </Column>
           <Column field="payload" header="Payload"></Column>
         </DataTable>
         <!--

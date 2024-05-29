@@ -23,5 +23,9 @@ export const config: ConfigType = {
         // launchOptions: puppeteerLaunchOptions,
         type: 'playwright',
         launchOptions: playwrightLaunchOptions,
+        viewportSize: {
+            width: 800,
+            height: 800,
+        },
     },
 };

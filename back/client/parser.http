@@ -8,3 +8,14 @@ Content-Type: application/json
     "searchText": "фамилия имя отчество"
   }
 }
+
+###
+POST https://shp-parsing.ydnnov.ru/api/parser/start
+Content-Type: application/json
+
+{
+  "parserName": "msudrf/sud-delo",
+  "inputData": {
+    "searchText": "фамилия имя отчество"
+  }
+}

@@ -15,10 +15,9 @@ export class SiteCaptchaService {
 
             let image;
 
-            const emitResult = await bus.emitAsync(
+            const emitResult = await bus.emit(
                 'bk.captcha.create-answer-request.image-find-or-create',
-                mgr,
-                imageBase64,
+                { mgr, imageBase64 },
             );
 
             if (emitResult.length && emitResult[0]) {
@@ -41,10 +40,9 @@ export class SiteCaptchaService {
             ansreqEnt.image_id = image.id;
             const { id } = await mgr.save(CaptchaAnswerRequestEntity, ansreqEnt);
             ansreqEnt = await mgr.findOneBy(CaptchaAnswerRequestEntity, { id });
-            await bus.emitAsync(
+            await bus.emit(
                 'captcha:create-answer-request:success',
-                mgr,
-                ansreqEnt,
+                { mgr, ansreqEnt },
             );
             // delete ansreqEnt.image['base64'];
             // console.log({ ansreqEnt });
@@ -61,7 +59,8 @@ export class SiteCaptchaService {
             min_len: 3,
             max_len: 10,
         });
-        bus.emitAsync('bk.captcha.answer-received', result.data);
+        // console.log({ result });
+        await bus.emit('captcha.answer-received', result.data);
     }
 
     public async getAnswerRequest(id: number): Promise<CaptchaAnswerRequestEntity | null> {

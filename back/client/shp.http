@@ -1,0 +1,16 @@
+### POST request to example server
+POST https://shp.int.ka-ship.ru/api/test_parser
+Content-Type: application/json
+
+{
+    "token": "668a10f1-d148-4fa5-9d86-76af6f904a16",
+    "data": {
+        "type": "first",
+        "info": {
+            "fio": "testovye",
+            "blabla": "blabbla"
+        }
+    }
+}
+
+###

@@ -9,6 +9,10 @@ export type PuppeteerBrowserParams = {
 export type PlaywrightBrowserParams = {
     type: 'playwright'
     launchOptions: PlaywrightLaunchOptions
+    viewportSize: {
+        width: number
+        height: number
+    }
 }
 
 export type ConfigType = {

@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { socket } from '~/socket-io.js';
+import { bus } from '~/bus.js';
+import type { AppEvent } from '~/shared/classes/app-event.js';
 
 const emit = defineEmits(['image-received']);
 
 const imageBase64 = ref<string>('');
 const answer = ref<string>('');
 
-socket.on('captcha:create-answer-request:success', (mgr, captchaRequestAnswer) => {
-  imageBase64.value = captchaRequestAnswer.image.base64;
+bus.on('captcha:create-answer-request:success', (appEvent: AppEvent<any>) => {
+  // console.log('captcha:create-answer-request:success', appEvent);
+  imageBase64.value = appEvent.payload.ansreqEnt.image.base64;
 });
 
 const sendCaptchaAnswer = () => {
-  socket.emit('bk.captcha.answer-received', answer.value);
+  bus.emit('captcha.answer-received', answer.value);
+  // socket.emit('bk.captcha.answer-received', answer.value);
 };
 </script>
 

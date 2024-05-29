@@ -5,18 +5,18 @@ import { bus } from '../bus.js';
 import { services } from '../services/services.js';
 import { helpers } from '../helpers/helpers.js';
 import { OperationResult } from '../types/common.js';
+import { AppEvent } from '../shared/classes/app-event.js';
 
 export class MsudrfSudDeloParser {
 
-    public async run(fio: string)
-        : Promise<OperationResult<string>> {
+    public async run(fio: string): Promise<OperationResult<string>> {
 
         const page = await services.headless.getPage();
 
         const url = 'http://32.sar.msudrf.ru/modules.php?name=sud_delo&op=hl';
         await page.goto(url);
 
-        await bus.emitAsync('bk.parser.msudrf-sud-delo.opened-start-page');
+        await bus.emit('parser.msudrf-sud-delo.opened-start-page');
 
         const captchaAnswerText = await this.solveCaptcha();
 
@@ -25,25 +25,41 @@ export class MsudrfSudDeloParser {
         await page.keyboard.type(captchaAnswerText);
         const submitEl = await page.$('#kcaptchaForm button[type=submit]');
         await submitEl.click();
+        if (!submitEl) {
+            bus.emit('parser.msudrf-sud-delo.error.no-captcha-submit-button');
+        }
 
         // const linkEl = await page.getByText('Гражданские и административные дела');
         await helpers.sleep(1000);
         const linkEl = await page.$('#type_1');
-        console.log(linkEl);
+        if (!linkEl) {
+            bus.emit('parser.msudrf-sud-delo.error.no-sud-delo-button');
+        }
+        // console.log({ linkEl });
         await linkEl.click();
 
         await helpers.sleep(1000);
         const inputEl = await page.$('[name=G1_PARTS__NAMESS]');
+        if (!inputEl) {
+            bus.emit('parser.msudrf-sud-delo.error.no-fio-input');
+        }
         await inputEl.scrollIntoViewIfNeeded();
         await inputEl.focus();
-        await helpers.sleep(1000);
+        // await helpers.sleep(1000);
         await page.keyboard.type(fio);
-        await helpers.sleep(1000);
+        // await helpers.sleep(1000);
 
         const searchButtonEl = await page.$('#button_block .search');
+        if (!searchButtonEl) {
+            bus.emit('parser.msudrf-sud-delo.error.no-search-button');
+        }
         await searchButtonEl.click();
 
-        await page.waitForSelector('#tablcont');
+        try {
+            await page.waitForSelector('#tablcont');
+        } catch (err) {
+            bus.emit('parser.msudrf-sud-delo.error.no-result-table');
+        }
 
         const resultData = await page.content();
 
@@ -106,8 +122,9 @@ export class MsudrfSudDeloParser {
             .createAnswerRequest(imageBase64);
 
         const result = new Promise((resolve, reject) => {
-            bus.once('bk.captcha.answer-received', (answerText) => {
-                resolve(answerText);
+            bus.on('captcha.answer-received', (appEvent: AppEvent<any>) => {
+                console.log({ 'appEvent.payload': appEvent.payload });
+                resolve(appEvent.payload);
             });
         });
 

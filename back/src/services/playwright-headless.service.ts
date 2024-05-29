@@ -10,6 +10,7 @@ import {
 } from 'playwright';
 import { HeadlessService } from './headless.service.js';
 import { bus } from '../bus.js';
+import { config } from '../config.js';
 
 export class PlaywrightHeadlessService extends HeadlessService {
 
@@ -62,6 +63,7 @@ export class PlaywrightHeadlessService extends HeadlessService {
             // console.log('Page exists, returning it');
             page = pages[0];
         }
+        page.setViewportSize(config.browserParams.viewportSize);
         // this.bindResponseFn(page);
         return page;
     }
@@ -73,7 +75,7 @@ export class PlaywrightHeadlessService extends HeadlessService {
 
     public async goto(url: string): Promise<OperationResult<null>> {
         const page = await this.getPage();
-        await bus.emitAsync('bk.headless.navigation-started', { url });
+        await bus.emit('headless.navigation-started', { url });
         // console.log(`Navigating to ${url}`);
         await page.goto(url);
         return {

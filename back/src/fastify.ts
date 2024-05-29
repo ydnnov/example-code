@@ -1,5 +1,5 @@
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import Fastify from 'fastify';
+import Fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import Ajv from 'ajv';
 
 export const fastify = Fastify({
@@ -39,4 +39,9 @@ fastify.setValidatorCompiler(req => {
     }
 
     return compiler.compile(req.schema);
+});
+
+fastify.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
+    // TODO не работает как надо, выдаёт всё время 127.0.0.1
+    console.log(`Request from ip: ${request.ip}`);
 });
