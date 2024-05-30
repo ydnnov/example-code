@@ -26,9 +26,9 @@ const componentByKey = (key: string) => {
 };
 
 const componentKeyA = computed(() =>
-    ui.mainSplitter.panels[ui.mainSplitter.swapped ? 0 : 1]);
-const componentKeyB = computed(() =>
     ui.mainSplitter.panels[ui.mainSplitter.swapped ? 1 : 0]);
+const componentKeyB = computed(() =>
+    ui.mainSplitter.panels[ui.mainSplitter.swapped ? 0 : 1]);
 const ComponentA = computed(() => componentByKey(componentKeyA.value));
 const ComponentB = computed(() => componentByKey(componentKeyB.value));
 </script>
