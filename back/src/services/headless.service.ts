@@ -1,5 +1,4 @@
 import EventEmitter2 from 'eventemitter2';
-import puppeteer, { Browser, ElementHandle, HTTPResponse, KeyInput, Page } from 'puppeteer';
 import { config } from '../config.js';
 import { helpers } from '../helpers/helpers.js';
 import { OperationResult } from '../types/common.js';
@@ -20,7 +19,9 @@ export abstract class HeadlessService {
 
     public abstract getBrowser();
 
-    public abstract getPage();
+    // TODO Удалить вообще puppeteer из проекта, и эту иерархию с
+    //      абстрактным классом, сделать только playwright и всё
+    public abstract getPage(): Promise<playwright.Page>
 
     public abstract getUrl(): Promise<string>;
 

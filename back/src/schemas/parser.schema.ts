@@ -1,24 +1,23 @@
 import { Static, Type } from '@sinclair/typebox';
 
 ////////////////////////////////////////////////////////////////////////////////
-export const parserNameSchema = Type.Union([
-    Type.Literal('msudrf/sud-delo'),
-]);
-export type ParserNameType = Static<typeof parserNameSchema>
-////////////////////////////////////////////////////////////////////////////////
 export const parserMsudrfSudDeloBodySchema = Type.Object({
-    parserName: Type.Union([
-        Type.Literal('msudrf/sud-delo'),
-        Type.Literal('msudrf/territorialnaya-podsudnost'),
-    ]),
+    parserName: Type.Literal('msudrf/sudebnoye-deloproizvodstvo'),
     inputData: Type.Object({
-        searchText: Type.String(),
+        fio: Type.String(),
     }),
 });
-export type ParserMsudrfSudDeloBodyType = Static<typeof parserMsudrfSudDeloBodySchema>
+////////////////////////////////////////////////////////////////////////////////
+export const parserTerrPodsBodySchema = Type.Object({
+    parserName: Type.Literal('msudrf/territorialnaya-podsudnost'),
+    inputData: Type.Object({
+        address: Type.String(),
+    }),
+});
 ////////////////////////////////////////////////////////////////////////////////
 export const parserStartBodySchema = Type.Union([
     parserMsudrfSudDeloBodySchema,
+    parserTerrPodsBodySchema,
 ]);
 export type ParserStartBodyType = Static<typeof parserStartBodySchema>
 ////////////////////////////////////////////////////////////////////////////////

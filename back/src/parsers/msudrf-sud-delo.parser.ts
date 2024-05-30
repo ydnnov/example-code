@@ -18,15 +18,22 @@ export class MsudrfSudDeloParser {
 
         await bus.emit('parser.msudrf-sud-delo.opened-start-page');
 
-        const captchaAnswerText = await this.solveCaptcha();
+        // const captchaAnswerText = await this.solveCaptcha();
+        //
+        // const captchaInputEl = await page.$('#kcaptchaForm [name=captcha-response]');
+        // await captchaInputEl.focus();
+        // await page.keyboard.type(captchaAnswerText);
+        // const submitEl = await page.$('#kcaptchaForm button[type=submit]');
+        // await submitEl.click();
+        // if (!submitEl) {
+        //     bus.emit('parser.msudrf-sud-delo.error.no-captcha-submit-button');
+        // }
 
-        const captchaInputEl = await page.$('#kcaptchaForm [name=captcha-response]');
-        await captchaInputEl.focus();
-        await page.keyboard.type(captchaAnswerText);
-        const submitEl = await page.$('#kcaptchaForm button[type=submit]');
-        await submitEl.click();
-        if (!submitEl) {
-            bus.emit('parser.msudrf-sud-delo.error.no-captcha-submit-button');
+        if (!await this.passCaptchaPage()) {
+            return {
+                success: false,
+                err: 'Failed to pass captcha',
+            };
         }
 
         // const linkEl = await page.getByText('Гражданские и административные дела');
@@ -100,6 +107,25 @@ export class MsudrfSudDeloParser {
         return resultItems;
     }
 
+    protected async passCaptchaPage() {
+        const page = await services.headless.getPage();
+        const answerText = await this.solveCaptcha();
+        const captchaInputEl = await page.$('#kcaptchaForm [name=captcha-response]');
+        await captchaInputEl.focus();
+        await page.keyboard.type(answerText);
+        const submitEl = await page.$('#kcaptchaForm button[type=submit]');
+        await submitEl.click();
+        if (!submitEl) {
+            bus.emit('parser.msudrf-sud-delo.error.no-captcha-submit-button');
+        }
+    }
+
+    protected async getCaptchaBase64() {
+        const page = await services.headless.getPage();
+        const imageElem = await page.$('img[src="/captcha.php"]');
+        return helpers.getImageBase64(page, imageElem);
+    }
+
     protected async solveCaptcha() {
 
         // Usage:
@@ -112,17 +138,12 @@ export class MsudrfSudDeloParser {
         //         });
         //     });
 
-        const page = await services.headless.getPage();
-        const imageElem = await page.$('img[src="/captcha.php"]');
-        const imageBase64 = await helpers.getImageBase64(
-            page,
-            imageElem,
-        );
+        const imageBase64 = await this.getCaptchaBase64();
         const ansreqEnt = await services.siteCaptcha
             .createAnswerRequest(imageBase64);
 
         const result = new Promise((resolve, reject) => {
-            bus.on('captcha.answer-received', (appEvent: AppEvent<any>) => {
+            bus.once('captcha.answer-received', (appEvent: AppEvent<any>) => {
                 console.log({ 'appEvent.payload': appEvent.payload });
                 resolve(appEvent.payload);
             });
@@ -133,4 +154,8 @@ export class MsudrfSudDeloParser {
         return result;
     }
 
+    // protected async isCaptchaPassed() {
+    //
+    //     const page = await services.headless.getPage();
+    // }
 }

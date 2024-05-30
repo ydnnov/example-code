@@ -29,7 +29,7 @@ export class CreateParserTables1714229191300 implements MigrationInterface {
             );
 
             insert into parser (name)
-            values ('msudrf/sud-delo'),
+            values ('msudrf/sudebnoye-deloproizvodstvo'),
                    ('msudrf/territorialnaya-podsudnost');
         `);
     }

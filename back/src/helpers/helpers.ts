@@ -15,7 +15,7 @@ const helpers = {
 
     pollWait: async <T>(callback, delay, timeout): Promise<T> => {
         let resultValue = null;
-        return new Promise(async (resolve, reject) => {
+        return new Promise<T>(async (resolve, reject) => {
             const timeStart = Date.now();
             for (; ;) {
                 try {

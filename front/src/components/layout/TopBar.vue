@@ -64,14 +64,14 @@ const items = ref([
 ]);
 
 const msudrfSudDeloStart = async () => {
-  const response = await client.parser.run('msudrf/sud-delo', {
-    searchText: 'глушаева ольга федоровна',
+  const response = await client.parser.run('msudrf/sudebnoye-deloproizvodstvo', {
+    fio: 'глушаева ольга федоровна',
   });
 };
 
-const territorialnayaPodsudnostStart = async () => {
+const msudrfTerrPodsStart = async () => {
   const response = await client.parser.run('msudrf/territorialnaya-podsudnost', {
-    searchText: 'Ульяновская обл, г Инза, ул Гагарина, д 2Б',
+    address: 'Ульяновская обл, г Инза, ул Гагарина, д 2Б',
   });
 };
 </script>
@@ -127,7 +127,7 @@ const territorialnayaPodsudnostStart = async () => {
                 class="h-[40px] mx-4"
             />
             <Button
-                @click="territorialnayaPodsudnostStart"
+                @click="msudrfTerrPodsStart"
                 label="Территориальная подсудность"
                 class="h-[40px] mx-4"
             />
