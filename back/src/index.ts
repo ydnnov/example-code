@@ -9,37 +9,26 @@ import { helpers } from './helpers/helpers.js';
 import { routes } from './routes/routes.js';
 import { listeners } from './listeners/listeners.js';
 import { bus } from './bus.js';
-import { backApp } from './shared/app.js';
-
-console.log(backApp);
-
-bus.on('app-starting', (...args) => {
-    console.log('app-starting', args);
-});
-bus.emit('app-starting');
+import { pwpageReadyPromise } from './pwpage.js';
 
 listeners.bindAll();
 
-
 process.on('uncaughtException', async (error) => {
-    // await bus.emitAsync('bk.uncaught-exception', error);
+    bus.emit('uncaught-exception', error);
     console.log(helpers.colorizeForConsole(31,
         helpers.consoleHeaderText('uncaughtException ', '!'),
     ));
     console.error(error);
-    console.log(helpers.colorizeForConsole(31, '='.repeat(100)));
-    // throw error;
+    console.log(helpers.colorizeForConsole(31, '='.repeat(80)));
 });
 
 process.on('unhandledRejection', async (error) => {
-    // await bus.emitAsync('bk.unhandled-rejection', error);
+    bus.emit('unhandled-rejection', error);
     console.log(helpers.colorizeForConsole(31,
         helpers.consoleHeaderText('unhandledRejection ', '!'),
     ));
     console.error(error);
-    console.log(helpers.colorizeForConsole(31, '+-'.repeat(50)));
-    // console.error(error);
-    // throw error;
+    console.log(helpers.colorizeForConsole(31, '+-'.repeat(40)));
 });
 
 (async () => {
@@ -51,15 +40,18 @@ process.on('unhandledRejection', async (error) => {
 
     await db.initialize();
 
+    await pwpageReadyPromise;
+
     const onServerStart = async (err, address) => {
         if (err) {
             console.error(err);
             process.exit(1);
         }
 
-        console.log('='.repeat(100));
+        // console.clear();
+        console.log('='.repeat(80));
         logger.info(`Server started at ${address}`);
-        console.log('='.repeat(100));
+        console.log('='.repeat(80));
     };
 
     fastify.listen({ port: env.FASTIFY_PORT }, onServerStart);
