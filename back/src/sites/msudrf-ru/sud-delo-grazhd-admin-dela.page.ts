@@ -1,5 +1,6 @@
 import { bus } from '../../bus.js';
 import { pwpage } from '../../pwpage.js';
+import { SudDeloResultPage } from './sud-delo-result.page.js';
 
 export class SudDeloGrazhdAdminDelaPage {
 
@@ -27,8 +28,11 @@ export class SudDeloGrazhdAdminDelaPage {
         await pwpage.keyboard.type(fio);
     }
 
-    public async submitSearch() {
+    public async submitSearch(timeout: number) {
         const searchButtonEl = await pwpage.$(this.submitSel);
         await searchButtonEl.click();
+        const page = new SudDeloResultPage();
+        const isReady = await page.waitReady(timeout);
+        return isReady ? page : null;
     }
 }

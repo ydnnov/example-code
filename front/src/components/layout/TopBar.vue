@@ -1,82 +1,50 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Button from 'primevue/button';
+import { useBagStore } from '~/stores/bag.store.js';
 import { useUserStore } from '~/stores/user.store.js';
+import { useUiStore } from '~/stores/ui.store.js';
 import { client } from '~/client/client.js';
+import { useToast } from 'primevue/usetoast';
 
+const { bag } = useBagStore();
 const { user } = useUserStore();
 const { ui } = useUiStore();
+const toast = useToast();
 
 const items = ref([
   {
     label: 'Home',
     icon: 'pi pi-home',
   },
-  // {
-  //   label: 'Features',
-  //   icon: 'pi pi-star'
-  // },
-  // {
-  //   label: 'Projects',
-  //   icon: 'pi pi-search',
-  //   items: [
-  //     {
-  //       label: 'Core',
-  //       icon: 'pi pi-bolt',
-  //       shortcut: '⌘+S'
-  //     },
-  //     {
-  //       label: 'Blocks',
-  //       icon: 'pi pi-server',
-  //       shortcut: '⌘+B'
-  //     },
-  //     {
-  //       label: 'UI Kit',
-  //       icon: 'pi pi-pencil',
-  //       shortcut: '⌘+U'
-  //     },
-  //     {
-  //       separator: true
-  //     },
-  //     {
-  //       label: 'Templates',
-  //       icon: 'pi pi-palette',
-  //       items: [
-  //         {
-  //           label: 'Apollo',
-  //           icon: 'pi pi-palette',
-  //           badge: 2
-  //         },
-  //         {
-  //           label: 'Ultima',
-  //           icon: 'pi pi-palette',
-  //           badge: 3
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // },
-  // {
-  //   label: 'Contact',
-  //   icon: 'pi pi-envelope',
-  //   badge: 3
-  // }
 ]);
 
 const msudrfSudDeloStart = async () => {
   const response = await client.parser.run('msudrf/sudebnoye-deloproizvodstvo', {
-    fio: 'глушаева ольга федоровна',
+    fio: bag['parserInputText'],
+  });
+  toast.add({
+    severity: 'success',
+    summary: 'Response',
+    group: 'jsonResult',
+    detail: response,
+    life: 0,
   });
 };
 
 const msudrfTerrPodsStart = async () => {
   const response = await client.parser.run('msudrf/territorialnaya-podsudnost', {
-    address: 'Ульяновская обл, г Инза, ул Гагарина, д 2Б',
+    address: bag['parserInputText'],
   });
 };
 </script>
 
 <template>
+  <Toast position="bottom-left" group="jsonResult" style="width: calc(100% - 40px)">
+    <template #message="{message}">
+      <pre style="overflow-x: scroll">{{ message.detail }}</pre>
+    </template>
+  </Toast>
   <div class="card">
     <Menubar :model="items">
       <template #start>
@@ -121,6 +89,12 @@ const msudrfTerrPodsStart = async () => {
             />
           </div>
           <div class="ml-2 border-l-[3px] border-black-500">
+            <InputText
+                placeholder="Search"
+                type="text"
+                class="ml-4"
+                v-model="bag['parserInputText']"
+            />
             <Button
                 @click="msudrfSudDeloStart"
                 label="Судебное делопроизводство"
@@ -132,29 +106,6 @@ const msudrfTerrPodsStart = async () => {
                 class="h-[40px] mx-4"
             />
           </div>
-<!--
-          <div class="ml-2 border-l-[3px] border-black-500">
-            <Button
-                @click="ui.mainSplitter.panels[1] = 'msudrf-sud-delo'"
-                icon="pi pi-microchip"
-                class="w-[40px] h-[40px] ml-4"
-            />
-          </div>
-          <div class="ml-2 mr-10 border-l-[3px] border-black-500">
-            <Button
-                @click=""
-                icon="pi pi-asterisk"
-                class="w-[40px] h-[40px] ml-4"
-            />
-            <Button
-                @click="msudrfSudDeloStart"
-                icon="pi pi-asterisk"
-                class="w-[40px] h-[40px] ml-2"
-            />
-          </div>
--->
-
-          <InputText placeholder="Search" type="text" class="" />
 
           <div class="mt-[7px] ml-10">{{ user.name }}</div>
 

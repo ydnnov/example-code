@@ -6,10 +6,12 @@ import { services } from '../../services/services.js';
 import { helpers } from '../../helpers/helpers.js';
 import { OperationResult } from '../../types/common.js';
 import { Request } from 'playwright';
+import { ParserBase } from '../parser-base.js';
 
-export class MsudrfTerrPodsParser {
+export class MsudrfTerrPodsParser extends ParserBase{
 
     constructor(protected address: string) {
+        super()
     }
 
     // public currentStage = 'none';
@@ -125,6 +127,9 @@ export class MsudrfTerrPodsParser {
     //     //     success: true,
     //     //     resultData: 'qwe',
     //     // };
+    }
+
+    extractJson(html: string) {
     }
 
     // // public extractJson(ptaskId: number) {

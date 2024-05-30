@@ -9,7 +9,6 @@ import { bag as _bag } from '../bag.js';
 import { config as _config } from '../config.js';
 import { helpers as _helpers } from '../helpers/helpers.js';
 import { services as _services } from './services.js';
-import { parsers as _parsers } from '../parsers/parsers.js';
 
 export class CodeExecService {
 
@@ -23,7 +22,6 @@ export class CodeExecService {
         const bag = _bag;
         const config = _config;
         const services = _services;
-        const parsers = _parsers;
         const browser = await services.headless.getBrowser();
         const page = await services.headless.getPage();
         tsCode = this.stripImports(tsCode);

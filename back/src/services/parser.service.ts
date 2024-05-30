@@ -2,17 +2,16 @@ import { db } from '../data-source.js';
 import { ParserEntity } from '../entities/parser.entity.js';
 import { ParserTaskEntity } from '../entities/parser-task.entity.js';
 import { ParserStartBodyType } from '../schemas/parser.schema.js';
-import { parsers } from '../parsers/parsers.js';
 import * as fs from 'node:fs';
 import { env } from '../envconf.js';
 import { MsudrfTerrPodsParser } from '../parsers/msudrf-terr-pods/msudrf-terr-pods.parser.js';
 import { MsudrfSudDeloParser } from '../parsers/msudrf-sud-delo/msudrf-sud-delo.parser.js';
+import { ParserBase } from '../parsers/parser-base.js';
 
 export class ParserService {
 
     public async startParser(
         params: ParserStartBodyType,
-        // { parserName, inputData }: ParserStartBodyType,
     ): Promise<object> {
 
         const mgr = db.createEntityManager();
@@ -29,70 +28,35 @@ export class ParserService {
         // console.log({ result });
 
         const parser = this.createParser(params);
+
         const result = await parser.run();
-        return result;
 
-        // let parser, result;
-        // switch (parserName) {
-        //     case 'msudrf/sud-delo':
-        //         parser = new TerritorialnayaPodsudnostParser(inputData.searchText);
-        //         result = await parser.run();
-        //         return result;
-        //
-        //     // result = await parsers.msudrfSudDelo.run(inputData.searchText);
-        //     // if (result.success === true) {
-        //     //     const filename = `${env.STORAGE_PATH}/result_html/${ptaskEnt.id}.html`;
-        //     //     fs.writeFileSync(filename, result.resultData);
-        //     //     ptaskEnt.status = 'success';
-        //     //     ptaskEnt.result_data = { html: result.resultData };
-        //     //     // console.log({ result });
-        //     //     await parserTaskRepo.save(ptaskEnt);
-        //     //     const resultJson = parsers.msudrfSudDelo.extractJson(ptaskEnt.id);
-        //     //     return resultJson;
-        //     // } else {
-        //     //     ptaskEnt.status = 'failed';
-        //     //     ptaskEnt.result_data = { error: result.err };
-        //     //     await parserTaskRepo.save(ptaskEnt);
-        //     //     return { error: result.err };
-        //     // }
-        //     case 'msudrf/territorialnaya-podsudnost':
-        //         parser = new TerritorialnayaPodsudnostParser(inputData.searchText);
-        //         result = await parser.run();
-        //         return result;
-        //     // if (result.success === true) {
-        //     //     const filename = `${env.STORAGE_PATH}/result_html/${ptaskEnt.id}.html`;
-        //     //     fs.writeFileSync(filename, result.resultData);
-        //     //     ptaskEnt.status = 'success';
-        //     //     ptaskEnt.result_data = { html: result.resultData };
-        //     //     // console.log({ result });
-        //     //     await parserTaskRepo.save(ptaskEnt);
-        //     //     const resultJson = parsers.msudrfSudDelo.extractJson(ptaskEnt.id);
-        //     //     return resultJson;
-        //     // } else {
-        //     //     ptaskEnt.status = 'failed';
-        //     //     ptaskEnt.result_data = { error: result.err };
-        //     //     await parserTaskRepo.save(ptaskEnt);
-        //     //     return { error: result.err };
-        //     // }
-        //     default:
-        //         throw new Error(`Unknown parser ${parserName}`);
-        // }
+        if (result.success === true) {
 
-        // console.log({ ptaskEnt });
-        //
-        // const result = await mgr.insert(ParserTaskEntity, ptaskEnt);
-        // const id = result.identifiers[0].id;
+            const filename = `${env.STORAGE_PATH}/result_html/${
+                params.parserName}/${ptaskEnt.id}.html`;
 
-        // ptaskEnt = await mgr.findOneBy(ParserTaskEntity, { id });
-        //
-        // const runResult = await parserEnt.run(ptaskEnt);
-        //
-        // return ptaskEnt;
+            fs.writeFileSync(filename, result.resultData);
+
+            const resultJson = parser.extractJson(result.resultData);
+
+            ptaskEnt.status = 'success';
+            ptaskEnt.result_data = resultJson;
+            await parserTaskRepo.save(ptaskEnt);
+
+            return resultJson;
+
+        } else {
+
+            ptaskEnt.status = 'failed';
+            ptaskEnt.result_data = { error: result.err };
+            await parserTaskRepo.save(ptaskEnt);
+
+            return { error: result.err };
+        }
     }
 
-    protected createParser(params: ParserStartBodyType)
-        : MsudrfSudDeloParser
-        | MsudrfTerrPodsParser {
+    protected createParser(params: ParserStartBodyType): ParserBase {
         switch (params.parserName) {
             case 'msudrf/sudebnoye-deloproizvodstvo': {
                 return new MsudrfSudDeloParser(params.inputData.fio);
