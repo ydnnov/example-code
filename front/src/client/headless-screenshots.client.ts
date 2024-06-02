@@ -1,13 +1,16 @@
-import { request } from '~/axios.js';
+import { ClientBase } from '~/client/client-base.js';
 
-export const headlessScreenshotsClient = {
-  startSending: () => {
-    request.post('headless-screenshots/start-sending');
-  },
-  stopSending: () => {
-    request.post('headless-screenshots/stop-sending');
-  },
-  setSendInterval: (interval: number) => {
-    request.post('headless-screenshots/set-send-interval', { interval });
-  },
-};
+export class HeadlessScreenshotsClient extends ClientBase {
+
+    startSending() {
+        this.request.post('headless-screenshots/start-sending');
+    }
+
+    stopSending() {
+        this.request.post('headless-screenshots/stop-sending');
+    }
+
+    setSendInterval(interval: number) {
+        this.request.post('headless-screenshots/set-send-interval', { interval });
+    }
+}

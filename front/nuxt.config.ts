@@ -4,6 +4,12 @@ export default defineNuxtConfig({
     ssr: false,
     srcDir: 'src',
     css: ['~/styles/styles.scss'],
+    runtimeConfig: {
+        public: {
+            backendUrl: process.env.NUXT_BACKEND_URL || 'http://localhost:5000',
+            websocketUrl: process.env.NUXT_WEBSOCKET_URL || 'http://localhost:5000',
+        },
+    },
     postcss: {
         plugins: {
             tailwindcss: {},
@@ -20,7 +26,4 @@ export default defineNuxtConfig({
             unstyled: false,
         },
     },
-    plugins: [
-        '~/init-nuxt-plugin.ts',
-    ],
 });

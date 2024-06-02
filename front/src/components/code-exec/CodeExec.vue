@@ -2,14 +2,15 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import Button from 'primevue/button';
 import '~/user-worker.js';
-import { codeExecClient } from '~/client/code-exec.client.js';
 import { useStorage } from '@vueuse/core';
-import { tsDefinitionsClient } from '~/client/ts-definitions.client.js';
+import useClient from '~/composables/useClient.js';
+
+const client = useClient();
 
 let editor;
 const editorEl = ref();
 const codeExecSend = () => {
-  codeExecClient.exec(editor.getValue());
+  client.codeExec.exec(editor.getValue());
 };
 const srcTabs = useStorage('codeexec-controls:src-tabs', {
   nextId: 2,
@@ -97,7 +98,7 @@ onMounted(async () => {
 //     noSyntaxValidation: false,
 //   });
 
-  const tsDefinitions = await tsDefinitionsClient.all();
+  const tsDefinitions = await client.tsDefinitions.all();
 
   // monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
   //   target: monaco.languages.typescript.ScriptTarget.ES2016,

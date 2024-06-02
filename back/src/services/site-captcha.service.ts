@@ -52,6 +52,7 @@ export class SiteCaptchaService {
     }
 
     public async getFromRucaptchaCom(imageBase64: string) {
+        await bus.emit('captcha.requesting-answer');
         const solver = new Captcha.Solver('0499f76849203ad92d5c3c642fde9d40');
         const result = await solver.imageCaptcha({
             body: imageBase64,

@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { client } from '~/client/client.js';
+import useClient from '~/composables/useClient.js';
+
+const client = useClient();
 
 const searchText = ref<string>('');
 

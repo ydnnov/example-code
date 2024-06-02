@@ -2,9 +2,11 @@
 // import _ from 'lodash';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import { headlessScreenshotsClient } from '~/client/headless-screenshots.client.js';
 import { useDebounceFn } from '@vueuse/core';
 import { useStorage } from '@vueuse/core';
+import useClient from '~/composables/useClient.js';
+
+const client = useClient();
 
 const screenshotSendInterval = useStorage('screenshot-interval', '1000');
 const screenshotSendIntervalValid = () => {
@@ -13,21 +15,21 @@ const screenshotSendIntervalValid = () => {
       (Number(screenshotSendInterval.value) <= 60000);
 };
 const startSendingScreenshots = () => {
-  headlessScreenshotsClient.startSending();
+  client.headlessScreenshots.startSending();
 };
 const stopSendingScreenshots = () => {
-  headlessScreenshotsClient.stopSending();
+  client.headlessScreenshots.stopSending();
 };
 // const sendUpdateScreenshotInterval = _.debounce(() => {
 const sendUpdateScreenshotInterval = useDebounceFn(() => {
   if (!screenshotSendIntervalValid()) return;
-  headlessScreenshotsClient.setSendInterval(Number(screenshotSendInterval.value));
+  client.headlessScreenshots.setSendInterval(Number(screenshotSendInterval.value));
 }, 500);
 watch(screenshotSendInterval, (value) => {
   sendUpdateScreenshotInterval();
 });
 if (screenshotSendIntervalValid()) {
-  headlessScreenshotsClient.setSendInterval(Number(screenshotSendInterval.value));
+  client.headlessScreenshots.setSendInterval(Number(screenshotSendInterval.value));
 }
 sendUpdateScreenshotInterval();
 startSendingScreenshots();

@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { socket } from '~/socket-io.js';
-import { headlessClient } from '~/client/headless.client.js';
+import useClient from '~/composables/useClient.js';
+import useWebsocket from '~/composables/useWebsocket.js';
+
+const client = useClient();
+const socket = useWebsocket();
 
 const screenshot = ref('');
 const screenshotImg = ref<HTMLImageElement>();
@@ -16,13 +19,13 @@ const onScreenshotClick = (ev: PointerEvent) => {
     return;
   }
   const img = screenshotImg.value;
-  headlessClient.screenshotClick(
+  client.headless.screenshotClick(
       ev.offsetX / img?.clientWidth * img?.naturalWidth,
       ev.offsetY / img?.clientHeight * img?.naturalHeight,
   );
 };
 const onScreenshotType = (ev: KeyboardEvent) => {
-  headlessClient.screenshotType(ev.key, ev.code);
+  client.headless.screenshotType(ev.key, ev.code);
 };
 const showingScreenshotIndicator = ref(false);
 </script>

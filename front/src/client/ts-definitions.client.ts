@@ -1,8 +1,9 @@
-import { request } from '~/axios.js';
+import { ClientBase } from '~/client/client-base.js';
 
-export const tsDefinitionsClient = {
-    all: async () => {
-        const result = await request.get('ts-definitions/all');
+export class TsDefinitionsClient extends ClientBase {
+
+    async all() {
+        const result = await this.request.get('ts-definitions/all');
         return result.data;
-    },
-};
+    }
+}

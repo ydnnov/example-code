@@ -3,13 +3,13 @@ import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import { socket } from '~/socket-io.js';
 import { useEventBusStore } from '~/stores/event-bus.store.js';
 import { bus } from '~/bus.js';
-import { client } from '~/client/client.js';
+import useClient from '~/composables/useClient.js';
 
 const eventBusStore = useEventBusStore();
 const toast = useToast();
+const client = useClient();
 
 const send = (side: 'front' | 'back') => {
 
@@ -27,18 +27,9 @@ const send = (side: 'front' | 'back') => {
     client.eventBus.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
   } else if (side === 'front') {
     bus.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
-    // console.log('qwe', { side });
   } else {
     console.log(`Wrong side: "${side}"`);
   }
-  // bus.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
-  // socket.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
-  toast.add({
-    severity: 'secondary',
-    summary: eventBusStore.form.eventName,
-    detail: eventBusStore.form.payload,
-    life: 3000,
-  });
 };
 </script>
 

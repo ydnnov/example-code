@@ -4,13 +4,14 @@ import Button from 'primevue/button';
 import { useBagStore } from '~/stores/bag.store.js';
 import { useUserStore } from '~/stores/user.store.js';
 import { useUiStore } from '~/stores/ui.store.js';
-import { client } from '~/client/client.js';
 import { useToast } from 'primevue/usetoast';
+import useClient from '~/composables/useClient.js';
 
 const { bag } = useBagStore();
 const { user } = useUserStore();
 const { ui } = useUiStore();
 const toast = useToast();
+const client = useClient();
 
 const items = ref([
   {
@@ -36,6 +37,13 @@ const msudrfTerrPodsStart = async () => {
   const response = await client.parser.run('msudrf/territorialnaya-podsudnost', {
     address: bag['parserInputText'],
   });
+};
+
+const someAction = async () => {
+  client.headless.goto('https://bing.com');
+  // toast.add({
+  //   detail: config.public.backendUrl,
+  // });
 };
 </script>
 
@@ -95,6 +103,8 @@ const msudrfTerrPodsStart = async () => {
                 class="ml-4"
                 v-model="bag['parserInputText']"
             />
+          </div>
+          <div class="ml-2">
             <Button
                 @click="msudrfSudDeloStart"
                 label="Судебное делопроизводство"
@@ -103,6 +113,14 @@ const msudrfTerrPodsStart = async () => {
             <Button
                 @click="msudrfTerrPodsStart"
                 label="Территориальная подсудность"
+                class="h-[40px] mx-4"
+            />
+          </div>
+
+          <div class="ml-2 border-l-[3px] border-black-500">
+            <Button
+                @click="someAction"
+                label="someAction"
                 class="h-[40px] mx-4"
             />
           </div>

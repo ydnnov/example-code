@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
-import { headlessClient } from '~/client/headless.client.js';
-import { client } from '~/client/client.js';
+import useClient from '~/composables/useClient.js';
+
+const client = useClient();
 
 const predefinedSites = reactive([
   ['yandex.ru', 'YandexRu'],
@@ -17,10 +18,10 @@ const goto = (value: string) => {
   } else {
     currentUrl.value = 'https://' + value;
   }
-  headlessClient.goto(currentUrl.value);
+  client.headless.goto(currentUrl.value);
 };
 const reloadPage = () => {
-  headlessClient.reloadPage();
+  client.headless.reloadPage();
 };
 
 onMounted(async () => {

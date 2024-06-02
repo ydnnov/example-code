@@ -1,9 +1,10 @@
-import { request } from '~/axios.js';
+import { ClientBase } from '~/client/client-base.js';
 
-export const codeExecClient = {
-  exec: (code: string) => {
-    request.post('code-exec', code, {
-      headers: { 'Content-Type': 'text/plain' },
-    });
-  },
-};
+export class CodeExecClient extends ClientBase {
+
+    exec(code: string) {
+        this.request.post('code-exec', code, {
+            headers: { 'Content-Type': 'text/plain' },
+        });
+    }
+}
