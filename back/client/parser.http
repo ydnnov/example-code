@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "parserName": "msudrf/sudebnoye-deloproizvodstvo",
   "inputData": {
-    "searchText": "фамилия имя отчество"
+    "fio": "фамилия имя отчество"
   }
 }
 
@@ -16,6 +16,6 @@ Content-Type: application/json
 {
   "parserName": "msudrf/sudebnoye-deloproizvodstvo",
   "inputData": {
-    "searchText": "фамилия имя отчество"
+    "fio": "фамилия имя отчество"
   }
 }
