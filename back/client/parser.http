@@ -3,7 +3,7 @@ POST http://127.0.0.1:5000/parser/start
 Content-Type: application/json
 
 {
-  "parserName": "msudrf/sud-delo",
+  "parserName": "msudrf/sudebnoye-deloproizvodstvo",
   "inputData": {
     "searchText": "фамилия имя отчество"
   }
@@ -14,7 +14,7 @@ POST https://shp-parsing.ydnnov.ru/api/parser/start
 Content-Type: application/json
 
 {
-  "parserName": "msudrf/sud-delo",
+  "parserName": "msudrf/sudebnoye-deloproizvodstvo",
   "inputData": {
     "searchText": "фамилия имя отчество"
   }

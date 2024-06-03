@@ -77,17 +77,39 @@ export class SiteCaptchaService {
             .findOneBy(CaptchaImageEntity, { id });
     }
 
-    public async setAnswer({ answerRequestId, answer }: SiteCaptchaSetAnswerType) {
+    public async setUnconfirmedAnswer(answerRequestId: number, answer: string) {
 
-        // const mgr = db.createEntityManager();
-        // const ansrecEnt = await mgr
-        //     .findOneBy(CaptchaAnswerRequestEntity, { id: answerRequestId });
-        // delete ansrecEnt.image['base64'];
-        // console.log({ ansrecEnt });
-        // ansrecEnt.answer = answer;
-        // const result = await mgr.save(CaptchaAnswerRequestEntity, ansrecEnt);
-        // console.log({ result });
-        // // bus
+        const mgr = db.createEntityManager();
+        const ansrecEnt = await mgr
+            .findOneBy<CaptchaAnswerRequestEntity>(
+                CaptchaAnswerRequestEntity, { id: answerRequestId },
+            );
+        if (!ansrecEnt) {
+            throw new Error(`Captcha answer request with id=${answerRequestId} not found`);
+        }
+        ansrecEnt.answer = answer;
+        const result = await mgr.save(CaptchaAnswerRequestEntity, ansrecEnt);
+    }
 
+    public async confirmAnswer(answerRequestId: number) {
+
+        await db.transaction(async (mgr) => {
+            const ansrecEnt = await mgr
+                .findOneBy<CaptchaAnswerRequestEntity>(
+                    CaptchaAnswerRequestEntity, { id: answerRequestId },
+                );
+            if (!ansrecEnt) {
+                throw new Error(`Captcha answer request with id=${answerRequestId} not found`);
+            }
+            ansrecEnt.is_answer_accepted = true;
+            await mgr.save(CaptchaAnswerRequestEntity, ansrecEnt);
+
+            const imageEnt = await mgr
+                .findOneBy<CaptchaImageEntity>(
+                    CaptchaImageEntity, { id: ansrecEnt.image_id },
+                );
+            imageEnt.accepted_answer = ansrecEnt.answer;
+            await mgr.save(CaptchaImageEntity, imageEnt);
+        });
     }
 }

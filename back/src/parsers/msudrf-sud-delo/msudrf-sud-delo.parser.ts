@@ -7,6 +7,17 @@ import { MsudrfSite } from '../../sites/msudrf-ru/msudrf.site.js';
 import { SudDeloCaptchaPage } from '../../sites/msudrf-ru/sud-delo-captcha.page.js';
 import { ParserBase } from '../parser-base.js';
 import { pwpageRecreate } from '../../pwpage.js';
+import { CaptchaAnswerRequestEntity } from '../../entities/captcha-answer-request.entity.js';
+
+type GetCaptchaAnswerResultType = {
+    answerRequestEntity: CaptchaAnswerRequestEntity,
+    success: true
+    answer: string
+} | {
+    answerRequestEntity: CaptchaAnswerRequestEntity | null,
+    success: false
+    err: any
+}
 
 export class MsudrfSudDeloParser extends ParserBase {
 
@@ -41,19 +52,25 @@ export class MsudrfSudDeloParser extends ParserBase {
                 continue;
             }
 
-            try {
-                const captchaAnswer = await this.getCaptchaAnswer(sudDeloPage);
-                await bus.emit('captcha.waiting-answer-confirmation');
-                await sudDeloPage.inputCaptchaAnswer(captchaAnswer);
-            } catch (err) {
+            const captchaAnswer = await this.getCaptchaAnswer(sudDeloPage);
+            if (captchaAnswer.success === true) {
+                await services.siteCaptcha.setUnconfirmedAnswer(
+                    captchaAnswer.answerRequestEntity.id,
+                    captchaAnswer.answer,
+                );
+            } else {
                 continue;
             }
+            await bus.emit('captcha.waiting-answer-confirmation');
+            await sudDeloPage.inputCaptchaAnswer(captchaAnswer.answer);
+
             const zaprosyOpfrPage = await sudDeloPage.submitCaptcha(5000);
             if (!zaprosyOpfrPage) {
                 await bus.emit('parser.msudrf-sud-delo.error.failed-to-open-sud-delo-page');
                 lastError = 'Failed to solve captcha';
                 continue;
             }
+            await services.siteCaptcha.confirmAnswer(captchaAnswer.answerRequestEntity.id);
 
             const searchPage = await zaprosyOpfrPage.clickGrazhdAdminDelaLink(5000);
             if (!searchPage) {
@@ -109,16 +126,25 @@ export class MsudrfSudDeloParser extends ParserBase {
         return resultItems;
     }
 
-
     protected async getCaptchaAnswer(
         captchaPage: SudDeloCaptchaPage,
-    ): Promise<string> {
-        const imageBase64 = await captchaPage.getCaptchaBase64();
+    ): Promise<GetCaptchaAnswerResultType> {
+
+        const imageBase64 = await captchaPage.getCaptchaBase64(5000);
+        if (!imageBase64) {
+            return {
+                answerRequestEntity: null,
+                success: false,
+                err: 'Error loading captcha image in headless page',
+            };
+        }
+
         const ansreqEnt = await services.siteCaptcha
             .createAnswerRequest(imageBase64);
-        const result = new Promise<string>((resolve, reject) => {
+
+        const answerPromise = new Promise<string>((resolve, reject) => {
             bus.once('captcha.answer-received', (appEvent: AppEvent<any>) => {
-                console.log({ 'appEvent.payload': appEvent.payload });
+                // console.log({ 'appEvent.payload': appEvent.payload });
                 resolve(appEvent.payload);
             });
             bus.once('captcha.rucaptcha-error', (appEvent: AppEvent<any>) => {
@@ -128,6 +154,19 @@ export class MsudrfSudDeloParser extends ParserBase {
 
         await services.siteCaptcha.getFromRucaptchaCom(imageBase64);
 
-        return result;
+        try {
+            const answer = await answerPromise;
+            return {
+                answerRequestEntity: ansreqEnt,
+                success: true,
+                answer,
+            };
+        } catch (err) {
+            return {
+                answerRequestEntity: ansreqEnt,
+                success: false,
+                err,
+            };
+        }
     }
 }

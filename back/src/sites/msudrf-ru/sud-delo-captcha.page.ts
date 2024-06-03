@@ -14,6 +14,7 @@ export class SudDeloCaptchaPage {
             await Promise.all([
                 pwpage.waitForSelector(this.inputSel, { timeout }),
                 pwpage.waitForSelector(this.submitSel, { timeout }),
+                pwpage.waitForSelector(this.captchaImageSel, { timeout }),
             ]);
             await bus.emit('parser.msudrf-sud-delo.captcha-page-ready');
             return true;
@@ -23,9 +24,9 @@ export class SudDeloCaptchaPage {
         }
     }
 
-    public async getCaptchaBase64() {
+    public async getCaptchaBase64(timeout: number) {
         const imageElem = await pwpage.$(this.captchaImageSel);
-        return helpers.getImageBase64(pwpage, imageElem);
+        return helpers.getImageBase64(pwpage, imageElem, timeout);
     }
 
     public async inputCaptchaAnswer(answer: string) {

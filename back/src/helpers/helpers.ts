@@ -70,17 +70,38 @@ const helpers = {
 
     async getImageBase64(
         page: Page,
-        element: ElementHandle,
-    ): Promise<string> {
-        const result = await page.evaluate((elem) => {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.width = elem.width;
-            canvas.height = elem.height;
-            context.drawImage(elem, 0, 0);
-            const base64Data = canvas.toDataURL('image/png');
-            return base64Data;
-        }, element);
+        img: ElementHandle,
+        timeout: number,
+    ): Promise<string | null> {
+        const result = await page.evaluate(
+            async ({ img, timeout }: {
+                img: HTMLImageElement,
+                timeout: number,
+            }) => {
+                const imgLoadPromise = new Promise((resolve, reject) => {
+                    if (img.complete) {
+                        resolve();
+                    } else {
+                        img.addEventListener('load', resolve);
+                        img.addEventListener('error', reject);
+                    }
+                });
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(reject, timeout);
+                });
+                try {
+                    await Promise.race([imgLoadPromise, timeoutPromise]);
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    context.drawImage(img, 0, 0);
+                    const base64Data = canvas.toDataURL('image/png');
+                    return base64Data;
+                } catch (err) {
+                    return null;
+                }
+            }, { img, timeout });
         return result;
     },
 };

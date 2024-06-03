@@ -2,6 +2,7 @@ import EventEmitter2 from 'eventemitter2';
 import { OperationResult } from '../types/common.js';
 import { services } from './services.js';
 import {
+    chromium,
     firefox,
     Browser as PlaywrightBrowser,
     BrowserContext as PlaywrightBrowserContext,
@@ -51,6 +52,17 @@ export class PlaywrightHeadlessService extends HeadlessService {
             this.browserContextPromise = browser.newContext();
         }
         const context = await this.browserContextPromise;
+
+        // await context.route('http://32.sar.msudrf.ru/captcha.php', (route, request) => {
+        //     console.log('slowing down captcha image request');
+        //     setTimeout(() => {
+        //         console.log(request.url());
+        //         console.log('continuing with request');
+        //         route.continue();
+        //         // route.abort('failed');
+        //     }, 5000);
+        // });
+
         const pages = await context.pages();
         let page;
         if (!pages.length) {
