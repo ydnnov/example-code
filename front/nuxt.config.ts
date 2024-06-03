@@ -6,8 +6,8 @@ export default defineNuxtConfig({
     css: ['~/styles/styles.scss'],
     runtimeConfig: {
         public: {
-            backendUrl: process.env.NUXT_BACKEND_URL || 'http://localhost:5000',
-            websocketUrl: process.env.NUXT_WEBSOCKET_URL || 'http://localhost:5000',
+            backendUrl: process.env.VITE_BACKEND_URL || 'http://localhost:5000',
+            websocketUrl: process.env.VITE_WEBSOCKET_URL || 'http://localhost:5000',
         },
     },
     postcss: {
