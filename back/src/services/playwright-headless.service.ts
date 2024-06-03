@@ -53,15 +53,21 @@ export class PlaywrightHeadlessService extends HeadlessService {
         }
         const context = await this.browserContextPromise;
 
-        // await context.route('http://32.sar.msudrf.ru/captcha.php', (route, request) => {
-        //     console.log('slowing down captcha image request');
-        //     setTimeout(() => {
-        //         console.log(request.url());
-        //         console.log('continuing with request');
-        //         route.continue();
-        //         // route.abort('failed');
-        //     }, 5000);
-        // });
+        // Debug
+        if(false) {
+            await context.route('http://32.sar.msudrf.ru/captcha.php', (route, request) => {
+                if(true) {
+                    route.abort('failed');
+                }else {
+                    console.log('slowing down captcha image request');
+                    setTimeout(() => {
+                        console.log(request.url());
+                        console.log('continuing with request');
+                        route.continue();
+                    }, 5000);
+                }
+            });
+        }
 
         const pages = await context.pages();
         let page;

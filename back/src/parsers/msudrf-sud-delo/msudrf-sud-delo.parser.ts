@@ -59,6 +59,7 @@ export class MsudrfSudDeloParser extends ParserBase {
                     captchaAnswer.answer,
                 );
             } else {
+                lastError = captchaAnswer.err;
                 continue;
             }
             await bus.emit('captcha.waiting-answer-confirmation');
