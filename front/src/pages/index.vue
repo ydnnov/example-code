@@ -2,7 +2,6 @@
 import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
 import { useUiStore } from '~/stores/ui.store.js';
-import MsudrfSudDeloParser from '~/components/parsers/MsudrfSudDeloParser.vue';
 import TopBar from '~/components/layout/TopBar.vue';
 import CodeExec from '~/components/code-exec/CodeExec.vue';
 import HeadlessControls from '~/components/headless/HeadlessControls.vue';
@@ -20,8 +19,6 @@ const componentByKey = (key: string) => {
       return CodeExec;
     case 'event-bus':
       return EventBus;
-    case 'msudrf-sud-delo':
-      return MsudrfSudDeloParser;
   }
 };
 

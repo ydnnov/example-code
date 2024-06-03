@@ -13,15 +13,15 @@ export default defineNuxtPlugin({
             if (eventName === 'update-screenshot') {
                 return;
             }
-            console.log('From websocket:', { eventName, appEvent });
+            // console.log('From websocket:', { eventName, appEvent });
             if (appEvent.app.name === 'back') {
-                console.log('Reemitting', { eventName, appEvent });
+                // console.log('Reemitting', { eventName, appEvent });
                 await bus.reemit(appEvent);
             }
         });
 
         bus.onAny((eventName: string, appEvent: AppEvent<any>) => {
-            console.log('Emitting:', { eventName, appEvent });
+            // console.log('Emitting:', { eventName, appEvent });
             socket.emit(eventName, appEvent);
             eventsStore.events.push(appEvent);
         });

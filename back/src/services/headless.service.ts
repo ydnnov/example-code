@@ -23,6 +23,8 @@ export abstract class HeadlessService {
     //      абстрактным классом, сделать только playwright и всё
     public abstract getPage(): Promise<playwright.Page>
 
+    public abstract recreatePage(): Promise<playwright.Page>;
+
     public abstract getUrl(): Promise<string>;
 
     public abstract goto(url: string): Promise<OperationResult<null>>;

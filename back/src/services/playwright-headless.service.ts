@@ -64,7 +64,15 @@ export class PlaywrightHeadlessService extends HeadlessService {
             page = pages[0];
         }
         page.setViewportSize(config.browserParams.viewportSize);
-        // this.bindResponseFn(page);
+        return page;
+    }
+
+    public async recreatePage(): Promise<PlaywrightPage> {
+        const context = await this.browserContextPromise;
+        const pages = await context.pages();
+        await pages[0].close();
+        const page = await context.newPage();
+        page.setViewportSize(config.browserParams.viewportSize);
         return page;
     }
 

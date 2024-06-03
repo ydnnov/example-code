@@ -6,6 +6,7 @@ import { AppEvent } from '../../shared/classes/app-event.js';
 import { MsudrfSite } from '../../sites/msudrf-ru/msudrf.site.js';
 import { SudDeloCaptchaPage } from '../../sites/msudrf-ru/sud-delo-captcha.page.js';
 import { ParserBase } from '../parser-base.js';
+import { pwpageRecreate } from '../../pwpage.js';
 
 export class MsudrfSudDeloParser extends ParserBase {
 
@@ -19,7 +20,12 @@ export class MsudrfSudDeloParser extends ParserBase {
 
         let lastError;
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
+
+            await bus.emit('parser.attempt-number', { num: i + 1 });
+
+            await pwpageRecreate();
+
             const homePage = await site.openHomePage(5000);
             if (!homePage) {
                 await bus.emit('parser.msudrf-sud-delo.error.failed-to-open-home-page');

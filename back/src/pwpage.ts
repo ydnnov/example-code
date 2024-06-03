@@ -12,3 +12,8 @@ export const pwpageReadyPromise = new Promise((resolve) => {
                 });
         });
 });
+
+export const pwpageRecreate = async () => {
+    const { services } = await import('./services/services.js');
+    pwpage = await services.headless.recreatePage();
+};
