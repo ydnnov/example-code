@@ -53,15 +53,18 @@ export class SiteCaptchaService {
 
     public async getFromRucaptchaCom(imageBase64: string) {
         await bus.emit('captcha.requesting-answer');
-        const solver = new Captcha.Solver('0499f76849203ad92d5c3c642fde9d40');
-        const result = await solver.imageCaptcha({
-            body: imageBase64,
-            numeric: 0,
-            min_len: 3,
-            max_len: 10,
-        });
-        // console.log({ result });
-        await bus.emit('captcha.answer-received', result.data);
+        try {
+            const solver = new Captcha.Solver('0499f76849203ad92d5c3c642fde9d40');
+            const result = await solver.imageCaptcha({
+                body: imageBase64,
+                numeric: 0,
+                min_len: 3,
+                max_len: 10,
+            });
+            await bus.emit('captcha.answer-received', result.data);
+        } catch (err) {
+            await bus.emit('captcha.rucaptcha-error', err);
+        }
     }
 
     public async getAnswerRequest(id: number): Promise<CaptchaAnswerRequestEntity | null> {

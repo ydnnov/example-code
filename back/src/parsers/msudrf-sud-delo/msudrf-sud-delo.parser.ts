@@ -19,7 +19,7 @@ export class MsudrfSudDeloParser extends ParserBase {
 
         let lastError;
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 5; i++) {
             const homePage = await site.openHomePage(5000);
             if (!homePage) {
                 await bus.emit('parser.msudrf-sud-delo.error.failed-to-open-home-page');
@@ -35,9 +35,13 @@ export class MsudrfSudDeloParser extends ParserBase {
                 continue;
             }
 
-            const captchaAnswer = await this.getCaptchaAnswer(sudDeloPage);
-            await bus.emit('captcha.waiting-answer-confirmation');
-            await sudDeloPage.inputCaptchaAnswer(captchaAnswer);
+            try {
+                const captchaAnswer = await this.getCaptchaAnswer(sudDeloPage);
+                await bus.emit('captcha.waiting-answer-confirmation');
+                await sudDeloPage.inputCaptchaAnswer(captchaAnswer);
+            } catch (err) {
+                continue;
+            }
             const zaprosyOpfrPage = await sudDeloPage.submitCaptcha(5000);
             if (!zaprosyOpfrPage) {
                 await bus.emit('parser.msudrf-sud-delo.error.failed-to-open-sud-delo-page');
@@ -110,6 +114,9 @@ export class MsudrfSudDeloParser extends ParserBase {
             bus.once('captcha.answer-received', (appEvent: AppEvent<any>) => {
                 console.log({ 'appEvent.payload': appEvent.payload });
                 resolve(appEvent.payload);
+            });
+            bus.once('captcha.rucaptcha-error', (appEvent: AppEvent<any>) => {
+                reject();
             });
         });
 
