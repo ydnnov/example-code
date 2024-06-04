@@ -5,7 +5,7 @@ export class CreateCaptchaTables1714127544688 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
 
-            create table public.captcha_image
+            create table if not exists public.captcha_image
             (
                 id              serial
                     constraint pci_pk primary key,
@@ -14,7 +14,7 @@ export class CreateCaptchaTables1714127544688 implements MigrationInterface {
                 accepted_answer text
             );
 
-            create table public.captcha_answer_request
+            create table if not exists public.captcha_answer_request
             (
                 id                 serial
                     constraint pcar_pk primary key,
@@ -24,15 +24,14 @@ export class CreateCaptchaTables1714127544688 implements MigrationInterface {
                 answer             text,
                 is_answer_accepted boolean
             );
-            create index pcar_image_id_index on public.captcha_answer_request (image_id);
+            create index if not exists pcar_image_id_index on public.captcha_answer_request (image_id);
         `);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
-            drop table if exists captcha_answer_request;
-            drop table if exists captcha_image;
+            drop table if exists public.captcha_answer_request;
+            drop table if exists public.captcha_image;
         `);
     }
-
 }

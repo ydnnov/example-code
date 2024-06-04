@@ -3,7 +3,6 @@ import { db } from '../data-source.js';
 import { bus } from '../bus.js';
 import { CaptchaAnswerRequestEntity } from '../entities/captcha-answer-request.entity.js';
 import { CaptchaImageEntity } from '../entities/captcha-image.entity.js';
-import { SiteCaptchaSetAnswerType } from '../schemas/site-captcha.schema.js';
 
 export class SiteCaptchaService {
 
@@ -16,7 +15,7 @@ export class SiteCaptchaService {
             let image;
 
             const emitResult = await bus.emit(
-                'bk.captcha.create-answer-request.image-find-or-create',
+                'captcha.create-answer-request.image-find-or-create',
                 { mgr, imageBase64 },
             );
 
@@ -41,7 +40,7 @@ export class SiteCaptchaService {
             const { id } = await mgr.save(CaptchaAnswerRequestEntity, ansreqEnt);
             ansreqEnt = await mgr.findOneBy(CaptchaAnswerRequestEntity, { id });
             await bus.emit(
-                'captcha:create-answer-request:success',
+                'captcha.create-answer-request.success',
                 { mgr, ansreqEnt },
             );
             // delete ansreqEnt.image['base64'];

@@ -1,28 +1,7 @@
 import { bus } from '../bus.js';
 import { websocket } from '../websocket.js';
 import { AppEvent } from '../shared/classes/app-event.js';
-
-const stripPayloadCircularJson = (payload) => {
-    if (typeof payload === 'string' ||
-        typeof payload === 'number' ||
-        typeof payload === 'undefined' ||
-        payload === null
-    ) {
-        return payload;
-    }
-    const keys = Object.keys(payload);
-    const result = {};
-    for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        try {
-            JSON.stringify(payload[key]);
-            result[key] = payload[key];
-        } catch (err) {
-            result[key] = {};
-        }
-    }
-    return result;
-};
+import { EventBus } from '../shared/classes/event-bus.js';
 
 export const busToWsListener = {
     bind() {
@@ -35,7 +14,7 @@ export const busToWsListener = {
                 //     console.log({ eventName, appEvent });
                 //     console.log('='.repeat(80));
                 // }
-                appEvent.payload = stripPayloadCircularJson(appEvent.payload);
+                appEvent.payload = EventBus.stripPayloadCircularJson(appEvent.payload);
                 websocket.sockets.emit(eventName, appEvent);
             }
         });

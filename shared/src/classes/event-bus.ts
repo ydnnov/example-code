@@ -8,6 +8,28 @@ export class EventBus {
 
     protected emitter: EventEmitter2 = new EventEmitter2();
 
+    public static stripPayloadCircularJson(payload) {
+        if (typeof payload === 'string' ||
+            typeof payload === 'number' ||
+            typeof payload === 'undefined' ||
+            payload === null
+        ) {
+            return payload;
+        }
+        const keys = Object.keys(payload);
+        const result = {};
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            try {
+                JSON.stringify(payload[key]);
+                result[key] = payload[key];
+            } catch (err) {
+                result[key] = {};
+            }
+        }
+        return result;
+    }
+
     public emit(
         eventName: string,
         payload?: any,

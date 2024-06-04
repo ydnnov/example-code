@@ -48,6 +48,8 @@ process.on('unhandledRejection', async (error) => {
             process.exit(1);
         }
 
+        // bus.emit('app-started');
+
         // console.clear();
         console.log('='.repeat(80));
         logger.info(`Server started at ${address}`);
