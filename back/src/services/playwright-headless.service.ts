@@ -54,11 +54,11 @@ export class PlaywrightHeadlessService extends HeadlessService {
         const context = await this.browserContextPromise;
 
         // Debug
-        if(false) {
+        if (false) {
             await context.route('http://32.sar.msudrf.ru/captcha.php', (route, request) => {
-                if(true) {
+                if (true) {
                     route.abort('failed');
-                }else {
+                } else {
                     console.log('slowing down captcha image request');
                     setTimeout(() => {
                         console.log(request.url());
@@ -86,11 +86,18 @@ export class PlaywrightHeadlessService extends HeadlessService {
     }
 
     public async recreatePage(): Promise<PlaywrightPage> {
+        const browser = await this.browserPromise;
+        const contexts = browser.contexts();
+        if (contexts.length > 1) {
+            console.log('Number of contexts is greater than 1');
+        }
+        if (contexts[0]) {
+            contexts[0].close();
+        }
+        this.browserContextPromise = browser.newContext();
         const context = await this.browserContextPromise;
-        const pages = await context.pages();
-        await pages[0].close();
         const page = await context.newPage();
-        page.setViewportSize(config.browserParams.viewportSize);
+        await page.setViewportSize(config.browserParams.viewportSize);
         return page;
     }
 
