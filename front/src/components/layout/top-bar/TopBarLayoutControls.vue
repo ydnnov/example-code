@@ -21,12 +21,12 @@ const { ui } = useUiStore();
   </div>
   <div class="ml-2 border-l-[3px] border-black-500">
     <Button
-        @click="ui.mainSplitter.panels[1] = 'code-exec'"
+        @click="ui.mainSplitter.panels[0] = 'code-exec'"
         icon="pi pi-code"
         class="w-[40px] h-[40px] ml-4"
     />
     <Button
-        @click="ui.mainSplitter.panels[1] = 'event-bus'"
+        @click="ui.mainSplitter.panels[0] = 'event-bus'"
         icon="pi pi-align-left"
         class="w-[40px] h-[40px] ml-2"
     />

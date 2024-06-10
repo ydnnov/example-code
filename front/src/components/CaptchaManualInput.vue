@@ -7,7 +7,7 @@ const emit = defineEmits(['image-received']);
 const imageBase64 = ref<string>('');
 const answer = ref<string>('');
 
-bus.on('captcha:create-answer-request:success', (appEvent: AppEvent<any>) => {
+bus.on('captcha.create-answer-request.success', (appEvent: AppEvent<any>) => {
   imageBase64.value = appEvent.payload.ansreqEnt.image.base64;
 });
 

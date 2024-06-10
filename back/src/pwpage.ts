@@ -17,3 +17,7 @@ export const pwpageRecreate = async () => {
     const { services } = await import('./services/services.js');
     pwpage = await services.headless.recreatePage();
 };
+
+export const pwpageSet = async (page: Page) => {
+    pwpage = page;
+};
