@@ -1,5 +1,6 @@
 import { Page } from 'playwright';
 import { ElementHandle } from 'playwright';
+import { StdResult } from '../types/common.js';
 
 const helpers = {
     fmtDateTime: (d: Date): string => {
@@ -13,25 +14,33 @@ const helpers = {
         return `${year}-${month}-${day}-${hour}-${minute}-${second}`;
     },
 
-    pollWait: async <T>(callback, delay, timeout): Promise<T> => {
-        let resultValue = null;
-        return new Promise<T>(async (resolve, reject) => {
+    pollWait: async <T>(callback, delay, timeout): Promise<StdResult<T>> => {
+        return new Promise<StdResult<T>>(async (resolve) => {
             const timeStart = Date.now();
             for (; ;) {
                 try {
-                    resultValue = await callback();
+                    const resultValue = await callback();
+                    if (resultValue) {
+                        resolve({
+                            success: true,
+                            ...resultValue,
+                        });
+                        return;
+                    }
                 } catch (err) {
-                    resultValue = null;
-                }
-                if (resultValue) {
-                    resolve(resultValue);
+                    resolve({
+                        success: false,
+                        err,
+                    });
                     return;
                 }
                 const timeElapsed = Date.now() - timeStart;
                 if (timeElapsed > timeout) {
-                    console.trace();
-                    reject(`${timeout}ms timeout elapsed`);
-                    break;
+                    resolve({
+                        success: false,
+                        err: `${timeout}ms timeout elapsed`,
+                    });
+                    return;
                 }
                 await helpers.sleep(delay);
             }

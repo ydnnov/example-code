@@ -1,12 +1,13 @@
+import * as fs from 'node:fs';
+import { env } from '../envconf.js';
 import { db } from '../data-source.js';
 import { ParserEntity } from '../entities/parser.entity.js';
 import { ParserTaskEntity } from '../entities/parser-task.entity.js';
 import { ParserStartBodyType } from '../schemas/parser.schema.js';
-import * as fs from 'node:fs';
-import { env } from '../envconf.js';
+import { ParserBase } from '../parsers/parser-base.js';
+import { FsspSefizlicoParser } from '../parsers/fssp-sefizlico/fssp-sefizlico.parser.js';
 import { MsudrfTerrPodsParser } from '../parsers/msudrf-terr-pods/msudrf-terr-pods.parser.js';
 import { MsudrfSudDeloParser } from '../parsers/msudrf-sud-delo/msudrf-sud-delo.parser.js';
-import { ParserBase } from '../parsers/parser-base.js';
 
 export class ParserService {
 
@@ -63,6 +64,13 @@ export class ParserService {
             }
             case 'msudrf/territorialnaya-podsudnost': {
                 return new MsudrfTerrPodsParser(params.inputData.address);
+            }
+            case 'fssp/search-ext-fizicheskoe-lico': {
+                return new FsspSefizlicoParser(
+                    params.inputData.fio,
+                    params.inputData.dob,
+                    params.inputData.reg,
+                );
             }
             default: {
                 throw new Error(`Unknown parsing request: ${JSON.stringify(params)}`);
