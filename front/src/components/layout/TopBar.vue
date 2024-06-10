@@ -7,10 +7,12 @@ import { useUiStore } from '~/stores/ui.store.js';
 import { useToast } from 'primevue/usetoast';
 import useClient from '~/composables/useClient.js';
 import TopBarLayoutControls from '~/components/layout/top-bar/TopBarLayoutControls.vue';
+import { useFsspStore } from '~/stores/fssp.store.js';
 
 const { bag } = useBagStore();
 const { user } = useUserStore();
 const { ui } = useUiStore();
+const fssp = useFsspStore();
 const toast = useToast();
 const client = useClient();
 
@@ -40,6 +42,27 @@ const msudrfTerrPodsStart = async () => {
   });
 };
 
+const fsspStartMany = async () => {
+  try {
+    const data = JSON.parse(fssp.toImportText);
+    const response = await client.parser.run('fssp/search-ext-fizicheskoe-lico', data);
+    if (response.success) {
+      console.log(response);
+    } else {
+      toast.add({
+        detail: response.err,
+        severity: 'error',
+      });
+      console.log(response);
+    }
+  } catch (err) {
+    toast.add({
+      detail: err,
+      severity: 'error',
+    });
+  }
+};
+
 const someAction = async () => {
   client.headless.goto('https://bing.com');
   // toast.add({
@@ -54,6 +77,28 @@ const someAction = async () => {
       <pre style="overflow-x: scroll">{{ message.detail }}</pre>
     </template>
   </Toast>
+  <Dialog
+      v-model:visible="fssp.importDialogVisible"
+      modal
+      header="Загрузить"
+      :style="{ width: '800px' }"
+  >
+    <Textarea v-model="fssp.toImportText" rows="20" cols="65" />
+
+    <div class="flex justify-between">
+      <Button
+          type="button"
+          label="Загрузить"
+          @click="fsspStartMany"
+      ></Button>
+      <Button
+          type="button"
+          label="Отмена"
+          severity="secondary"
+          @click="fssp.importDialogVisible = false"
+      ></Button>
+    </div>
+  </Dialog>
   <div class="card">
     <Menubar :model="items">
       <template #start>
@@ -90,6 +135,11 @@ const someAction = async () => {
             <Button
                 @click="msudrfTerrPodsStart"
                 label="Территориальная подсудность"
+                class="h-[40px] mx-4"
+            />
+            <Button
+                @click="fssp.importDialogVisible = true"
+                label="ФССП"
                 class="h-[40px] mx-4"
             />
           </div>
