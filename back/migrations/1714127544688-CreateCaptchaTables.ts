@@ -8,7 +8,8 @@ export class CreateCaptchaTables1714127544688 implements MigrationInterface {
             create table if not exists public.captcha_image
             (
                 id              serial
-                    constraint pci_pk primary key,
+                    constraint pci_pk
+                        primary key,
                 url             text,
                 base64          text not null,
                 accepted_answer text
@@ -17,7 +18,8 @@ export class CreateCaptchaTables1714127544688 implements MigrationInterface {
             create table if not exists public.captcha_answer_request
             (
                 id                 serial
-                    constraint pcar_pk primary key,
+                    constraint pcar_pk
+                        primary key,
                 requested_at       timestamp with time zone default now() not null,
                 image_id           integer                                not null
                     constraint pcar_captcha_image_id_fk references public.captcha_image,

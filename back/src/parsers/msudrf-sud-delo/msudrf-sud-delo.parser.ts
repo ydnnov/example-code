@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 import { bus } from '../../bus.js';
 import { services } from '../../services/services.js';
-import { OperationResult } from '../../types/common.js';
+import { StdResult } from '../../types/common.js';
 import { AppEvent } from '../../shared/classes/app-event.js';
 import { MsudrfSite } from '../../sites/msudrf-ru/msudrf.site.js';
 import { SudDeloCaptchaPage } from '../../sites/msudrf-ru/sud-delo-captcha.page.js';
@@ -25,7 +25,7 @@ export class MsudrfSudDeloParser extends ParserBase {
         super();
     }
 
-    public async run(): Promise<OperationResult<string>> {
+    public async run(): Promise<StdResult<{ resultHtml: string }>> {
 
         const site = new MsudrfSite();
 
@@ -92,7 +92,7 @@ export class MsudrfSudDeloParser extends ParserBase {
 
             return {
                 success: true,
-                resultData: await resultPage.getResultHtml(),
+                resultHtml: await resultPage.getResultHtml(),
             };
         }
 
