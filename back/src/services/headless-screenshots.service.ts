@@ -3,7 +3,7 @@ import { websocket } from '../websocket.js';
 import { logger } from '../logger.js';
 import { helpers } from '../helpers/helpers.js';
 import { OperationResult } from '../types/common.js';
-import { services } from './services.js';
+import { pwpage } from '../pwpage.js';
 
 export class HeadlessScreenshotsService {
 
@@ -60,12 +60,12 @@ export class HeadlessScreenshotsService {
     public async sendScreenshot() {
         try {
             // console.log('capturing screenshot');
-            const page = await services.headless.getPage();
-            if (!page) {
-                console.log('Page does not exist');
-                return;
-            }
-            const screenshot = await page.screenshot({
+            // const page = await services.headless.getPage();
+            // if (!page) {
+            //     console.log('Page does not exist');
+            //     return;
+            // }
+            const screenshot = await pwpage.screenshot({
                 type: 'png',
                 // encoding: 'base64',
                 encoding: 'binary',

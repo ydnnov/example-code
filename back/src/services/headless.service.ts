@@ -1,67 +1,154 @@
-import EventEmitter2 from 'eventemitter2';
-import { config } from '../config.js';
-import { helpers } from '../helpers/helpers.js';
 import { OperationResult } from '../types/common.js';
 import { services } from './services.js';
-import playwright from 'playwright';
+import {
+    chromium,
+    firefox,
+    Browser,
+    BrowserContext,
+    Page,
+    LaunchOptions,
+} from 'playwright';
+import { config } from '../config.js';
+import { EmitsToBus } from '../classes/emits-to-bus.js';
 
-export abstract class HeadlessService {
+export class HeadlessService extends EmitsToBus {
 
-    protected events = new EventEmitter2();
+    protected eventPrefix: string = 'headless-service';
 
-    // protected browserPromise: Promise<Browser>;
-    //
-    // protected pagePromise: Promise<Page>;
+    protected browserPromise: Promise<Browser>;
+
+    protected browserContextPromise: Promise<BrowserContext>;
+
+    protected pagePromise: Promise<Page>;
 
     protected isResponseFnBound = false;
 
     protected responseListeners = [];
 
-    public abstract getBrowser();
+    constructor(launchOptions: LaunchOptions) {
+        super();
+        this.browserPromise = new Promise(resolve => {
+            firefox.launch(launchOptions)
+                .then(browser => {
+                    resolve(browser);
+                })
+                .catch(err => {
+                    console.log('Failed to launch playwright');
+                    console.log(err);
+                });
+        });
+    }
 
-    // TODO Удалить вообще puppeteer из проекта, и эту иерархию с
-    //      абстрактным классом, сделать только playwright и всё
-    public abstract getPage(): Promise<playwright.Page>
+    public async getBrowser(): Promise<Browser> {
+        return this.browserPromise;
+    }
 
-    public abstract recreatePage(): Promise<playwright.Page>;
+    public async getPage(): Promise<Page> {
+        const browser = await this.browserPromise;
+        if (!this.browserContextPromise) {
+            // console.log('Creating new browser context');
+            this.browserContextPromise = browser.newContext();
+        }
+        const context = await this.browserContextPromise;
 
-    public abstract getUrl(): Promise<string>;
+        // Debug
+        if (false) {
+            await context.route('http://32.sar.msudrf.ru/captcha.php', (route, request) => {
+                if (true) {
+                    route.abort('failed');
+                } else {
+                    console.log('slowing down captcha image request');
+                    setTimeout(() => {
+                        console.log(request.url());
+                        console.log('continuing with request');
+                        route.continue();
+                    }, 5000);
+                }
+            });
+        }
 
-    public abstract goto(url: string): Promise<OperationResult<null>>;
+        const pages = await context.pages();
+        let page;
+        if (!pages.length) {
+            // console.log('No pages, creating new and returning it');
+            page = await context.newPage();
+            page.on('domcontentloaded', (page: Page) => {
+                console.log('domcontentloaded: ' + page.url());
+            });
+        } else {
+            // console.log('Page exists, returning it');
+            page = pages[0];
+        }
+        page.setViewportSize(config.browserParams.viewportSize);
+        return page;
+    }
 
-    public abstract reloadPage(): Promise<OperationResult<null>>;
+    public async recreatePage(): Promise<Page> {
+        const browser = await this.browserPromise;
+        const contexts = browser.contexts();
+        if (contexts.length > 1) {
+            console.log('Number of contexts is greater than 1');
+        }
+        if (contexts[0]) {
+            contexts[0].close();
+        }
+        this.browserContextPromise = browser.newContext();
+        const context = await this.browserContextPromise;
+        const page = await context.newPage();
+        await page.setViewportSize(config.browserParams.viewportSize);
+        return page;
+    }
 
-    public abstract onClick(x: number, y: number);
+    public async getUrl(): Promise<string> {
+        const page = await this.getPage();
+        return page.url();
+    }
 
-    public abstract onKeypress(key: string, code: string);
+    public async goto(url: string): Promise<OperationResult<null>> {
+        const page = await this.getPage();
+        await this.emit('navigation-started', { url });
+        // console.log(`Navigating to ${url}`);
+        await page.goto(url);
+        return {
+            success: true,
+            resultData: null,
+        };
+    }
 
-    // public abstract getFreshPage();
+    public async reloadPage(): Promise<OperationResult<null>> {
+        const page = await this.getPage();
+        await page.reload();
+        return {
+            success: true,
+            resultData: null,
+        };
+    }
 
-    // public addResponseListener(callback: (response: HTTPResponse) => void) {
-    //     this.events.addListener('response', callback);
-    // }
-    //
-    // public removeResponseListener(callback: (response: HTTPResponse) => void) {
-    //     this.events.removeListener('response', callback);
-    // }
-    //
-    // public async waitForSelector(selector: string, pollDelay: number, timeout: number)
-    //     : Promise<ElementHandle> {
-    //     const page = await this.getPage();
-    //     return helpers.pollWait<ElementHandle>(
-    //         () => page.$(selector),
-    //         pollDelay,
-    //         timeout,
-    //     );
-    // }
-    //
-    // protected bindResponseFn(page: Page) {
-    //     if (this.isResponseFnBound) {
-    //         return;
-    //     }
-    //     page.on('response', (response: HTTPResponse) => {
-    //         this.events.emit('response', response);
-    //     });
-    //     this.isResponseFnBound = true;
-    // }
+    public async onClick(x: number, y: number) {
+        const page = await this.getPage();
+        await page.mouse.click(x, y);
+        services.headlessScreenshots.addClickPoint(x, y);
+        // console.log({ x, y });
+        return {
+            success: true,
+            resultData: null,
+        };
+    }
+
+    public async onKeypress(key: string, code: string) {
+        // console.log({ key, code });
+        const page = await this.getPage();
+        if (key.length === 1) {
+            await page.keyboard.type(key);
+        } else {
+            await page.keyboard.press(key);
+        }
+        // if (code === 'Escape') {
+        //     services.headlessScreenshots.deleteAllClickPoints();
+        // }
+        return {
+            success: true,
+            resultData: null,
+        };
+    }
 }
