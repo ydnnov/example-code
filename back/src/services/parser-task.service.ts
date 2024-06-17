@@ -1,11 +1,12 @@
 import { db } from '../data-source.js';
 import { ParserEntity, ParserTaskEntity } from '../entities/entities.js';
+import { ParserNameType } from '../shared/schemas/parser-task/common.js';
 import {
     ParserTaskGetManyQueryType,
     ParserTaskGetManyResultType,
     ParserTaskType,
 } from '../shared/schemas/parser-task/read.js';
-import { ParserNameType } from '../shared/schemas/parsing.js';
+import { ParserTaskCreateOneBodyType } from '../shared/schemas/parser-task/create.js';
 
 export class ParserTaskService {
 
@@ -51,19 +52,19 @@ export class ParserTaskService {
         return { items };
     }
 
-    // public async createOne(
-    //     params: ParserTaskCreateOneBodyType,
-    // ): Promise<object> {
-    //
-    //     const mgr = db.createEntityManager();
-    //
-    //     const parserRepo = mgr.getRepository(ParserEntity);
-    //
-    //     console.log(await parserRepo.find());
-    //
-    //     // const parserTaskRepo = mgr.getRepository(ParserTaskEntity);
-    //     //
-    //     // const parserEnt = await parserRepo.findOneBy({ name: params.parserName });
-    //
-    // }
+    public async createOne(
+        body: ParserTaskCreateOneBodyType,
+    ): Promise<ParserTaskType> {
+
+        const mgr = db.createEntityManager();
+
+        const parserRepo = mgr.getRepository(ParserEntity);
+
+        console.log(await parserRepo.find());
+
+        // const parserTaskRepo = mgr.getRepository(ParserTaskEntity);
+        //
+        // const parserEnt = await parserRepo.findOneBy({ name: params.parserName });
+
+    }
 }

@@ -14,11 +14,11 @@ ln src/classes/bus-middleware.ts        ../back/src/shared/classes/bus-middlewar
 ln src/classes/event-bus.ts             ../back/src/shared/classes/event-bus.ts
 ln src/constants/parsing.ts             ../back/src/shared/constants/parsing.ts
 ln src/schemas/common.ts                ../back/src/shared/schemas/common.ts
+ln src/schemas/parser-task/common.ts    ../back/src/shared/schemas/parser-task/common.ts
 ln src/schemas/parser-task/create.ts    ../back/src/shared/schemas/parser-task/create.ts
 ln src/schemas/parser-task/delete.ts    ../back/src/shared/schemas/parser-task/delete.ts
 ln src/schemas/parser-task/read.ts      ../back/src/shared/schemas/parser-task/read.ts
 ln src/schemas/parser-task/update.ts    ../back/src/shared/schemas/parser-task/update.ts
-ln src/schemas/parsing.ts               ../back/src/shared/schemas/parsing.ts
 
 rm -rf ../front/src/shared/classes
 rm -rf ../front/src/shared/constants
