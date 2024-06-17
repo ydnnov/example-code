@@ -1,6 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
 import { genericDictionarySchema } from '../common.js';
-import { parserNameSchema } from '../parsing.js';
+import { parserNameSchema } from './common.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 // Common
