@@ -4,6 +4,7 @@ import { EventBusService } from './event-bus.service.js';
 import { HeadlessService } from './headless.service.js';
 import { HeadlessScreenshotsService } from './headless-screenshots.service.js';
 import { ParserService } from './parser.service.js';
+import { ParserTaskService } from './parser-task.service.js';
 import { SiteCaptchaService } from './site-captcha.service.js';
 import { TsDefinitionsService } from './ts-definitions.service.js';
 
@@ -13,6 +14,7 @@ export const services = {
     headless: new HeadlessService(config.browserParams.launchOptions),
     headlessScreenshots: new HeadlessScreenshotsService(),
     parser: new ParserService(),
+    parserTask: new ParserTaskService(),
     siteCaptcha: new SiteCaptchaService(),
     tsDefinitions: new TsDefinitionsService(),
 };
