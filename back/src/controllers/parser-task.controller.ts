@@ -1,15 +1,15 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { services } from '../services/services.js';
 import {
-    ParserTaskGetManyParamsType,
+    ParserTaskGetManyQueryType,
     ParserTaskGetManyResultType,
 } from '../shared/schemas/parser-task/read.js';
 
 export class ParserTaskController {
     public async getMany(
-        request: FastifyRequest<{ Params: ParserTaskGetManyParamsType }>,
+        request: FastifyRequest<{ Querystring: ParserTaskGetManyQueryType }>,
         reply: FastifyReply,
     ): Promise<ParserTaskGetManyResultType> {
-        return services.parserTask.getMany(request.params);
+        return services.parserTask.getMany(request.query);
     }
 }

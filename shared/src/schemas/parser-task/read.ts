@@ -7,7 +7,8 @@ import { parserNameSchema } from '../parsing.js';
 export const parserTaskSchema = Type.Object({
     id: Type.Number(),
     parser_id: Type.Number(),
-    created_at: Type.String(),
+    parser_name: parserNameSchema,
+    created_at: Type.Date(),
     status: Type.Union([
         Type.Literal('new'),
         Type.Literal('started'),
@@ -17,14 +18,20 @@ export const parserTaskSchema = Type.Object({
     input_data: genericDictionarySchema,
     result_data: genericDictionarySchema,
 });
+export type ParserTaskType = Static<typeof parserTaskSchema>;
 ////////////////////////////////////////////////////////////////////////////////
 // Get one
 export const parserTaskGetOneResultSchema = parserTaskSchema;
 ////////////////////////////////////////////////////////////////////////////////
 // Get many
-export const parserTaskGetManyParamsSchema = Type.Object({
-    pageNum: Type.Optional(Type.Number()),
-    perPage: Type.Optional(Type.Number()),
+export const parserTaskGetManyQuerySchema = Type.Object({
+    offset: Type.Optional(Type.Number({
+        minimum: 0,
+    })),
+    limit: Type.Optional(Type.Number({
+        minimum: 1,
+        maximum: 100,
+    })),
     parser: Type.Optional(parserNameSchema),
     status: Type.Optional(Type.Union([
         Type.Literal('new'),
@@ -33,10 +40,9 @@ export const parserTaskGetManyParamsSchema = Type.Object({
         Type.Literal('failed'),
     ])),
 });
-export type ParserTaskGetManyParamsType = Static<typeof parserTaskGetManyParamsSchema>
+export type ParserTaskGetManyQueryType = Static<typeof parserTaskGetManyQuerySchema>
 
 export const parserTaskGetManyResultSchema = Type.Object({
-    numFound: Type.Number(),
     items: Type.Array(parserTaskSchema),
 });
 export type ParserTaskGetManyResultType = Static<typeof parserTaskGetManyResultSchema>

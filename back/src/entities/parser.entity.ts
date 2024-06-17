@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ParserNameType } from '../shared/schemas/parsing.js';
 
 @Entity({ name: 'parser' })
 export class ParserEntity {
@@ -6,6 +7,5 @@ export class ParserEntity {
     id: number;
 
     @Column({ type: 'text' })
-    name: 'msudrf/sud-delo';
-
+    name: () => ParserNameType;
 }

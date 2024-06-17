@@ -43,4 +43,5 @@ export const parserNameSchema = Type.Union([
     Type.Literal(PARSER_NAME.MSUDRF_TERR_PODS),
     Type.Literal(PARSER_NAME.FSSP_SEFIZLICO),
 ]);
+export type ParserNameType = Static<typeof parserNameSchema>
 ////////////////////////////////////////////////////////////////////////////////

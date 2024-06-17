@@ -30,7 +30,8 @@ export class CreateParserTables1714229191300 implements MigrationInterface {
 
             insert into parser (name)
             values ('msudrf/sudebnoye-deloproizvodstvo'),
-                   ('msudrf/territorialnaya-podsudnost')
+                   ('msudrf/territorialnaya-podsudnost'),
+                   ('fssp/search-ext-fizicheskoe-lico')
             on conflict do nothing;
         `);
     }
