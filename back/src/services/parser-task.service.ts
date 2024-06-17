@@ -59,12 +59,21 @@ export class ParserTaskService {
         const mgr = db.createEntityManager();
 
         const parserRepo = mgr.getRepository(ParserEntity);
+        const parserTaskRepo = mgr.getRepository(ParserTaskEntity);
 
-        console.log(await parserRepo.find());
+        const parserEnt = await parserRepo.findOneBy({ name: body.parserName });
 
-        // const parserTaskRepo = mgr.getRepository(ParserTaskEntity);
-        //
-        // const parserEnt = await parserRepo.findOneBy({ name: params.parserName });
+        let ptaskEnt = new ParserTaskEntity();
+        ptaskEnt.parser_id = parserEnt.id;
+        ptaskEnt.input_data = body.inputData;
+        ptaskEnt = await parserTaskRepo.save(ptaskEnt);
+        ptaskEnt = await parserTaskRepo.findOneBy({ id: ptaskEnt.id });
 
+        const result = {
+            ...ptaskEnt,
+            parser_name: body.parserName,
+        };
+
+        return result;
     }
 }
