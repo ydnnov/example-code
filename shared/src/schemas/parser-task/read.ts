@@ -1,13 +1,13 @@
 import { Static, Type } from '@sinclair/typebox';
 import { genericDictionarySchema } from '../common.js';
-import { parserNameSchema } from './common.js';
+import { parserKeySchema } from './common.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 // Common
 export const parserTaskSchema = Type.Object({
     id: Type.Number(),
-    parser_id: Type.Number(),
-    parser_name: parserNameSchema,
+    parser_index: Type.Number(),
+    parser_key: parserKeySchema,
     created_at: Type.Date(),
     status: Type.Union([
         Type.Literal('new'),
@@ -32,7 +32,7 @@ export const parserTaskGetManyQuerySchema = Type.Object({
         minimum: 1,
         maximum: 100,
     })),
-    parser: Type.Optional(parserNameSchema),
+    parser: Type.Optional(parserKeySchema),
     status: Type.Optional(Type.Union([
         Type.Literal('new'),
         Type.Literal('started'),

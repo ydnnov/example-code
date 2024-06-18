@@ -1,6 +1,6 @@
 import { db } from '../data-source.js';
-import { ParserEntity, ParserTaskEntity } from '../entities/entities.js';
-import { ParserNameType } from '../shared/schemas/parser-task/common.js';
+import { PARSER_INDEX_BY_KEY, PARSER_KEY_BY_INDEX } from '../shared/constants/parsing.js';
+import { ParserTaskEntity } from '../entities/entities.js';
 import {
     ParserTaskGetManyQueryType,
     ParserTaskGetManyResultType,
@@ -16,16 +16,7 @@ export class ParserTaskService {
 
         const mgr = db.createEntityManager();
 
-        const parserRepo = mgr.getRepository(ParserEntity);
         const parserTaskRepo = mgr.getRepository(ParserTaskEntity);
-
-        const parserEnts = await parserRepo.find();
-        const parserNamesById: {
-            [key: number]: ParserNameType
-        } = {};
-        for (let i = 0; i < parserEnts.length; i++) {
-            parserNamesById[parserEnts[i].id] = <ParserNameType>parserEnts[i].name;
-        }
 
         // TODO костыль, надо заставить typebox+fastify самим это делать
         const limit = typeof query.limit === 'number' ? query.limit : 20;
@@ -45,7 +36,7 @@ export class ParserTaskService {
             const pt = parserTaskEnts[i];
             items.push({
                 ...pt,
-                parser_name: parserNamesById[pt.parser_id],
+                parser_key: PARSER_KEY_BY_INDEX[pt.parser_index],
             });
         }
 
@@ -60,20 +51,17 @@ export class ParserTaskService {
 
         const mgr = db.createEntityManager();
 
-        const parserRepo = mgr.getRepository(ParserEntity);
         const parserTaskRepo = mgr.getRepository(ParserTaskEntity);
 
-        const parserEnt = await parserRepo.findOneBy({ name: body.parserName });
-
         let ptaskEnt = new ParserTaskEntity();
-        ptaskEnt.parser_id = parserEnt.id;
+        ptaskEnt.parser_index = PARSER_INDEX_BY_KEY[body.parserKey];
         ptaskEnt.input_data = body.inputData;
         ptaskEnt = await parserTaskRepo.save(ptaskEnt);
         ptaskEnt = await parserTaskRepo.findOneBy({ id: ptaskEnt.id });
 
         const result = {
             ...ptaskEnt,
-            parser_name: body.parserName,
+            parser_key: body.parserKey,
         };
 
         return result;

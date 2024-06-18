@@ -1,5 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
-import { PARSER_NAME } from '../../constants/parsing.js';
+import { PARSER_KEY } from '../../constants/parsing.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 export const parserInputDataSchema = {
@@ -18,17 +18,17 @@ export const parserInputDataSchema = {
 export type ParserInputDataType = Static<typeof parserTaskCreateOneBodySchema>
 ////////////////////////////////////////////////////////////////////////////////
 export const parserMsudrfSudDeloBodySchema = Type.Object({
-    parserName: Type.Literal(PARSER_NAME.MSUDRF_SUD_DELO),
+    parserKey: Type.Literal(PARSER_KEY.MSUDRF_SUD_DELO),
     inputData: parserInputDataSchema.msudrfSudDelo,
 });
 ////////////////////////////////////////////////////////////////////////////////
 export const parserMsudrfTerrPodsBodySchema = Type.Object({
-    parserName: Type.Literal(PARSER_NAME.MSUDRF_TERR_PODS),
+    parserKey: Type.Literal(PARSER_KEY.MSUDRF_TERR_PODS),
     inputData: parserInputDataSchema.msudrfTerrPods,
 });
 ////////////////////////////////////////////////////////////////////////////////
 export const parserFsspSefizlicoBodySchema = Type.Object({
-    parserName: Type.Literal(PARSER_NAME.FSSP_SEFIZLICO),
+    parserKey: Type.Literal(PARSER_KEY.FSSP_SEFIZLICO),
     inputData: parserInputDataSchema.fsspSefizlico,
 });
 ////////////////////////////////////////////////////////////////////////////////

@@ -7,7 +7,7 @@ export class ParserTaskEntity {
     id: number;
 
     @Column({ type: 'integer' })
-    parser_id: number;
+    parser_index: number;
 
     @Column({ type: 'timestamptz' })
     created_at: Date;
