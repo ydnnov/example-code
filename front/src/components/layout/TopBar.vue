@@ -2,14 +2,17 @@
 import { ref } from 'vue';
 import Button from 'primevue/button';
 import { useBagStore } from '~/stores/bag.store.js';
+import { useMsudrfSudDeloStore } from '~/stores/msudrf-sud-delo.store.js';
 import { useUserStore } from '~/stores/user.store.js';
 import { useUiStore } from '~/stores/ui.store.js';
 import { useToast } from 'primevue/usetoast';
 import useClient from '~/composables/useClient.js';
 import TopBarLayoutControls from '~/components/layout/top-bar/TopBarLayoutControls.vue';
 import { useFsspStore } from '~/stores/fssp.store.js';
+import ParserTaskList from '~/components/parser-tasks/ParserTaskList.vue';
 
 const { bag } = useBagStore();
+const msudrfSudDelo = useMsudrfSudDeloStore();
 const { user } = useUserStore();
 const { ui } = useUiStore();
 const fssp = useFsspStore();
@@ -23,7 +26,18 @@ const items = ref([
   },
 ]);
 
-const msudrfSudDeloStart = async () => {
+const sudDeloParseManyInput = ref('');
+const sudDeloParseManyDialogVisible = ref(false);
+const sudDeloButtonItems = [
+  {
+    label: 'Загрузить много',
+    command: () => {
+      // toast.add({ severity: 'success', summary: 'Updated', detail: 'Data Updated', life: 3000 });
+      sudDeloParseManyDialogVisible.value = true;
+    },
+  },
+];
+const msudrfSudDeloStartOne = async () => {
   const response = await client.parser.run('msudrf/sudebnoye-deloproizvodstvo', {
     fio: bag['parserInputText'],
   });
@@ -34,6 +48,9 @@ const msudrfSudDeloStart = async () => {
     detail: response,
     life: 0,
   });
+};
+const msudrfSudDeloStartMany = async () => {
+  await msudrfSudDelo.addItemsToImport(sudDeloParseManyInput.value);
 };
 
 const msudrfTerrPodsStart = async () => {
@@ -64,10 +81,9 @@ const fsspStartMany = async () => {
 };
 
 const someAction = async () => {
-  client.headless.goto('https://bing.com');
-  // toast.add({
-  //   detail: config.public.backendUrl,
-  // });
+  toast.add({
+    detail: 'someAction',
+  });
 };
 </script>
 
@@ -77,6 +93,28 @@ const someAction = async () => {
       <pre style="overflow-x: scroll">{{ message.detail }}</pre>
     </template>
   </Toast>
+  <Dialog
+      v-model:visible="sudDeloParseManyDialogVisible"
+      modal
+      header="Edit Profile"
+      :style="{ width: '800px' }"
+  >
+    <Textarea v-model="sudDeloParseManyInput" rows="20" cols="65" />
+
+    <div class="flex justify-between">
+      <Button
+          type="button"
+          label="Загрузить"
+          @click="msudrfSudDeloStartMany"
+      ></Button>
+      <Button
+          type="button"
+          label="Отмена"
+          severity="secondary"
+          @click="sudDeloParseManyDialogVisible = false"
+      ></Button>
+    </div>
+  </Dialog>
   <Dialog
       v-model:visible="fssp.importDialogVisible"
       modal
@@ -95,6 +133,23 @@ const someAction = async () => {
           type="button"
           label="Отмена"
           severity="secondary"
+          @click="fssp.importDialogVisible = false"
+      ></Button>
+    </div>
+  </Dialog>
+  <Dialog
+      v-model:visible="bag.parserTasksDialogVisible"
+      modal
+      dismissable-mask
+      header="Задачи по парсингу"
+      :style="{ width: 'calc(100% - 100px)', height: 'calc(100% - 100px)' }"
+  >
+    <ParserTaskList />
+
+    <div class="flex justify-between">
+      <Button
+          type="button"
+          label="Закрыть"
           @click="fssp.importDialogVisible = false"
       ></Button>
     </div>
@@ -118,18 +173,11 @@ const someAction = async () => {
       <template #end>
         <div class="flex align-items-center gap-2">
           <TopBarLayoutControls />
-          <div class="ml-2 border-l-[3px] border-black-500">
-            <InputText
-                placeholder="Search"
-                type="text"
-                class="ml-4"
-                v-model="bag['parserInputText']"
-            />
-          </div>
           <div class="ml-2">
-            <Button
-                @click="msudrfSudDeloStart"
+            <SplitButton
+                @click="msudrfSudDeloStartOne"
                 label="Судебное делопроизводство"
+                :model="sudDeloButtonItems"
                 class="h-[40px] mx-4"
             />
             <Button
@@ -140,6 +188,11 @@ const someAction = async () => {
             <Button
                 @click="fssp.importDialogVisible = true"
                 label="ФССП"
+                class="h-[40px] mx-4"
+            />
+            <Button
+                @click="bag.parserTasksDialogVisible = true"
+                label="Задачи"
                 class="h-[40px] mx-4"
             />
           </div>

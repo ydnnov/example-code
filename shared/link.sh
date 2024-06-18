@@ -34,7 +34,9 @@ ln src/classes/app.ts                   ../front/src/shared/classes/app.ts
 ln src/classes/app-event.ts             ../front/src/shared/classes/app-event.ts
 ln src/classes/bus-middleware.ts        ../front/src/shared/classes/bus-middleware.ts
 ln src/classes/event-bus.ts             ../front/src/shared/classes/event-bus.ts
+ln src/constants/parsing.ts             ../front/src/shared/constants/parsing.ts
 ln src/schemas/common.ts                ../front/src/shared/schemas/common.ts
+ln src/schemas/parser-task/common.ts    ../front/src/shared/schemas/parser-task/common.ts
 ln src/schemas/parser-task/create.ts    ../front/src/shared/schemas/parser-task/create.ts
 ln src/schemas/parser-task/delete.ts    ../front/src/shared/schemas/parser-task/delete.ts
 ln src/schemas/parser-task/read.ts      ../front/src/shared/schemas/parser-task/read.ts

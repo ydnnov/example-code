@@ -49,7 +49,9 @@ export class ParserTaskService {
             });
         }
 
-        return { items };
+        const total = await parserTaskRepo.count();
+
+        return { items, total };
     }
 
     public async createOne(

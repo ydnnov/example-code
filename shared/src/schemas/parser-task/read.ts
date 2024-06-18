@@ -44,6 +44,7 @@ export type ParserTaskGetManyQueryType = Static<typeof parserTaskGetManyQuerySch
 
 export const parserTaskGetManyResultSchema = Type.Object({
     items: Type.Array(parserTaskSchema),
+    total: Type.Number(),
 });
 export type ParserTaskGetManyResultType = Static<typeof parserTaskGetManyResultSchema>
 ////////////////////////////////////////////////////////////////////////////////
