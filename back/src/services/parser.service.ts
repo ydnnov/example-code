@@ -1,13 +1,13 @@
 import * as fs from 'node:fs';
 import { env } from '../envconf.js';
 import { db } from '../data-source.js';
-import { ParserEntity } from '../entities/parser.entity.js';
 import { ParserTaskEntity } from '../entities/parser-task.entity.js';
 import { ParserStartBodyType } from '../schemas/parser.schema.js';
 import { ParserBase } from '../parsers/parser-base.js';
 import { FsspSefizlicoParser } from '../parsers/fssp-sefizlico/fssp-sefizlico.parser.js';
 import { MsudrfTerrPodsParser } from '../parsers/msudrf-terr-pods/msudrf-terr-pods.parser.js';
 import { MsudrfSudDeloParser } from '../parsers/msudrf-sud-delo/msudrf-sud-delo.parser.js';
+import { PARSER_INDEX_BY_KEY } from '../shared/constants/parsing.js';
 
 export class ParserService {
 
@@ -17,16 +17,12 @@ export class ParserService {
 
         const mgr = db.createEntityManager();
 
-        const parserRepo = mgr.getRepository(ParserEntity);
         const parserTaskRepo = mgr.getRepository(ParserTaskEntity);
 
-        const parserEnt = await parserRepo.findOneBy({ name: params.parserName });
-
         let ptaskEnt = new ParserTaskEntity();
-        ptaskEnt.parser_id = parserEnt.id;
+        ptaskEnt.parser_index = PARSER_INDEX_BY_KEY[params.parserName];
         ptaskEnt.input_data = params.inputData;
         await parserTaskRepo.save(ptaskEnt);
-        // console.log({ result });
 
         const parser = this.createParser(params);
 
@@ -37,9 +33,9 @@ export class ParserService {
             const filename = `${env.STORAGE_PATH}/result_html/${
                 params.parserName}/${ptaskEnt.id}.html`;
 
-            fs.writeFileSync(filename, result.resultData);
+            fs.writeFileSync(filename, result.resultHtml);
 
-            const resultJson = parser.extractJson(result.resultData);
+            const resultJson = parser.extractJson(result.resultHtml);
 
             ptaskEnt.status = 'success';
             ptaskEnt.result_data = resultJson;

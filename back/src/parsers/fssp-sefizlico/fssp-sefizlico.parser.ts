@@ -91,20 +91,28 @@ export class FsspSefizlicoParser extends ParserBase {
                     if (!captchaAnswer.success) {
                         continue;
                     }
-                    const captchaAnswerEl = await pwpage.$('#captcha-popup-code');
+                    let captchaAnswerEl = await pwpage.$('#captcha-popup-code');
                     await (await captchaAnswerEl).focus();
                     await pwpage.keyboard.type(captchaAnswer.answer.toLocaleUpperCase());
+                    await helpers.sleep(2000);
                     const captchaSubmitEl = await pwpage.$('#ncapcha-submit');
                     await captchaSubmitEl.click();
-                    await helpers.sleep(3000);
-                    const results = await pwpage.waitForSelector('.results');
-                    console.log({ results });
-                    const captchaImage = await pwpage.waitForSelector('#capchaVisual');
-                    console.log({ captchaImage });
-                    if (captchaImage) {
+                    await helpers.sleep(1000);
+                    captchaAnswerEl = await pwpage.$('#captcha-popup-code');
+                    if (!!captchaAnswerEl) {
                         await this.emit('captcha-not-accepted');
                         continue;
                     }
+                    // console.log(captchaAnswerEl);
+                    // const results=await pwpage.$$('.results-frame')
+                    // const results = await pwpage.waitForSelector('.results');
+                    // console.log({ results });
+                    // const captchaInput = await pwpage.waitForSelector('#capchaVisual');
+                    // console.log({ captchaImage });
+                    // if (captchaImage) {
+                    //     await this.emit('captcha-not-accepted');
+                    //     continue;
+                    // }
                     await this.emit('captcha-accepted');
                     break;
                 } catch (err) {
@@ -112,10 +120,12 @@ export class FsspSefizlicoParser extends ParserBase {
                 }
             }
 
+            const resultHtml = await pwpage.content();
 
+            console.log({ resultHtml });
             return {
                 success: true,
-                resultHtml: await pwpage.content(),
+                resultHtml,
             };
         }
 
@@ -184,6 +194,8 @@ export class FsspSefizlicoParser extends ParserBase {
     // }
 
     public extractJson(html: string) {
+
+        return html;
 
         // const $ = cheerio.load(html);
         //
