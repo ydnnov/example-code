@@ -57,6 +57,9 @@ const helpers = {
     },
 
     colorizeForConsole: (colorNum, message) => {
+        // TODO запили чтобы цвета были не цифрой какой то непонятной,
+        //      а чтобы писать 'red' / 'green' / 'blue', и через
+        //      литерал-типы была подсказка
         return `\x1b[${colorNum}m${message}\x1b[0m`;
     },
 
