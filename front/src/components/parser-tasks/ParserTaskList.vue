@@ -1,4 +1,4 @@
-<script setup async lang="ts">
+<script setup lang="ts">
 import useClient from '~/composables/useClient.js';
 
 const toast = useToast();
@@ -22,6 +22,7 @@ const updateData = async () => {
 
 const onPageChange = (ev) => {
   pageNum.value = ev.page;
+  perPage.value = ev.rows;
   updateData();
 };
 
@@ -45,7 +46,7 @@ const hideDetails = () => {
   showingDetailsForId.value = 0;
 };
 
-onMounted(async () => {
+onMounted(() => {
   updateData();
 });
 
@@ -95,7 +96,7 @@ const requestReparse = async (id: number) => {
         @row-click="showDetails"
     >
       <Column field="id" header="ID"></Column>
-      <Column field="parser_name" header="Парсер"></Column>
+      <Column field="parser_key" header="Парсер"></Column>
       <Column field="status" header="Статус"></Column>
       <Column field="input_data" header="Данные запроса"></Column>
       <Column header="Действия"
