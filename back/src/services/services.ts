@@ -5,6 +5,8 @@ import { HeadlessService } from './headless.service.js';
 import { HeadlessScreenshotsService } from './headless-screenshots.service.js';
 import { ParserService } from './parser.service.js';
 import { ParserTaskService } from './parser-task.service.js';
+import { ParserTaskAttemptService } from './parser-task-attempt.service.js';
+// import { ParsingLoopService } from './parsing-loop.service.js';
 import { SiteCaptchaService } from './site-captcha.service.js';
 import { TsDefinitionsService } from './ts-definitions.service.js';
 
@@ -15,6 +17,8 @@ export const services = {
     headlessScreenshots: new HeadlessScreenshotsService(),
     parser: new ParserService(),
     parserTask: new ParserTaskService(),
+    parserTaskAttempt: new ParserTaskAttemptService(),
+    // parsingLoop: new ParsingLoopService(),
     siteCaptcha: new SiteCaptchaService(),
     tsDefinitions: new TsDefinitionsService(),
 };
