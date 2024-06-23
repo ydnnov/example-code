@@ -63,13 +63,14 @@ const helpers = {
         return `\x1b[${colorNum}m${message}\x1b[0m`;
     },
 
-    consoleHeaderText: (message, separatorChar = '=') => {
-        return `== ${message} ${'='.repeat(100 - (message.length + 4))}`;
-    },
-
-    consoleHeader: (message, separatorChar = '=', colorNum = 0) => {
+    consoleHeader: (
+        message: string,
+        width: number,
+        separatorChar = '=',
+        colorNum = 0,
+    ) => {
         return `\x1b[${colorNum}m${separatorChar.repeat(2)} ${message} ` +
-            `${separatorChar.repeat(100 - (message.length + 4))}\x1b[0m`;
+            `${separatorChar.repeat(80 - (message.length + 4))}\x1b[0m`;
     },
 
     chunkify<T>(arr: T[], chunkSize: number): T[][] {
