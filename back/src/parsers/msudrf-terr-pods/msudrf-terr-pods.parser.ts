@@ -4,7 +4,7 @@ import { env } from '../../envconf.js';
 import { bus } from '../../bus.js';
 import { services } from '../../services/services.js';
 import { helpers } from '../../helpers/helpers.js';
-import { OperationResult } from '../../types/common.js';
+import { OperationResult, StdResult } from '../../types/common.js';
 import { Request } from 'playwright';
 import { ParserBase } from '../parser-base.js';
 
@@ -43,10 +43,10 @@ export class MsudrfTerrPodsParser extends ParserBase {
     //     // console.log(request);
     // }
 
-    public async run(): Promise<OperationResult<string>> {
-        //
-        //     await bus.emit('parser.terr-pods.started');
-        //
+    public async run(): Promise<StdResult<{ resultHtml: string }>> {
+
+            await bus.emit('parser.terr-pods.started');
+
         //     this.currentStage = 'started';
         //     this.lastStageStartTime = new Date();
         //     // console.log(this.lastStageStartTime);
