@@ -17,20 +17,34 @@ export const parserInputDataSchema = {
 };
 export type ParserInputDataType = Static<typeof parserTaskCreateOneBodySchema>
 ////////////////////////////////////////////////////////////////////////////////
-export const parserMsudrfSudDeloBodySchema = Type.Object({
-    parserKey: Type.Literal(PARSER_KEY.MSUDRF_SUD_DELO),
-    inputData: parserInputDataSchema.msudrfSudDelo,
+export const parseWithTimeoutSchema = Type.Object({
+    timeout: Type.Optional(Type.Number()),
 });
 ////////////////////////////////////////////////////////////////////////////////
-export const parserMsudrfTerrPodsBodySchema = Type.Object({
-    parserKey: Type.Literal(PARSER_KEY.MSUDRF_TERR_PODS),
-    inputData: parserInputDataSchema.msudrfTerrPods,
-});
+export const parserMsudrfSudDeloBodySchema = Type.Intersect([
+    Type.Object({
+        parserKey: Type.Literal(PARSER_KEY.MSUDRF_SUD_DELO),
+        inputData: parserInputDataSchema.msudrfSudDelo,
+    }),
+    parseWithTimeoutSchema,
+]);
 ////////////////////////////////////////////////////////////////////////////////
-export const parserFsspSefizlicoBodySchema = Type.Object({
-    parserKey: Type.Literal(PARSER_KEY.FSSP_SEFIZLICO),
-    inputData: parserInputDataSchema.fsspSefizlico,
-});
+export const parserMsudrfTerrPodsBodySchema = Type.Intersect([
+    Type.Object({
+        parserKey: Type.Literal(PARSER_KEY.MSUDRF_TERR_PODS),
+        inputData: parserInputDataSchema.msudrfTerrPods,
+    }),
+    parseWithTimeoutSchema,
+]);
+////////////////////////////////////////////////////////////////////////////////
+export const parserFsspSefizlicoBodySchema = Type.Intersect([
+    Type.Object({
+        parserKey: Type.Literal(PARSER_KEY.FSSP_SEFIZLICO),
+        inputData: parserInputDataSchema.fsspSefizlico,
+    }),
+    parseWithTimeoutSchema,
+]);
+
 ////////////////////////////////////////////////////////////////////////////////
 export const parserTaskCreateOneBodySchema = Type.Union([
     parserMsudrfSudDeloBodySchema,

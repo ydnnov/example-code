@@ -21,12 +21,16 @@ export class CreateCaptchaTables1714127544688 implements MigrationInterface {
                     constraint pcar_pk
                         primary key,
                 requested_at       timestamp with time zone default now() not null,
+                parser_task_id     integer,
+                ptask_attempt_num  integer,
                 image_id           integer                                not null
-                    constraint pcar_captcha_image_id_fk references public.captcha_image,
+                    constraint pcar_captcha_image_id_fk
+                        references public.captcha_image,
                 answer             text,
                 is_answer_accepted boolean
             );
-            create index if not exists pcar_image_id_index on public.captcha_answer_request (image_id);
+            create index if not exists pcar_image_id_index
+                on public.captcha_answer_request (image_id);
         `);
     }
 

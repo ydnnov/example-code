@@ -10,13 +10,16 @@ import { routes } from './routes/routes.js';
 import { listeners } from './listeners/listeners.js';
 import { bus } from './bus.js';
 import { pwpageReadyPromise } from './pwpage.js';
+import { FsspSefizlicoParser } from './parsers/fssp-sefizlico/fssp-sefizlico.parser.js';
+import { services } from './services/services.js';
+import fs from 'node:fs';
 
 listeners.bindAll();
 
 process.on('uncaughtException', async (error) => {
     bus.emit('uncaught-exception', error);
     console.log(helpers.colorizeForConsole(31,
-        helpers.consoleHeaderText('uncaughtException ', '!'),
+        helpers.consoleHeader('uncaughtException ', '!'),
     ));
     console.error(error);
     console.log(helpers.colorizeForConsole(31, '='.repeat(80)));
@@ -25,7 +28,7 @@ process.on('uncaughtException', async (error) => {
 process.on('unhandledRejection', async (error) => {
     bus.emit('unhandled-rejection', error);
     console.log(helpers.colorizeForConsole(31,
-        helpers.consoleHeaderText('unhandledRejection ', '!'),
+        helpers.consoleHeader('unhandledRejection', 80, '!', 31),
     ));
     console.error(error);
     console.log(helpers.colorizeForConsole(31, '+-'.repeat(40)));
@@ -54,8 +57,56 @@ process.on('unhandledRejection', async (error) => {
         console.log('='.repeat(80));
         logger.info(`Server started at ${address}`);
         console.log('='.repeat(80));
+
+        // services.parsingLoop.run();
+
+        // const fsspSefizlicoParser = new FsspSefizlicoParser('qwe', 'asd', 'zxc');
+        // const sourceHtml = fs.readFileSync('/var/www/shp/parsing/shp-parsing/back/storage/result_html/fssp/search-ext-fizicheskoe-lico/143.html').toString();
+        // const resultJson = fsspSefizlicoParser.extractJson(sourceHtml);
+        // console.log(JSON.stringify(resultJson));
+
+        // const parser = new FsspSefizlicoParser(
+        //     'Фролов Сергей Павлович',
+        //     '27.02.1963',
+        //     'Саратовская область',
+        // );
+        const parser = new FsspSefizlicoParser(
+            'ТРОКИНА ТАТЬЯНА ГЕННАДИЕВНА',
+            '20.08.1978',
+            'Саратовская область',
+        );
+        parser.run();
     };
 
     fastify.listen({ port: env.FASTIFY_PORT }, onServerStart);
 
 })();
+
+async function parseMany() {
+
+    const qr = db.createQueryRunner();
+    const items = await qr.query(`
+        select *
+        from fssp_primer_na_parsing
+        where result_bad is null
+        order by id
+    `);
+
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        console.log(item);
+        console.log('='.repeat(50));
+        const parser = new FsspSefizlicoParser(item.fio, item.dob, item.region);
+        const result = await parser.run();
+        if (result.success) {
+            const resultJson = parser.extractJson(result.resultHtml[0]);
+            console.log(resultJson);
+            await db.createQueryBuilder()
+                .update('fssp_primer_na_parsing')
+                .set({ result_bad: resultJson })
+                .where({ id: item.id })
+                .execute();
+        }
+        // break;
+    }
+}

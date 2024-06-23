@@ -1,31 +1,9 @@
 ###
-POST http://127.0.0.1:5000/parser/start
+POST http://127.0.0.1:5000/parser-task
 Content-Type: application/json
 
 {
-  "parserName": "msudrf/sudebnoye-deloproizvodstvo",
-  "inputData": {
-    "fio": "глушаева ольга федоровна"
-  }
-}
-
-###
-POST https://shp-parsing.ydnnov.ru/api/parser/start
-Content-Type: application/json
-
-{
-  "parserName": "msudrf/sudebnoye-deloproizvodstvo",
-  "inputData": {
-    "fio": "глушаева ольга федоровна"
-  }
-}
-
-###
-POST https://shp-parsing.ydnnov.ru/api/parser/start
-Content-Type: application/json
-
-{
-  "parserName": "fssp/",
+  "parserKey": "fssp/",
   "inputItems": [
     {
       "fio": "Фролов Сергей Павлович",

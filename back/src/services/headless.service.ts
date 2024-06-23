@@ -7,6 +7,7 @@ import {
     BrowserContext,
     Page,
     LaunchOptions,
+    BrowserContextOptions,
 } from 'playwright';
 import { config } from '../config.js';
 import { EmitsToBus } from '../classes/emits-to-bus.js';
@@ -16,14 +17,18 @@ export class HeadlessService extends EmitsToBus {
     protected eventPrefix: string = 'headless-service';
 
     protected browserPromise: Promise<Browser>;
-
     protected browserContextPromise: Promise<BrowserContext>;
-
     protected pagePromise: Promise<Page>;
-
     protected isResponseFnBound = false;
-
     protected responseListeners = [];
+
+    protected contexts: {
+        [id: number]: {
+            id: number
+            contextObj: BrowserContext
+        }
+    } = {};
+    protected lastContextId = 0;
 
     constructor(launchOptions: LaunchOptions) {
         super();
@@ -37,6 +42,17 @@ export class HeadlessService extends EmitsToBus {
                     console.log(err);
                 });
         });
+    }
+
+    public async createContext(opts: BrowserContextOptions) {
+        const browser = await this.browserPromise;
+        const contextObj = await browser.newContext(opts);
+        this.lastContextId++;
+        this.contexts[this.lastContextId] = {
+            id: this.lastContextId,
+            contextObj,
+        };
+        return this.contexts[this.lastContextId];
     }
 
     public async getBrowser(): Promise<Browser> {
