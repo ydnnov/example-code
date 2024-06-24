@@ -1,13 +1,10 @@
-// import { ElementHandle } from 'playwright';
-// import { pwpage } from '../../pwpage.js';
-// import { FsspSefizlicoForm } from './fssp-sefizlico.form.js';
 import { EmitsToBus } from '../../classes/emits-to-bus.js';
 import { FgrIssIpSfizlicoForm } from './fgr.iss-ip-sfizlico.form.js';
 import { FsspGovRuSite } from './fssp-gov-ru.site.js';
 
 export class FgrIssIpPage extends EmitsToBus {
 
-    protected eventPrefix = 'fssp-gov-ru.iss-ip.page';
+    protected eventPrefix = 'fgr.iss-ip.page';
 
     protected pageUrl = 'https://fssp.gov.ru/iss/ip';
 
@@ -19,18 +16,14 @@ export class FgrIssIpPage extends EmitsToBus {
         this.searchForm = new FgrIssIpSfizlicoForm(this);
     }
 
+    get pwpage() {
+        return this.site.pwpage;
+    }
+
     public async open(timeout: number) {
-
         await this.emit('opening');
-
-        await this.site.pwpage.goto(this.pageUrl);
-
-        // const searchForm = new FgrIssIpSfizlicoForm(this);
-
-        // console.log({ searchForm });
-
-        await this.searchForm.attach(timeout);
-
-        // console.log({ searchForm });
+        await this.pwpage.goto(this.pageUrl);
+        const attached = await this.searchForm.attach(timeout);
+        return attached;
     }
 }

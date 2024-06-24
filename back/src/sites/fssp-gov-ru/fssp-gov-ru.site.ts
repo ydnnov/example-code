@@ -1,9 +1,10 @@
 import { EmitsToBus } from '../../classes/emits-to-bus.js';
 import { FgrIssIpPage } from './fgr.iss-ip.page.js';
-import { ParsingStepTimeoutError } from '../../errors/parsing/parsing-step-timeout.error.js';
 import { Page } from 'playwright';
-import { FgrIssIpSfizlicoForm } from './fgr.iss-ip-sfizlico.form.js';
 import { ParserTaskAttemptEntity } from '../../entities/parser-task-attempt.entity.js';
+
+const SMTH_WRONG_MSG = '.iss .results .empty';
+const SMTH_WRONG_TXT = 'Извините, что-то пошло не так. Попробуйте позже';
 
 export class FsspGovRuSite extends EmitsToBus {
 
@@ -20,19 +21,18 @@ export class FsspGovRuSite extends EmitsToBus {
         this.issIpPage = new FgrIssIpPage(this);
     }
 
-    // public async openIssIpPage(timeout: number, dontThrow: boolean = false)
-    //     : Promise<FgrIssIpPage> {
-    //     this.emit('opening-iss-ip-page');
-    //     await page.open();
-    //     const isReady = await page.waitReady(timeout);
-    //     if (isReady) {
-    //         this.emit('opening-iss-ip-page.success');
-    //         return page;
-    //     }
-    //     if (dontThrow) {
-    //         this.emit('opening-iss-ip-page.failure');
-    //         return null;
-    //     }
-    //     throw new ParserStepTimeoutError('open-iss-ip-page');
-    // }
+    public async hasSomethingWentWrongMessage() {
+        const elem = await this.pwpage.$(SMTH_WRONG_MSG);
+        console.log('hasSomethingWentWrongMessage');
+        console.log({ elem });
+        return !!elem;
+    }
+
+    public async waitSomethingWentWrongMessage(timeout: number) {
+        const state = 'attached';
+        const elem = await this.pwpage.waitForSelector(SMTH_WRONG_MSG, { timeout, state });
+        console.log('waitSomethingWentWrongMessage');
+        console.log({ elem });
+        return !!elem;
+    }
 }

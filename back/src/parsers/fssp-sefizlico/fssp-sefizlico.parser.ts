@@ -36,10 +36,10 @@ export class FsspSefizlicoParser extends ParserBase {
 
         const resultHtml = [];
 
-        let lastError;
-
-        for (let i = 0; i < 1; i++) {
-
+        // let lastError;
+        let stop = false;
+        let i = 0;
+        while(!stop) {
             // try {
             await this.emit('attempt', { num: i + 1 });
             // let attemptEnt = new ParserTaskAttemptEntity();
@@ -48,8 +48,44 @@ export class FsspSefizlicoParser extends ParserBase {
             // attemptEnt = await taskAttemptRepo.findOneBy({ id: attemptEnt.id });
             let attemptEnt = await taskAttemptRepo.findOneBy({ id: 2 });
             const attemptHandler = new FsspSefizlicoAttemptHandler(attemptEnt);
-            await attemptHandler.perform();
+            const result = await attemptHandler.perform();
+            console.log({result});
+            if (result) {
+                return {
+                    success: true,
+                    resultHtml: [String(result)],
+                };
+            }
 
+            console.log('waiting...');
+            await new Promise((resolve) => {
+                const handler = (event: string, ...args) => {
+                    if (event === 'parsing-resume') {
+                        bus.emitter.offAny(handler);
+                        resolve();
+                    } else if (event === 'parsing-stop') {
+                        bus.emitter.offAny(handler);
+                        stop = true;
+                        resolve();
+                    }
+                    // console.log('on any handler');
+                    // console.log({ event });
+                    // resolve();
+                };
+                bus.onAny(handler);
+                // bus.once('parsing-resume', () => {
+                //     resolve();
+                // });
+                // bus.once('parsing-stop', () => {
+                //     stop = true;
+                //     resolve();
+                // });
+            });
+            console.log('...passed wait');
+
+            // if (!result) {
+            //     throw new Error('Failed parsing attempt');
+            // }
             // const attempt=new FsspSefizlicoAttemptHandler()
 
             // await pwpageRecreate();
@@ -72,6 +108,7 @@ export class FsspSefizlicoParser extends ParserBase {
             //     continue;
             // }
             // }
+            i++;
         }
 
         // const regionInputEl = await pwpage.waitForSelector('#region_id_chosen input', {

@@ -1,8 +1,8 @@
 import { ElementHandle } from 'playwright';
 import { EmitsToBus } from '../../classes/emits-to-bus.js';
-import { ParsingStepTimeoutError } from '../../errors/parsing/parsing-step-timeout.error.js';
 import { FgrIssIpPage } from './fgr.iss-ip.page.js';
 import { FgrCaptchaForm } from './fgr.captcha.form.js';
+import { StdResult } from '../../types/common.js';
 
 const REGION_DD = '#region_id_chosen input';
 const LASTNAME_INP = '[name="is[last_name]"]';
@@ -13,7 +13,7 @@ const SEARCH_BTN = '#btn-sbm';
 
 export class FgrIssIpSfizlicoForm extends EmitsToBus {
 
-    protected eventPrefix = 'fssp-gov-ru.iss-ip-sfizlico.form';
+    protected eventPrefix = 'fgr.iss-ip-sfizlico.form';
 
     protected regionDropdownEl: ElementHandle;
     protected lastnameInputEl: ElementHandle;
@@ -36,34 +36,32 @@ export class FgrIssIpSfizlicoForm extends EmitsToBus {
 
     public async attach(timeout: number) {
         const state = 'attached';
-        const noop = (err) => {
-        };
         const elementWait = [
-            this.pwpage.waitForSelector(REGION_DD, { timeout, state }).catch(noop),
-            this.pwpage.waitForSelector(LASTNAME_INP, { timeout, state }).catch(noop),
-            this.pwpage.waitForSelector(FIRSTNAME_INP, { timeout, state }).catch(noop),
-            this.pwpage.waitForSelector(MIDNAME_INP, { timeout, state }).catch(noop),
-            this.pwpage.waitForSelector(DOB_INP, { timeout, state }).catch(noop),
-            this.pwpage.waitForSelector(SEARCH_BTN, { timeout, state }).catch(noop),
+            this.pwpage.waitForSelector(REGION_DD, { state }),
+            this.pwpage.waitForSelector(LASTNAME_INP, { state }),
+            this.pwpage.waitForSelector(FIRSTNAME_INP, { state }),
+            this.pwpage.waitForSelector(MIDNAME_INP, { state }),
+            this.pwpage.waitForSelector(DOB_INP, { state }),
+            this.pwpage.waitForSelector(SEARCH_BTN, { state }),
         ];
         const result = await Promise.race([
             Promise.all(elementWait),
-            new Promise((resolve, reject) => {
+            new Promise((resolve) => {
                 setTimeout(() => {
-                    const error = new ParsingStepTimeoutError(
-                        this.site.taskAttemptEntity,
-                        'sfizlicoform-wait-ready',
-                    );
-                    reject(error);
+                    resolve('timeout');
                 }, timeout);
             }),
         ]);
+        if (result === 'timeout') {
+            return false;
+        }
         this.regionDropdownEl = result[0];
         this.lastnameInputEl = result[1];
         this.firstnameInputEl = result[2];
         this.midnameInputEl = result[3];
         this.dobInputEl = result[4];
         this.searchButtonEl = result[5];
+        return true;
     }
 
     public async inputFields(fio: string, dob: string, region: string) {
@@ -93,10 +91,35 @@ export class FgrIssIpSfizlicoForm extends EmitsToBus {
         await this.pwpage.keyboard.press('Enter');
     }
 
-    public async submitSearch(timeout: number): Promise<FgrCaptchaForm> {
+    public async submitSearch(timeout: number): Promise<StdResult<{
+        form: FgrCaptchaForm
+    }>> {
         await this.searchButtonEl.click();
         const form = new FgrCaptchaForm(this.site);
-        await form.attach(timeout);
-        return form;
+        const result = Promise.race([
+            form.attach(timeout),
+            this.site.waitSomethingWentWrongMessage(timeout)
+                .then(v => {
+                    console.log(v);
+                    return {
+                        success: false,
+                        err: 'smth-wrong-msg',
+                    };
+                }),
+        ]);
+        const attached = await form.attach(timeout);
+        if (attached) {
+            return {
+                success: true,
+                form,
+            };
+        }
+        if (this.site.hasSomethingWentWrongMessage()) {
+            return {
+                success: false,
+                err: 'smth-wrong-msg',
+            };
+        }
+        return result ? form : null;
     }
 }

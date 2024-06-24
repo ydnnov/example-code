@@ -6,16 +6,21 @@ export type OperationResult<TData> = {
     err: string
 }
 
-export type StdResultSuccess<TData> = {
+export type StdResultSuccess<TData = {}> = {
     success: true,
 } & TData
 
-export type StdResultFail = {
+export type StdResultFail<TErr = any> = {
     success: false,
-    err: any
+    err: TErr
 }
 
-export type StdResult<TData> = StdResultSuccess<TData> | StdResultFail
+export type ResultProducer = {
+    from?: string
+}
+
+export type StdResult<TData = {}, TErr = any>
+    = (StdResultSuccess<TData> | StdResultFail<TErr>) & ResultProducer
 
 // export type GenericDictionary = {
 //     [k: string]: any
