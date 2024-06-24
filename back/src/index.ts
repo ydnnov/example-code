@@ -13,23 +13,21 @@ import { pwpageReadyPromise } from './pwpage.js';
 import { FsspSefizlicoParser } from './parsers/fssp-sefizlico/fssp-sefizlico.parser.js';
 import { services } from './services/services.js';
 import fs from 'node:fs';
+import { ParserTaskEntity } from './entities/parser-task.entity.js';
+import { ParserFactory } from './factories/parser.factory.js';
 
 listeners.bindAll();
 
 process.on('uncaughtException', async (error) => {
     bus.emit('uncaught-exception', error);
-    console.log(helpers.colorizeForConsole(31,
-        helpers.consoleHeader('uncaughtException ', '!'),
-    ));
+    console.log(helpers.consoleHeader('uncaughtException ', 80, '!', 31));
     console.error(error);
     console.log(helpers.colorizeForConsole(31, '='.repeat(80)));
 });
 
 process.on('unhandledRejection', async (error) => {
     bus.emit('unhandled-rejection', error);
-    console.log(helpers.colorizeForConsole(31,
-        helpers.consoleHeader('unhandledRejection', 80, '!', 31),
-    ));
+    console.log(helpers.consoleHeader('unhandledRejection', 80, '!', 31));
     console.error(error);
     console.log(helpers.colorizeForConsole(31, '+-'.repeat(40)));
 });
@@ -70,12 +68,20 @@ process.on('unhandledRejection', async (error) => {
         //     '27.02.1963',
         //     'Саратовская область',
         // );
-        const parser = new FsspSefizlicoParser(
-            'ТРОКИНА ТАТЬЯНА ГЕННАДИЕВНА',
-            '20.08.1978',
-            'Саратовская область',
-        );
-        parser.run();
+        // const parserTask=
+        // const parser = new FsspSefizlicoParser(
+        //     'ТРОКИНА ТАТЬЯНА ГЕННАДИЕВНА',
+        //     '20.08.1978',
+        //     'Саратовская область',
+        // );
+        // parser.run();
+        const mgr = db.createEntityManager();
+        const taskRepo = mgr.getRepository(ParserTaskEntity);
+        const taskEnt = await taskRepo.findOneBy({ id: 140 });
+        const parserFactory = new ParserFactory();
+        const parser = parserFactory.create(taskEnt);
+        const result = await parser.run();
+        // console.log(parser);
     };
 
     fastify.listen({ port: env.FASTIFY_PORT }, onServerStart);

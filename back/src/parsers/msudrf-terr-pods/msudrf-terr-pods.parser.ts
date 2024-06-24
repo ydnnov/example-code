@@ -10,10 +10,6 @@ import { ParserBase } from '../parser-base.js';
 
 export class MsudrfTerrPodsParser extends ParserBase {
 
-    constructor(protected address: string) {
-        super();
-    }
-
     // public currentStage = 'none';
     // // public lastStageSuccess;
     // public lastStageStartTime;

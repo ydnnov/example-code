@@ -16,6 +16,19 @@ export class CreateParserTables1714229191300 implements MigrationInterface {
                 input_data   jsonb                    default '{}'::jsonb not null,
                 result_data  jsonb
             );
+
+            create table if not exists public.parser_task_attempt
+            (
+                id             serial
+                    constraint parser_task_attempt_pk
+                        primary key,
+                parser_task_id integer                                      not null,
+                started_at     timestamp with time zone default now()       not null,
+                ended_at       timestamp with time zone,
+                status         text                     default 'new'::text not null,
+                failure_reason text,
+                run_options    jsonb                    default '{}'::jsonb not null
+            );
         `);
     }
 

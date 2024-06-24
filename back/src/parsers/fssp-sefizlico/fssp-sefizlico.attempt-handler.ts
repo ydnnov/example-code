@@ -14,9 +14,9 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
     }
 
     public async perform() {
-        console.log('#'.repeat(200));
+        console.log('#'.repeat(150));
         console.log('FsspSefizlicoParserAttempt.perform()');
-        console.log('#'.repeat(200));
+        console.log('#'.repeat(150));
         console.log({ attemptEntity: this.attemptEntity });
         // await this.emit('attempt', { num: i + 1 });
 

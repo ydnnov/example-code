@@ -11,17 +11,13 @@ export class ParserFactory {
         const parserKey = PARSER_KEY_BY_INDEX[parserTask.parser_index];
         switch (parserKey) {
             case PARSER_KEY.MSUDRF_SUD_DELO: {
-                return new MsudrfSudDeloParser(parserTask.input_data['fio']);
+                return new MsudrfSudDeloParser(parserTask);
             }
             case PARSER_KEY.MSUDRF_TERR_PODS: {
-                return new MsudrfTerrPodsParser(parserTask.input_data['address']);
+                return new MsudrfTerrPodsParser(parserTask);
             }
             case PARSER_KEY.FSSP_SEFIZLICO: {
-                return new FsspSefizlicoParser(
-                    parserTask.input_data['fio'],
-                    parserTask.input_data['dob'],
-                    parserTask.input_data['reg'],
-                );
+                return new FsspSefizlicoParser(parserTask);
             }
             default: {
                 throw new Error(`Unknown parsing request: ${JSON.stringify(parserTask)}`);

@@ -9,6 +9,8 @@ import { CaptchaAnswerRequestEntity } from '../../entities/captcha-answer-reques
 import { helpers } from '../../helpers/helpers.js';
 import { FsspGovRuSite } from '../../sites/fssp-gov-ru/fssp-gov-ru.site.js';
 import { FsspSefizlicoAttemptHandler } from './fssp-sefizlico.attempt-handler.js';
+import { ParserTaskAttemptEntity } from '../../entities/parser-task-attempt.entity.js';
+import { db } from '../../data-source.js';
 
 type GetCaptchaAnswerResultType = {
     answerRequestEntity: CaptchaAnswerRequestEntity,
@@ -24,17 +26,13 @@ export class FsspSefizlicoParser extends ParserBase {
 
     protected eventPrefix = 'fssp-sefizlico.parser';
 
-    constructor(
-        protected fio: string,
-        protected dob: string,
-        protected reg: string,
-    ) {
-        super();
-    }
-
     public async run(): Promise<StdResult<{ resultHtml: string[] }>> {
 
         this.emit('started');
+
+        const mgr = db.createEntityManager();
+
+        const taskAttemptRepo = mgr.getRepository(ParserTaskAttemptEntity);
 
         const resultHtml = [];
 
@@ -44,7 +42,13 @@ export class FsspSefizlicoParser extends ParserBase {
 
             // try {
             await this.emit('attempt', { num: i + 1 });
-
+            // let attemptEnt = new ParserTaskAttemptEntity();
+            // attemptEnt.parser_task_id = this.parserTask.id;
+            // await taskAttemptRepo.save(attemptEnt);
+            // attemptEnt = await taskAttemptRepo.findOneBy({ id: attemptEnt.id });
+            let attemptEnt = await taskAttemptRepo.findOneBy({ id: 2 });
+            const attemptHandler = new FsspSefizlicoAttemptHandler(attemptEnt);
+            await attemptHandler.perform();
 
             // const attempt=new FsspSefizlicoAttemptHandler()
 

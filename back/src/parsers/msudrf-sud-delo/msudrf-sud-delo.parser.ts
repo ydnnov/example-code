@@ -21,10 +21,6 @@ type GetCaptchaAnswerResultType = {
 
 export class MsudrfSudDeloParser extends ParserBase {
 
-    constructor(protected fio: string) {
-        super();
-    }
-
     public async run(): Promise<StdResult<{ resultHtml: string }>> {
 
         const site = new MsudrfSite();
@@ -80,7 +76,7 @@ export class MsudrfSudDeloParser extends ParserBase {
                 continue;
             }
 
-            await searchPage.inputFio(this.fio);
+            await searchPage.inputFio(this.parserTask.input_data['fio']);
             const resultPage = await searchPage.submitSearch(5000);
             if (!resultPage) {
                 await bus.emit('parser.msudrf-sud-delo.error.failed-to-open-result-page');
