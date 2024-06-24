@@ -6,7 +6,7 @@ import { app } from '../app.js';
 
 export class EventBus {
 
-    protected emitter: EventEmitter2 = new EventEmitter2();
+    public readonly emitter: EventEmitter2 = new EventEmitter2();
 
     public static stripPayloadCircularJson(payload) {
         if (typeof payload === 'string' ||
