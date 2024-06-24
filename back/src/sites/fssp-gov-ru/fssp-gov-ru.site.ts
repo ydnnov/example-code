@@ -1,8 +1,9 @@
 import { EmitsToBus } from '../../classes/emits-to-bus.js';
 import { FgrIssIpPage } from './fgr.iss-ip.page.js';
-import { ParserStepTimeoutError } from '../../errors/parsing/parser-step-timeout.error.js';
+import { ParsingStepTimeoutError } from '../../errors/parsing/parsing-step-timeout.error.js';
 import { Page } from 'playwright';
 import { FgrIssIpSfizlicoForm } from './fgr.iss-ip-sfizlico.form.js';
+import { ParserTaskAttemptEntity } from '../../entities/parser-task-attempt.entity.js';
 
 export class FsspGovRuSite extends EmitsToBus {
 
@@ -10,7 +11,10 @@ export class FsspGovRuSite extends EmitsToBus {
 
     public readonly issIpPage: FgrIssIpPage;
 
-    constructor(public readonly pwpage: Page) {
+    constructor(
+        public readonly pwpage: Page,
+        public readonly taskAttemptEntity: ParserTaskAttemptEntity,
+    ) {
         super();
 
         this.issIpPage = new FgrIssIpPage(this);

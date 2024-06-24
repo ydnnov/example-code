@@ -1,5 +1,6 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Static, Type } from '@sinclair/typebox';
+import { ParserTaskEntity } from './parser-task.entity.js';
 
 export const parserTaskAttemptRunOptionsSchema = Type.Object({
     timeout: Type.Number(),
@@ -36,4 +37,13 @@ export class ParserTaskAttemptEntity {
         console.log(this.constructor.name);
         console.log({ args });
     }
+
+    @ManyToOne(
+        () => ParserTaskEntity,
+        (task) => task.attempts, {
+            eager: true,
+        },
+    )
+    @JoinColumn({ name: 'parser_task_id' })
+    parserTask: () => ParserTaskEntity;
 }

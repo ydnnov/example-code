@@ -15,19 +15,27 @@ import { services } from './services/services.js';
 import fs from 'node:fs';
 import { ParserTaskEntity } from './entities/parser-task.entity.js';
 import { ParserFactory } from './factories/parser.factory.js';
+import { ParsingError } from './errors/parsing/parsing.error.js';
 
 listeners.bindAll();
 
 process.on('uncaughtException', async (error) => {
     bus.emit('uncaught-exception', error);
-    console.log(helpers.consoleHeader('uncaughtException ', 80, '!', 31));
+    console.log(helpers.consoleHeader('uncaughtException ', 40, '~!', 31));
     console.error(error);
     console.log(helpers.colorizeForConsole(31, '='.repeat(80)));
 });
 
 process.on('unhandledRejection', async (error) => {
+    if (error instanceof ParsingError) {
+        console.log('parsing error');
+        console.log(helpers.consoleHeader('timeout', 80, '~', 32));
+        console.error(error);
+        console.log(helpers.colorizeForConsole(32, '~'.repeat(80)));
+        return;
+    }
     bus.emit('unhandled-rejection', error);
-    console.log(helpers.consoleHeader('unhandledRejection', 80, '!', 31));
+    console.log(helpers.consoleHeader('unhandledRejection', 40, '~!', 31));
     console.error(error);
     console.log(helpers.colorizeForConsole(31, '+-'.repeat(40)));
 });

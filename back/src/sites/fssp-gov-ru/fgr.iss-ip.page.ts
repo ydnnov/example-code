@@ -25,21 +25,12 @@ export class FgrIssIpPage extends EmitsToBus {
 
         await this.site.pwpage.goto(this.pageUrl);
 
-        const searchForm = new FgrIssIpSfizlicoForm(this);
+        // const searchForm = new FgrIssIpSfizlicoForm(this);
 
-        console.log({ searchForm });
+        // console.log({ searchForm });
 
-        await searchForm.attach(timeout);
+        await this.searchForm.attach(timeout);
 
-        console.log({ searchForm });
+        // console.log({ searchForm });
     }
-
-    // public async getSearchForm(timeout: number) {
-    //     const form = new FgrIssIpSfizlicoForm();
-    //     const isReady = await form.waitReady(timeout);
-    //     if (isReady) {
-    //         return form;
-    //     }
-    //     return null;
-    // }
 }
