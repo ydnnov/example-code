@@ -1,35 +1,14 @@
 <script setup lang="ts">
-import { useToast } from 'primevue/usetoast';
-import Button from 'primevue/button';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import { useEventBusStore } from '~/stores/event-bus.store.js';
 import { bus } from '~/bus.js';
-import useClient from '~/composables/useClient.js';
+import EventsTable from '~/components/event-bus/EventsTable.vue';
+import EventSendForm from '~/components/event-bus/EventSendForm.vue';
 
-const eventBusStore = useEventBusStore();
-const toast = useToast();
-const client = useClient();
+const sendRerun = () => {
+  bus.emit('parsing-rerun');
+};
 
-const send = (side: 'front' | 'back') => {
-
-  if (!eventBusStore.form.eventName.length) {
-    toast.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'Please, enter event name',
-      life: 3000,
-    });
-    return;
-  }
-
-  if (side === 'back') {
-    client.eventBus.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
-  } else if (side === 'front') {
-    bus.emit(eventBusStore.form.eventName, eventBusStore.form.payload);
-  } else {
-    console.log(`Wrong side: "${side}"`);
-  }
+const sendStep = () => {
+  bus.emit('parsing-step');
 };
 </script>
 
@@ -39,98 +18,23 @@ const send = (side: 'front' | 'back') => {
       Events
     </div>
     <div class="mb-[10px]">
-      <div>
-        <InputText
-            class="w-full"
-            v-model="eventBusStore.form.eventName"
-        />
-      </div>
-      <div>
-        <Textarea
-            class="block w-full mt-[10px]"
-            v-model="eventBusStore.form.payload"
-        />
-      </div>
+
       <div class="w-full my-[10px]">
         <Button
-            @click="send('front')"
-            label="send front"
-        >send front
-        </Button>
-        <Button
-            class="ml-2"
-            @click="send('back')"
-            label="send back"
-        >send back
-        </Button>
-      </div>
-    </div>
-    <div class="flex-grow relative">
-      <div class="absolute inset-0">
-        <Button
-            @click="eventBusStore.events.splice(0)"
-            label="clear"
-            severity="danger"
-            class="absolute z-[999] right-[30px] h-[40px]"
-        />
-        <DataTable
-            :value="eventBusStore.events.slice().reverse()"
-            paginator
-            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            currentPageReportTemplate="{first} to {last} of {totalRecords}"
-            :rows="50"
-            :rowsPerPageOptions="[5, 10, 20, 50, 100, 200]"
-            scrollable
-            scroll-height="flex"
+            @click="sendRerun()"
         >
-          <Column field="eventName"
-                  header="Event"
-                  style="width: 35%"
-          >
-            <template #body="{data}">
-              <div :style="data['eventName'].includes('.error.') ? 'color: red' : ''">
-                {{ data['eventName'] }}
-              </div>
-            </template>
-          </Column>
-          <Column field="payload" header="Payload"></Column>
-        </DataTable>
-        <!--
-              <table class="w-full">
-                <tr
-                    class="border-t-[1px] last:border-b-[1px]"
-                >
-                  <th class="border-l-[1px] px-2 w-[25%]">eventName</th>
-                  <th class="border-x-[1px] px-2">payload</th>
-                  <th class="border-x-[1px] w-[35px]">
-                    <Button
-                        @click="eventBusStore.events.splice(0)"
-                        icon="pi pi-times"
-                        severity="danger"
-                        class="w-[30px] h-[30px]"
-                    />
-                  </th>
-                </tr>
-                <tr
-                    class="border-t-[1px] last:border-b-[1px]"
-                    v-for="(event, i) in eventBusStore.events.slice().reverse()"
-                    :key="i"
-                >
-                  <td class="border-l-[1px] px-2 w-[25%]">{{ event.eventName }}</td>
-                  <td class="border-x-[1px] px-2">{{ event.payload }}</td>
-                  <td class="border-x-[1px] w-[35px] text-center">
-                    <Button
-                        @click="eventBusStore.events.splice(eventBusStore.events.length - i - 1, 1)"
-                        icon="pi pi-times"
-                        severity="danger"
-                        class="w-[30px] h-[30px]"
-                    />
-                  </td>
-                </tr>
-              </table>
-        -->
+          Rerun
+        </Button>
+        <Button
+            @click="sendStep()"
+            class="ml-5"
+        >
+          Step
+        </Button>
       </div>
     </div>
+    <EventSendForm />
+    <EventsTable />
   </div>
 </template>
 
