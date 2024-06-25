@@ -1,6 +1,7 @@
 import { ElementHandle } from 'playwright';
 import { EmitsToBus } from '../../classes/emits-to-bus.js';
 import { FsspGovRuSite } from './fssp-gov-ru.site.js';
+import { RaceResult } from '../../types/common.js';
 
 const RESULTS_TBL = '.iss .results table.table';
 
@@ -18,10 +19,8 @@ export class FgrIisfResultsPage extends EmitsToBus {
         return this.site.pwpage;
     }
 
-    public async attach(timeout: number) {
-
-        await this.emit('attaching-results-page');
-
+    public async attach(timeout: number): Promise<RaceResult<{}, string>> {
+        const from = 'iisf-results-page.attach';
         const state = 'attached';
         const elementWait = [
             this.pwpage.waitForSelector(RESULTS_TBL, { state }),
@@ -35,9 +34,16 @@ export class FgrIisfResultsPage extends EmitsToBus {
             }),
         ]);
         if (result === 'timeout') {
-            return false;
+            return {
+                success: false,
+                err: 'timeout',
+                from,
+            };
         }
         this.resultsTableEl = result[0];
-        return true;
+        return {
+            success: true,
+            from,
+        };
     }
 }

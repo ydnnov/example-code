@@ -1,6 +1,8 @@
 import { EmitsToBus } from '../../classes/emits-to-bus.js';
 import { FgrIssIpSfizlicoForm } from './fgr.iss-ip-sfizlico.form.js';
 import { FsspGovRuSite } from './fssp-gov-ru.site.js';
+import { RaceResult } from '../../types/common.js';
+import { helpers } from '../../helpers/helpers.js';
 
 export class FgrIssIpPage extends EmitsToBus {
 
@@ -20,10 +22,15 @@ export class FgrIssIpPage extends EmitsToBus {
         return this.site.pwpage;
     }
 
-    public async open(timeout: number) {
-        await this.emit('opening');
+    public async open(timeout: number): Promise<RaceResult> {
+        const from = 'iss-ip-page.open';
+        await this.emit('before-open', { timeout });
         await this.pwpage.goto(this.pageUrl);
-        const attached = await this.searchForm.attach(timeout);
-        return attached;
+        const result = Promise.race([
+            this.searchForm.attach(timeout),
+            this.site.handleSomethingWentWrongMessage(),
+            helpers.raceTimeout(from, timeout),
+        ]);
+        return result;
     }
 }

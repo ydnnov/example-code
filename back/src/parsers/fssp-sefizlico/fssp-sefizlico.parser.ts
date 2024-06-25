@@ -4,10 +4,9 @@ import { services } from '../../services/services.js';
 import { StdResult } from '../../types/common.js';
 import { AppEvent } from '../../shared/classes/app-event.js';
 import { ParserBase } from '../parser-base.js';
-import { pwpage, pwpageRecreate, pwpageSet } from '../../pwpage.js';
+import { pwpage } from '../../pwpage.js';
 import { CaptchaAnswerRequestEntity } from '../../entities/captcha-answer-request.entity.js';
 import { helpers } from '../../helpers/helpers.js';
-import { FsspGovRuSite } from '../../sites/fssp-gov-ru/fssp-gov-ru.site.js';
 import { FsspSefizlicoAttemptHandler } from './fssp-sefizlico.attempt-handler.js';
 import { ParserTaskAttemptEntity } from '../../entities/parser-task-attempt.entity.js';
 import { db } from '../../data-source.js';
@@ -38,6 +37,7 @@ export class FsspSefizlicoParser extends ParserBase {
 
         // let lastError;
         let stop = false;
+        // let paused = true;
         let i = 0;
         while(!stop) {
             // try {
@@ -49,13 +49,6 @@ export class FsspSefizlicoParser extends ParserBase {
             let attemptEnt = await taskAttemptRepo.findOneBy({ id: 2 });
             const attemptHandler = new FsspSefizlicoAttemptHandler(attemptEnt);
             const result = await attemptHandler.perform();
-            console.log({result});
-            if (result) {
-                return {
-                    success: true,
-                    resultHtml: [String(result)],
-                };
-            }
 
             console.log('waiting...');
             await new Promise((resolve) => {
@@ -68,47 +61,48 @@ export class FsspSefizlicoParser extends ParserBase {
                         stop = true;
                         resolve();
                     }
-                    // console.log('on any handler');
-                    // console.log({ event });
-                    // resolve();
                 };
                 bus.onAny(handler);
-                // bus.once('parsing-resume', () => {
-                //     resolve();
-                // });
-                // bus.once('parsing-stop', () => {
-                //     stop = true;
-                //     resolve();
-                // });
             });
             console.log('...passed wait');
 
-            // if (!result) {
-            //     throw new Error('Failed parsing attempt');
+            // break;
+            // process.exit(0);
+            // console.log({result});
+            // if (result) {
+            //     return {
+            //         success: true,
+            //         resultHtml: [String(result)],
+            //     };
             // }
-            // const attempt=new FsspSefizlicoAttemptHandler()
-
-            // await pwpageRecreate();
             //
-            // const site = new FsspGovRuSite(pwpage);
             //
-            // await site.issIpPage.open(100);
-            // // site.issIpPage.searchForm.inputFields()
+            // // if (!result) {
+            // //     throw new Error('Failed parsing attempt');
+            // // }
+            // // const attempt=new FsspSefizlicoAttemptHandler()
             //
-            // console.log({ issIpPage: site.issIpPage });
-
-            // issIpPage.
-
-            // } catch (err) {
-            //     console.log(err);
-
-            // if (!issIpPage) {
-            //     await bus.emit('error.failed-to-open-iss-ip-page');
-            //     lastError = 'Failed to open iss ip page, site might be down';
-            //     continue;
-            // }
-            // }
-            i++;
+            // // await pwpageRecreate();
+            // //
+            // // const site = new FsspGovRuSite(pwpage);
+            // //
+            // // await site.issIpPage.open(100);
+            // // // site.issIpPage.searchForm.inputFields()
+            // //
+            // // console.log({ issIpPage: site.issIpPage });
+            //
+            // // issIpPage.
+            //
+            // // } catch (err) {
+            // //     console.log(err);
+            //
+            // // if (!issIpPage) {
+            // //     await bus.emit('error.failed-to-open-iss-ip-page');
+            // //     lastError = 'Failed to open iss ip page, site might be down';
+            // //     continue;
+            // // }
+            // // }
+            // i++;
         }
 
         // const regionInputEl = await pwpage.waitForSelector('#region_id_chosen input', {
@@ -194,12 +188,12 @@ export class FsspSefizlicoParser extends ParserBase {
         //     success: true,
         //     resultHtml,
         // };
-
+        //
         // await bus.emit('parser.fssp-sefizlico.parsing-failure');
 
         return {
             success: false,
-            err: lastError,
+            err: 'lastError',
         };
     }
 

@@ -2,7 +2,7 @@ import { ElementHandle } from 'playwright';
 import { EmitsToBus } from '../../classes/emits-to-bus.js';
 import { FgrIssIpPage } from './fgr.iss-ip.page.js';
 import { FgrCaptchaForm } from './fgr.captcha.form.js';
-import { StdResult } from '../../types/common.js';
+import { RaceResult, StdResult } from '../../types/common.js';
 
 const REGION_DD = '#region_id_chosen input';
 const LASTNAME_INP = '[name="is[last_name]"]';
@@ -34,7 +34,8 @@ export class FgrIssIpSfizlicoForm extends EmitsToBus {
         return this.site.pwpage;
     }
 
-    public async attach(timeout: number) {
+    public async attach(timeout: number): Promise<RaceResult> {
+        const from = 'sfizlico-form.attach';
         const state = 'attached';
         const elementWait = [
             this.pwpage.waitForSelector(REGION_DD, { state }),
@@ -53,7 +54,11 @@ export class FgrIssIpSfizlicoForm extends EmitsToBus {
             }),
         ]);
         if (result === 'timeout') {
-            return false;
+            return {
+                success: false,
+                err: 'timeout',
+                from,
+            };
         }
         this.regionDropdownEl = result[0];
         this.lastnameInputEl = result[1];
@@ -61,7 +66,10 @@ export class FgrIssIpSfizlicoForm extends EmitsToBus {
         this.midnameInputEl = result[3];
         this.dobInputEl = result[4];
         this.searchButtonEl = result[5];
-        return true;
+        return {
+            success: true,
+            from,
+        };
     }
 
     public async inputFields(fio: string, dob: string, region: string) {
@@ -91,35 +99,23 @@ export class FgrIssIpSfizlicoForm extends EmitsToBus {
         await this.pwpage.keyboard.press('Enter');
     }
 
-    public async submitSearch(timeout: number): Promise<StdResult<{
-        form: FgrCaptchaForm
+    public async submitSearch(timeout: number): Promise<RaceResult<{
+        captchaForm: FgrCaptchaForm
     }>> {
+        const from = 'sfizlico-form.submit';
         await this.searchButtonEl.click();
-        const form = new FgrCaptchaForm(this.site);
-        const result = Promise.race([
-            form.attach(timeout),
-            this.site.waitSomethingWentWrongMessage(timeout)
-                .then(v => {
-                    console.log(v);
-                    return {
-                        success: false,
-                        err: 'smth-wrong-msg',
-                    };
-                }),
+        const captchaForm = new FgrCaptchaForm(this.site);
+        const result = await Promise.race([
+            captchaForm.attach(timeout),
+            this.site.handleSomethingWentWrongMessage(),
         ]);
-        const attached = await form.attach(timeout);
-        if (attached) {
+        if (result.success === true) {
             return {
                 success: true,
-                form,
+                captchaForm,
+                from,
             };
         }
-        if (this.site.hasSomethingWentWrongMessage()) {
-            return {
-                success: false,
-                err: 'smth-wrong-msg',
-            };
-        }
-        return result ? form : null;
+        return result;
     }
 }

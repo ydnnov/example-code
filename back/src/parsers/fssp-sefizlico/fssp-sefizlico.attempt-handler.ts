@@ -5,8 +5,8 @@ import { EmitsToBus } from '../../classes/emits-to-bus.js';
 import { services } from '../../services/services.js';
 import { bus } from '../../bus.js';
 import { AppEvent } from '../../shared/classes/app-event.js';
-import { ParsingAttemptError } from '../../errors/parsing/parsing-attempt.error.js';
 import { FgrCaptchaForm } from '../../sites/fssp-gov-ru/fgr.captcha.form.js';
+import { StdResult } from '../../types/common.js';
 
 export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
@@ -22,63 +22,76 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
         return this.attemptEntity.parserTask.input_data;
     }
 
-    public async perform(numCaptchaAttempts: number = 1) {
+    public async perform(numCaptchaAttempts: number = 1): Promise<StdResult> {
 
         await pwpageRecreate();
 
         const site = new FsspGovRuSite(pwpage, this.attemptEntity);
 
-        // return;
-        if (!await site.issIpPage.open(15000)) {
-            return false;
+        const issIpPageOpenResult = await site.issIpPage.open(15000);
+        if (!issIpPageOpenResult.success) {
+            return issIpPageOpenResult;
         }
+
         await site.issIpPage.searchForm.inputFields(
             this.inputData['fio'],
             this.inputData['dob'],
             this.inputData['reg'],
         );
-        const captchaForm = await site.issIpPage.searchForm.submitSearch(15000);
-        console.log({ captchaForm });
-        // const captchaForm = await site.issIpPage.searchForm.submitSearch(15000);
-        // // console.log({ captchaForm });
-        // if (!captchaForm) {
-        //     this.emit('no-captcha-form');
-        //     const smthWrongMsg = await site.hasSomethingWentWrongMessage(5000);
-        //     console.log({ smthWrongMsg });
-        //     return false;
-        // }
-        // const solveCaptchaResult = await this.solveCaptcha(captchaForm, 5);
 
-        // console.log({ solveCaptchaResult });
+        const searchSubmitResult = await site.issIpPage.searchForm.submitSearch(15000);
+        if (!searchSubmitResult.success) {
+            return searchSubmitResult;
+        }
+
+        const captchaForm = searchSubmitResult.captchaForm;
+
+        const solveCaptchaResult = await this.solveCaptcha(captchaForm, 5);
+
+        console.log({ solveCaptchaResult });
     }
 
-    protected async solveCaptcha(captchaForm: FgrCaptchaForm, numAttempts: number) {
-        // console.log({ captchaForm, numAttempts });
+    protected async solveCaptcha(
+        captchaForm: FgrCaptchaForm,
+        numAttempts: number,
+    ): Promise<StdResult> {
+
         for (let i = 1; i <= numAttempts; i++) {
-            const captchaBase64 = await captchaForm.getImageBase64(5000);
-            const answer = await this.getCaptchaAnswer(captchaBase64);
+
+            const captchaBase64Result = await captchaForm.getImageBase64(5000);
+            if (!captchaBase64Result.success) {
+                return captchaBase64Result;
+            }
+
+            const answer = await this.getCaptchaAnswer(captchaBase64Result.data);
             console.log('received answer: ' + answer);
+
             await captchaForm.inputAnswer(answer);
+
             const result = await captchaForm.submit(5000);
-            console.log({ result });
-            // const smthWrongMsg = await captchaForm.site.hasSomethingWentWrongMessage(5000);
-            // console.log({ smthWrongMsg });
-            // if (result === 'timeout') {
-            //     continue;
-            // }
-            // if (result === 'wrong-answer') {
-            //     continue;
-            // }
-            // if (result === 'success') {
-            //     return true;
+            console.log({result});
+            if (result.success === true) {
+                return result;
+            }
+
+            if (result.err === 'has-wrong-captcha-msg') {
+                continue;
+            }
+
+            // if (result.err === 'smth-wrong-msg' || result.err === 'timeout') {
+            return result;
             // }
         }
-        return false;
+
+        return {
+            success: false,
+            err: 'out-of-attempts',
+        };
     }
 
     protected async getCaptchaAnswer(
         imageBase64: string,
-    ): Promise<string> {
+    ): Promise<StdResult> {
 
         const ansreqEnt = await services.siteCaptcha
             .createAnswerRequest(imageBase64);
@@ -96,12 +109,22 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
                 if (eventName === 'captcha.answer-received') {
                     bus.emitter.offAny(handler);
                     if (!(appEvent.payload || '').length) {
-                        reject('Empty captcha answer');
+                        resolve({
+                            success:false,
+                            err:'empty-captcha-answer'
+                        })
                     }
                     resolve(appEvent.payload);
                 } else if (eventName === 'captcha.rucaptcha-error') {
                     bus.emitter.offAny(handler);
-                    reject(appEvent.payload);
+                    resolve({
+                        success:false,
+                        err:appEvent.payload
+                    });
+                    resolve({
+                        success:true,
+                        imageBase64
+                    });
                 }
             };
             bus.onAny(handler);

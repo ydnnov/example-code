@@ -15,12 +15,12 @@ export type StdResultFail<TErr = any> = {
     err: TErr
 }
 
-export type ResultProducer = {
-    from?: string
-}
-
 export type StdResult<TData = {}, TErr = any>
-    = (StdResultSuccess<TData> | StdResultFail<TErr>) & ResultProducer
+    = (StdResultSuccess<TData> | StdResultFail<TErr>)
+
+export type RaceResult<TData = {}, TErr = any> = StdResult<TData, TErr> & {
+    from: string
+}
 
 // export type GenericDictionary = {
 //     [k: string]: any

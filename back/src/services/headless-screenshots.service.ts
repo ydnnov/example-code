@@ -94,7 +94,7 @@ export class HeadlessScreenshotsService {
             websocket.sockets.emit('update-screenshot', screenshot.toString('base64'));
             // websocket.sockets.emit('update-screenshot', imgData.toString('base64'));
         } catch (err) {
-            console.log(helpers.consoleHeader('ERROR IN CAPTURING SCREENSHOT', '=', 31));
+            console.log(helpers.consoleHeader('ERROR IN CAPTURING SCREENSHOT', 100, '=', 31));
             logger.error(err);
             console.log(helpers.colorizeForConsole(31, '='.repeat(100)));
         }

@@ -56,6 +56,18 @@ const helpers = {
         });
     },
 
+    raceTimeout: async (from: string, timeout: number) => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve({
+                    success: false,
+                    err: 'timeout',
+                    from,
+                });
+            }, timeout);
+        });
+    },
+
     colorizeForConsole: (colorNum, message) => {
         // TODO запили чтобы цвета были не цифрой какой то непонятной,
         //      а чтобы писать 'red' / 'green' / 'blue', и через

@@ -38,9 +38,7 @@ export class CodeExecService {
                 try {
                     ${code};
                 } catch (err) {
-                    console.log(helpers.colorizeForConsole(31,
-                        helpers.consoleHeader('RUNTIME ERROR', '!'),
-                    ));
+                    console.log(helpers.consoleHeader('RUNTIME ERROR', 100, '!', 31));
                     console.error(err);
                     console.log(helpers.colorizeForConsole(31, '!'.repeat(100)));
                 }
