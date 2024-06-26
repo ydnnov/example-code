@@ -12,6 +12,7 @@ export default function useClient() {
     const { $request } = useNuxtApp() as { $request: Axios };
 
     return {
+        $request,
         codeExec: new CodeExecClient($request),
         eventBus: new EventBusClient($request),
         headless: new HeadlessClient($request),
