@@ -1,5 +1,6 @@
 import { FrontInitType } from '../shared/schemas/front/init.js';
 import { pwpage } from '../pwpage.js';
+import { parsing } from '../helpers/parsing.js';
 
 export class FrontService {
 
@@ -9,7 +10,7 @@ export class FrontService {
                 url: pwpage.url(),
             },
             parser: {
-                paused: true,
+                paused: parsing.paused,
             },
         };
     }
