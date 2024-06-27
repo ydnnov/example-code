@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import useClient from '~/composables/useClient.js';
+import { useFrontStore } from '~/stores/front.store.js';
 
 const client = useClient();
+const { frontInitData } = useFrontStore();
 
 const predefinedSites = reactive([
   ['yandex.ru', 'YandexRu'],
@@ -11,7 +13,7 @@ const predefinedSites = reactive([
   ['http://2ust.arh.msudrf.ru', '2ust.arh.msudrf.ru'],
   ['http://32.sar.msudrf.ru', '32.sar.msudrf.ru'],
 ]);
-const currentUrl = ref('');
+const currentUrl = ref(frontInitData?.page.url);
 const goto = (value: string) => {
   if (value.match(/^https?:\/\//)) {
     currentUrl.value = value;
@@ -23,11 +25,6 @@ const goto = (value: string) => {
 const reloadPage = () => {
   client.headless.reloadPage();
 };
-
-onMounted(async () => {
-  const url = await client.headless.getUrl();
-  currentUrl.value = url;
-});
 </script>
 
 <template>
