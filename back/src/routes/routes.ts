@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { codeExecRoutes } from './code-exec.routes.js';
 import { eventBusRoutes } from './event-bus.routes.js';
+import { frontRoutes } from './front.routes.js';
 import { headlessRoutes } from './headless.routes.js';
 import { headlessScreenshotsRoutes } from './headless-screenshots.routes.js';
 import { parserRoutes } from './parser.routes.js';
@@ -16,6 +17,7 @@ import { bus } from '../bus.js';
 export function routes(fastify: FastifyInstance, options, done) {
     codeExecRoutes(fastify);
     eventBusRoutes(fastify);
+    frontRoutes(fastify);
     headlessRoutes(fastify);
     headlessScreenshotsRoutes(fastify);
     parserRoutes(fastify);
