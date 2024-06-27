@@ -48,8 +48,8 @@ export class FsspSefizlicoParser extends ParserBase {
             // attemptEnt = await taskAttemptRepo.findOneBy({ id: attemptEnt.id });
             let attemptEnt = await taskAttemptRepo.findOneBy({ id: 2 });
             const attemptHandler = new FsspSefizlicoAttemptHandler(attemptEnt);
-            const result = await attemptHandler.perform();
-
+            const attemptResult = await attemptHandler.perform();
+            console.log({ attemptResult });
             console.log('waiting...');
             await new Promise((resolve) => {
                 const handler = (event: string, ...args) => {

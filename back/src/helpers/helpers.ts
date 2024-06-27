@@ -1,6 +1,7 @@
 import { Page } from 'playwright';
 import { ElementHandle } from 'playwright';
 import { StdResult } from '../types/common.js';
+import { bus } from '../bus.js';
 
 const helpers = {
     fmtDateTime: (d: Date): string => {
@@ -68,6 +69,16 @@ const helpers = {
         });
     },
 
+    async waitEvent(events: string[]) {
+        const handler = (...args) => {
+            console.log(args);
+        };
+        const result = new Promise((resolve) => {
+            bus.once('parsing-step', handler);
+        });
+        return result;
+    },
+
     colorizeForConsole: (colorNum, message) => {
         // TODO запили чтобы цвета были не цифрой какой то непонятной,
         //      а чтобы писать 'red' / 'green' / 'blue', и через
@@ -81,8 +92,9 @@ const helpers = {
         separatorChar = '=',
         colorNum = 0,
     ) => {
+        const realWidth = (width / separatorChar.length);
         return `\x1b[${colorNum}m${separatorChar.repeat(2)} ${message} ` +
-            `${separatorChar.repeat(80 - (message.length + 4))}\x1b[0m`;
+            `${separatorChar.repeat(realWidth - (message.length + 4))}\x1b[0m`;
     },
 
     chunkify<T>(arr: T[], chunkSize: number): T[][] {

@@ -7,6 +7,7 @@ import { bus } from '../../bus.js';
 import { AppEvent } from '../../shared/classes/app-event.js';
 import { FgrCaptchaForm } from '../../sites/fssp-gov-ru/fgr.captcha.form.js';
 import { StdResult } from '../../types/common.js';
+import { parsing } from '../../helpers/parsing.js';
 
 export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
@@ -19,6 +20,10 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
     }
 
     get inputData() {
+        // console.log({ parserTask: this.attemptEntity.parserTask });
+        // if (!this.attemptEntity.parserTask['input_data']) {
+        //     throw new Error('no this.attemptEntity.parserTask[\'input_data\']');
+        // }
         return this.attemptEntity.parserTask.input_data;
     }
 
@@ -28,10 +33,14 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
         const site = new FsspGovRuSite(pwpage, this.attemptEntity);
 
+        await parsing.step('open-page');
+
         const issIpPageOpenResult = await site.issIpPage.open(15000);
         if (!issIpPageOpenResult.success) {
             return issIpPageOpenResult;
         }
+
+        await parsing.step('input-fields');
 
         await site.issIpPage.searchForm.inputFields(
             this.inputData['fio'],
@@ -39,14 +48,24 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
             this.inputData['reg'],
         );
 
+        await parsing.step('submit-form');
+
         const searchSubmitResult = await site.issIpPage.searchForm.submitSearch(15000);
         if (!searchSubmitResult.success) {
             return searchSubmitResult;
         }
 
+        await parsing.step('solve-captcha');
+
         const captchaForm = searchSubmitResult.captchaForm;
 
         const solveCaptchaResult = await this.solveCaptcha(captchaForm, 5);
+
+        if (!solveCaptchaResult.success) {
+            return solveCaptchaResult;
+        }
+
+        await parsing.step('before-...');
 
         console.log({ solveCaptchaResult });
     }
@@ -56,7 +75,16 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
         numAttempts: number,
     ): Promise<StdResult> {
 
-        for (let i = 1; i <= numAttempts; i++) {
+        let i = 0;
+        let stop = false;
+        bus.on('stop-captcha', () => {
+            stop = true;
+        });
+        while(!stop) {
+
+            i++;
+
+            await parsing.step(`solve-captcha-attempt-${i}`);
 
             const captchaBase64Result = await captchaForm.getImageBase64(5000);
             if (!captchaBase64Result.success) {
@@ -64,23 +92,27 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
             }
 
             const answer = await this.getCaptchaAnswer(captchaBase64Result.data);
-            console.log('received answer: ' + answer);
+            console.log('received captcha answer', answer);
 
-            await captchaForm.inputAnswer(answer);
+            if (!answer.success) {
+                continue;
+            }
+
+            await captchaForm.inputAnswer(answer.answerText);
 
             const result = await captchaForm.submit(5000);
-            console.log({result});
+            console.log({ result });
             if (result.success === true) {
                 return result;
             }
 
-            if (result.err === 'has-wrong-captcha-msg') {
-                continue;
-            }
-
-            // if (result.err === 'smth-wrong-msg' || result.err === 'timeout') {
-            return result;
+            // if (result.err === 'has-wrong-captcha-msg') {
+            //     continue;
             // }
+            //
+            // // if (result.err === 'smth-wrong-msg' || result.err === 'timeout') {
+            // return result;
+            // // }
         }
 
         return {
@@ -91,46 +123,51 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
     protected async getCaptchaAnswer(
         imageBase64: string,
-    ): Promise<StdResult> {
+    ): Promise<StdResult<{ answerText: string }>> {
 
         const ansreqEnt = await services.siteCaptcha
             .createAnswerRequest(imageBase64);
 
-        const answerPromise = new Promise<string>((resolve, reject) => {
+        const answerPromise = new Promise<StdResult<{ answerText: string }>>((resolve, reject) => {
             const handler = (eventName: string, arg) => {
+                console.log({ eventName, arg });
                 if (![
                     'captcha.answer-received',
                     'captcha.rucaptcha-error',
                 ].includes(eventName)) {
                     return;
                 }
+                bus.emitter.offAny(handler);
                 const appEvent = <AppEvent<any>>arg;
                 console.log({ appEvent });
                 if (eventName === 'captcha.answer-received') {
-                    bus.emitter.offAny(handler);
                     if (!(appEvent.payload || '').length) {
                         resolve({
-                            success:false,
-                            err:'empty-captcha-answer'
-                        })
+                            success: false,
+                            err: 'empty-captcha-answer',
+                        });
                     }
-                    resolve(appEvent.payload);
-                } else if (eventName === 'captcha.rucaptcha-error') {
-                    bus.emitter.offAny(handler);
                     resolve({
-                        success:false,
-                        err:appEvent.payload
+                        success: true,
+                        answerText: appEvent.payload,
                     });
+                } else if (eventName === 'captcha.rucaptcha-error') {
                     resolve({
-                        success:true,
-                        imageBase64
+                        success: false,
+                        err: appEvent.payload,
                     });
                 }
+                resolve({
+                    success: false,
+                    err: appEvent.payload,
+                });
             };
             bus.onAny(handler);
         });
 
-        // await services.siteCaptcha.getFromRucaptchaCom(imageBase64);
+        if (!parsing.paused) {
+            // await services.siteCaptcha.getFromRucaptchaCom(imageBase64);
+        }
 
         return answerPromise;
     }

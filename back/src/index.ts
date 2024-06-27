@@ -40,6 +40,15 @@ process.on('unhandledRejection', async (error) => {
     console.log(helpers.colorizeForConsole(31, '+-'.repeat(40)));
 });
 
+// process.on('exit', function () {
+//     console.log('process on exit');
+//     require('child_process').spawn(process.argv.shift(), process.argv, {
+//         cwd: process.cwd(),
+//         detached: true,
+//         stdio: 'inherit',
+//     });
+// });
+
 (async () => {
 
     fastify.register(fastifyCors, { origin: '*' });
@@ -85,7 +94,7 @@ process.on('unhandledRejection', async (error) => {
         // parser.run();
         const mgr = db.createEntityManager();
         const taskRepo = mgr.getRepository(ParserTaskEntity);
-        const taskEnt = await taskRepo.findOneBy({ id: 140 });
+        const taskEnt = await taskRepo.findOneBy({ id: 144 });
         const parserFactory = new ParserFactory();
         const parser = parserFactory.create(taskEnt);
         const result = await parser.run();

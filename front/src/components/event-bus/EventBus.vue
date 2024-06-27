@@ -3,12 +3,33 @@ import { bus } from '~/bus.js';
 import EventsTable from '~/components/event-bus/EventsTable.vue';
 import EventSendForm from '~/components/event-bus/EventSendForm.vue';
 
+const parsingInProgress = ref(true);
+const { $request } = useClient();
+
 const sendRerun = () => {
-  bus.emit('parsing-rerun');
+  // bus.emit('parsing-rerun');
+  // $request.post('/restart');
+  // bus.emit('parsing-resume');
 };
 
+bus.on('parsing-step-finished', () => {
+  parsingInProgress.value = false;
+});
+
+const paused = ref(false);
+const sendPause = () => {
+  paused.value = true;
+  parsingInProgress.value = true;
+  bus.emit('parsing.pause');
+};
+const sendPlay = () => {
+  paused.value = false;
+  parsingInProgress.value = true;
+  bus.emit('parsing.play');
+};
 const sendStep = () => {
-  bus.emit('parsing-step');
+  parsingInProgress.value = true;
+  bus.emit('parsing.step');
 };
 </script>
 
@@ -21,16 +42,23 @@ const sendStep = () => {
 
       <div class="w-full my-[10px]">
         <Button
-            @click="sendRerun()"
+            @click="sendPause()"
+            icon="pi pi-pause"
         >
-          Rerun
+        </Button>
+        <Button
+            @click="sendPlay()"
+            icon="pi pi-play"
+            class="ml-2"
+        >
         </Button>
         <Button
             @click="sendStep()"
-            class="ml-5"
+            icon="pi pi-step-forward"
+            class="ml-2"
         >
-          Step
         </Button>
+<!--        <div v-if="parsingInProgress">in progress</div>-->
       </div>
     </div>
     <EventSendForm />
