@@ -7,6 +7,7 @@ import TopBar from '~/components/layout/TopBar.vue';
 import CodeExec from '~/components/code-exec/CodeExec.vue';
 import HeadlessControls from '~/components/headless/HeadlessControls.vue';
 import EventBus from '~/components/event-bus/EventBus.vue';
+// import HeadlessComponent from '~/components/headless/HeadlessComponent.vue';
 
 const showCaptcha = ref(false);
 
@@ -14,11 +15,11 @@ const { ui } = useUiStore();
 const frontStore = useFrontStore();
 await frontStore.reloadInitData();
 
-
 const componentByKey = (key: string) => {
   switch (key) {
     case 'headless':
       return HeadlessControls;
+      // return HeadlessComponent;
     case 'code-exec':
       return CodeExec;
     case 'event-bus':

@@ -2,6 +2,11 @@ import { ClientBase } from '~/client/client-base.js';
 
 export class HeadlessClient extends ClientBase {
 
+    async getTabs() {
+        const response = await this.request.get('headless/tabs');
+        return response.data;
+    }
+
     goto(url: string) {
         this.request.post('headless/goto', { url });
     }
