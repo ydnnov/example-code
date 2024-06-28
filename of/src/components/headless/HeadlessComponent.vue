@@ -5,8 +5,8 @@ import { useHeadlessStore } from '~/stores/headless.store.js';
 
 const client = useClient();
 // const { frontInitData } = useFrontStore();
-const headless = useHeadlessStore();
-console.log({ headless });
+// const headless = useHeadlessStore();
+// console.log({ headless });
 // const predefinedSites = reactive([
 //   ['yandex.ru', 'YandexRu'],
 //   ['google.com', 'GoogleCom'],
@@ -15,22 +15,24 @@ console.log({ headless });
 //   ['http://32.sar.msudrf.ru', '32.sar.msudrf.ru'],
 // ]);
 // const currentUrl = ref(frontInitData?.page.url);
-const goto = (tabId: number, url: string) => {
-  const tab = headless.tabs[tabId];
-  // if (url.match(/^https?:\/\//)) {
-  //   currentUrl.value = value;
-  // } else {
-  //   currentUrl.value = 'https://' + value;
-  // }
-  // client.headless.goto(currentUrl.value);
-};
-// const reloadPage = () => {
-//   client.headless.reloadPage();
+// const goto = (tabId: number, url: string) => {
+//   const tab = headless.tabs[tabId];
+//   // if (url.match(/^https?:\/\//)) {
+//   //   currentUrl.value = value;
+//   // } else {
+//   //   currentUrl.value = 'https://' + value;
+//   // }
+//   // client.headless.goto(currentUrl.value);
 // };
+// // const reloadPage = () => {
+// //   client.headless.reloadPage();
+// // };
 </script>
 
 <template>
 
+  <div>qwe</div>
+<!--
   <TabView>
     <TabPanel v-for="tab in headless.tabs" :key="tab.id" :header="tab.url">
       <div class="">
@@ -43,6 +45,7 @@ const goto = (tabId: number, url: string) => {
       </div>
     </TabPanel>
   </TabView>
+-->
 
   <!--  <div class="">
       <div class="mt-1">

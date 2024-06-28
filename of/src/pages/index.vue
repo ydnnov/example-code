@@ -5,9 +5,9 @@ import { useUiStore } from '~/stores/ui.store.js';
 import { useFrontStore } from '~/stores/front.store.js';
 import TopBar from '~/components/layout/TopBar.vue';
 import CodeExec from '~/components/code-exec/CodeExec.vue';
-import HeadlessControls from '~/components/headless/HeadlessControls.vue';
+// import HeadlessControls from '~/components/headless/HeadlessControls.vue';
 import EventBus from '~/components/event-bus/EventBus.vue';
-// import HeadlessComponent from '~/components/headless/HeadlessComponent.vue';
+import HeadlessComponent from '~/components/headless/HeadlessComponent.vue';
 
 const showCaptcha = ref(false);
 
@@ -18,8 +18,8 @@ await frontStore.reloadInitData();
 const componentByKey = (key: string) => {
   switch (key) {
     case 'headless':
-      return HeadlessControls;
-      // return HeadlessComponent;
+      // return HeadlessControls;
+      return HeadlessComponent;
     case 'code-exec':
       return CodeExec;
     case 'event-bus':
