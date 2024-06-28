@@ -21,12 +21,15 @@ const parsing = {
     step(stepName: string) {
         bus.emit('parsing.step.' + stepName);
         if (!parsing.paused) {
-            console.log('not paused');
+            console.log('playing');
             return;
         }
         console.log('paused');
         const result = new Promise((resolve) => {
             bus.once('parsing.step', () => {
+                resolve();
+            });
+            bus.once('parsing.play', () => {
                 resolve();
             });
         });
