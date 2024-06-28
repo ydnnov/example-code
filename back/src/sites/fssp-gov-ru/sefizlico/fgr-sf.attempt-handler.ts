@@ -7,7 +7,7 @@ import { bus } from '../../bus.js';
 import { FgrCaptchaForm } from '../../sites/fssp-gov-ru/fgr.captcha.form.js';
 import { StdResult } from '../../types/common.js';
 import { parsing } from '../../helpers/parsing.js';
-import { FsspSefizlicoParser } from './fssp-sefizlico.parser.js';
+import { FgrSfParser } from './fgr-sf.parser.js';
 import { Page as PlaywrightPage } from 'playwright';
 import { helpers } from '../../helpers/helpers.js';
 import { bag } from '../../bag.js';
@@ -17,12 +17,12 @@ const RESET_RESULT: StdResult = {
     err: 'parser-reset',
 };
 
-export class FsspSefizlicoAttemptHandler extends EmitsToBus {
+export class FgrSfAttemptHandler extends EmitsToBus {
 
     protected eventPrefix = 'fssp-sefizlico.attempt-handler';
 
     constructor(
-        public readonly parser: FsspSefizlicoParser,
+        public readonly parser: FgrSfParser,
         public readonly attemptEntity: ParserTaskAttemptEntity,
         public readonly pwpage: PlaywrightPage,
     ) {

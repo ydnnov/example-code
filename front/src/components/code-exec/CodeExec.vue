@@ -138,6 +138,7 @@ declare const page: Page, browser: Browser;
 
   editor = monaco.editor.create(editorEl.value, {
     // value: getCurrentTab()?.code,
+    fontSize: 18,
     language: 'typescript',
     automaticLayout: true,
     model,

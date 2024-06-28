@@ -5,7 +5,9 @@ import { RaceResult, StdResult } from '../../types/common.js';
 
 const RESULTS_TBL = '.iss .results table.table';
 const PAGINATION = '.iss .results .pagination';
-const PAGINATION_LN = '.iss .results .pagination a';
+const PAGINATION_LN = '.iss .results .pagination .context>a, ' +
+    '.iss .results .pagination .context>span';
+const TOTAL_RECS = '.iss .results .search-found-total .search-found-total-inner';
 
 export class FgrIisfResultsPage extends EmitsToBus {
 
@@ -53,17 +55,58 @@ export class FgrIisfResultsPage extends EmitsToBus {
         return this.pwpage.$(PAGINATION);
     }
 
+    public async getNumFound() {
+        const el = await this.pwpage.$(TOTAL_RECS);
+        if (!el) {
+            return null;
+        }
+        const text = (await el.getProperty('innerText')).toString();
+        const matches = text.match(/\d+/);
+        if (!matches || !matches[0]) {
+            return null;
+        }
+        const result = Number(matches[0]);
+        return result;
+    }
+
+    public async getNumPages() {
+        const pagination = await this.getPagination();
+        console.log({ pagination });
+    }
+
     public async getPagination() {
         const links = await this.pwpage.$$(PAGINATION_LN);
         const result = [];
         for (let i = 0; i < links.length; i++) {
             const el = links[i];
+            const text = (await el.getProperty('innerText')).toString().trim();
+            if (!text.match(/\d+/)) {
+                continue;
+            }
+            const pageNum = Number(text);
+            const className = (await el.getProperty('className')).toString().trim();
             result.push({
                 el,
-                cls: (await el.getProperty('class')).toString(),
-                clsn: (await el.getProperty('className')).toString(),
+                pageNum,
+                className,
+                isActive: className.includes('active'),
+                text,
             });
         }
-        console.log({ result });
+        return result;
+    }
+
+    public async openNextPage() {
+        const pagination = await this.getPagination();
+        const activeIndex = pagination.findIndex(x => x.isActive);
+        if (activeIndex >= pagination.length - 1) {
+            console.log('last page');
+            return false;
+        }
+        console.log({ activeIndex });
+        const nextPage = pagination[activeIndex + 1].el;
+        const linkHtml = (await nextPage.getProperty('outerHTML')).toString();
+        console.log({ linkHtml });
+        await nextPage.click();
     }
 }

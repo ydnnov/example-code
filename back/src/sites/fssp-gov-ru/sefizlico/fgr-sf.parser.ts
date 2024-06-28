@@ -1,15 +1,15 @@
 import * as cheerio from 'cheerio';
-import { bus } from '../../bus.js';
-import { services } from '../../services/services.js';
-import { StdResult } from '../../types/common.js';
-import { AppEvent } from '../../shared/classes/app-event.js';
-import { ParserBase } from '../parser-base.js';
-import { pwpage } from '../../pwpage.js';
-import { CaptchaAnswerRequestEntity } from '../../entities/captcha-answer-request.entity.js';
-import { helpers } from '../../helpers/helpers.js';
-import { FsspSefizlicoAttemptHandler } from './fssp-sefizlico.attempt-handler.js';
-import { ParserTaskAttemptEntity } from '../../entities/parser-task-attempt.entity.js';
-import { db } from '../../data-source.js';
+import { db } from '../../../data-source.js';
+import { bus } from '../../../bus.js';
+import { services } from '../../../services/services.js';
+import { StdResult } from '../../../types/common.js';
+import { AppEvent } from '../../../shared/classes/app-event.js';
+import { ParserBase } from '../../../parsers/parser-base.js';
+import { pwpage } from '../../../pwpage.js';
+import { CaptchaAnswerRequestEntity } from '../../../entities/captcha-answer-request.entity.js';
+import { helpers } from '../../../helpers/helpers.js';
+import { FgrSfAttemptHandler } from './fgr-sf.attempt-handler.js';
+import { ParserTaskAttemptEntity } from '../../../entities/parser-task-attempt.entity.js';
 
 type GetCaptchaAnswerResultType = {
     answerRequestEntity: CaptchaAnswerRequestEntity,
@@ -21,9 +21,9 @@ type GetCaptchaAnswerResultType = {
     err: any
 }
 
-export class FsspSefizlicoParser extends ParserBase {
+export class FgrSfParser extends ParserBase {
 
-    protected eventPrefix = 'fssp-sefizlico.parser';
+    protected eventPrefix = 'fgr-sf.parser';
 
     public async run(): Promise<StdResult<{ resultHtml: string[] }>> {
 
@@ -49,7 +49,7 @@ export class FsspSefizlicoParser extends ParserBase {
             // await taskAttemptRepo.save(attemptEnt);
             // attemptEnt = await taskAttemptRepo.findOneBy({ id: attemptEnt.id });
             let attemptEnt = await taskAttemptRepo.findOneBy({ id: 3 });
-            const attemptHandler = new FsspSefizlicoAttemptHandler(this, attemptEnt, pwpage);
+            const attemptHandler = new FgrSfAttemptHandler(this, attemptEnt, pwpage);
             const attemptResult = await attemptHandler.perform();
             console.log('attempt finished with result', { attemptResult });
             await new Promise((resolve) => {

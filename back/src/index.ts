@@ -94,9 +94,10 @@ process.on('unhandledRejection', async (error) => {
         // parser.run();
         const mgr = db.createEntityManager();
         const taskRepo = mgr.getRepository(ParserTaskEntity);
-        const taskEnt = await taskRepo.findOneBy({ id: 144 });
+        const taskEnt = await taskRepo.findOneBy({ id: 145 });
         const parserFactory = new ParserFactory();
         const parser = parserFactory.create(taskEnt);
+        // console.log({ taskEnt });
         const result = await parser.run();
         // console.log(parser);
     };

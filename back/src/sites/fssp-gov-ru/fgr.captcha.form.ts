@@ -36,21 +36,28 @@ export class FgrCaptchaForm extends EmitsToBus {
         'timeout' |
         'smth-wrong-msg'
     >> {
+        console.log('attach()');
         const from = 'fgr-captcha-form.attach';
-        const state = 'attached';
+        const state = 'visible';
         const elementWait = [
-            this.pwpage.waitForSelector(CAPTCHA_IMG, { state }),
-            this.pwpage.waitForSelector(ANSWER_INP, { state }),
-            this.pwpage.waitForSelector(SUBMIT_BTN, { state }),
+            this.pwpage.waitForSelector(CAPTCHA_IMG, { state, timeout }),
+            this.pwpage.waitForSelector(ANSWER_INP, { state, timeout }),
+            this.pwpage.waitForSelector(SUBMIT_BTN, { state, timeout }),
         ];
+        console.log({ elementWait });
+        setTimeout(() => {
+            console.log({ elementWait });
+        }, 5000);
         const result = await Promise.race([
             Promise.all(elementWait),
             new Promise((resolve) => {
                 setTimeout(() => {
+                    console.log('resolve(\'timeout\')');
                     resolve('timeout');
                 }, timeout);
             }),
         ]);
+        console.log({ result });
         if (result === 'timeout') {
             return {
                 success: false,
@@ -61,6 +68,10 @@ export class FgrCaptchaForm extends EmitsToBus {
         this.captchaImageEl = result[0];
         this.answerInputEl = result[1];
         this.submitButtonEl = result[2];
+        console.log(this.captchaImageEl);
+        console.log(this.answerInputEl);
+        console.log(this.submitButtonEl);
+        // console.log('this.captchaImageEl');
         return {
             success: true,
             from,
@@ -78,6 +89,7 @@ export class FgrCaptchaForm extends EmitsToBus {
         const from = 'helpers.get-image-base64';
         try {
             const result = await helpers.getImageBase64(this.pwpage, this.captchaImageEl, timeout);
+            console.log({ result });
             if (!result.length) {
                 return {
                     success: false,
@@ -101,13 +113,27 @@ export class FgrCaptchaForm extends EmitsToBus {
     }
 
     public async inputAnswer(answer: string) {
-        const wrongMsgEl = await this.pwpage.$(WRONG_MSG);
-        if (wrongMsgEl) {
-            await wrongMsgEl.click();
+        console.log('inputAnswer', answer);
+        // const wrongMsgEl = await this.pwpage.$(WRONG_MSG);
+        // console.log({ wrongMsgEl });
+        // if (wrongMsgEl) {
+        //     console.log('wrongMsgEl');
+        //     await wrongMsgEl.click();
+        // }
+        try {
+            console.log('attaching');
+            const result = await this.attach(5000);
+            console.log({ result });
+            if (!result.success) {
+
+            }
+            console.log('attached');
+            await this.answerInputEl.click();
+            console.log('click');
+            await this.pwpage.keyboard.type(answer);
+        } catch (err) {
+            console.log({ err });
         }
-        await this.attach(5000);
-        await this.answerInputEl.click();
-        await this.pwpage.keyboard.type(answer);
     }
 
     public async submit(timeout: number): Promise<RaceResult<
