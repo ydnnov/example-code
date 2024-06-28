@@ -98,7 +98,8 @@ process.on('unhandledRejection', async (error) => {
         const parserFactory = new ParserFactory();
         const parser = parserFactory.create(taskEnt);
         // console.log({ taskEnt });
-        const result = await parser.run();
+        await parser.run();
+        // const result = await parser.run();
         // console.log(parser);
     };
 
