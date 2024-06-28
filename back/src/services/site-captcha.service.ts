@@ -3,10 +3,77 @@ import { db } from '../data-source.js';
 import { bus } from '../bus.js';
 import { CaptchaAnswerRequestEntity } from '../entities/captcha-answer-request.entity.js';
 import { CaptchaImageEntity } from '../entities/captcha-image.entity.js';
+import { StdResult } from '../types/common.js';
+import { services } from './services.js';
+import { AppEvent } from '../shared/classes/app-event.js';
+import { parsing } from '../helpers/parsing.js';
+import { ParserBase } from '../parsers/parser-base.js';
+import { EmitsToBus } from '../classes/emits-to-bus.js';
 
-export class SiteCaptchaService {
+const createAnswerRequestRecord = false;
 
-    public async createAnswerRequest(imageBase64: string): Promise<CaptchaAnswerRequestEntity> {
+export class SiteCaptchaService extends EmitsToBus{
+
+    protected eventPrefix = 'site-captcha.service';
+
+    public async getAnswer(
+        parser: ParserBase,
+        key: string,
+        imageBase64: string,
+    ): Promise<StdResult<{ answerText: string }>> {
+
+        if (createAnswerRequestRecord) {
+            const ansreqEnt = await services.siteCaptcha
+                .createAnswerRequest(imageBase64);
+        }
+
+
+        const answerPromise = new Promise<StdResult<{ answerText: string }>>((resolve, reject) => {
+            const handler = (eventName: string, arg) => {
+                console.log({ eventName, arg });
+                if (![
+                    'captcha.answer-received',
+                    'captcha.rucaptcha-error',
+                ].includes(eventName)) {
+                    return;
+                }
+                bus.emitter.offAny(handler);
+                const appEvent = <AppEvent<any>>arg;
+                console.log({ appEvent });
+                if (eventName === 'captcha.answer-received') {
+                    if (!(appEvent.payload || '').length) {
+                        resolve({
+                            success: false,
+                            err: 'empty-captcha-answer',
+                        });
+                    }
+                    resolve({
+                        success: true,
+                        answerText: appEvent.payload,
+                    });
+                } else if (eventName === 'captcha.rucaptcha-error') {
+                    resolve({
+                        success: false,
+                        err: appEvent.payload,
+                    });
+                }
+                resolve({
+                    success: false,
+                    err: appEvent.payload,
+                });
+            };
+            bus.onAny(handler);
+        });
+
+        if (!parsing.paused) {
+            // await services.siteCaptcha.getFromRucaptchaCom(imageBase64);
+        }
+
+        return answerPromise;
+    }
+
+    public async createAnswerRequest(imageBase64: string)
+        : Promise<CaptchaAnswerRequestEntity> {
 
         let ansreqEnt;
 
@@ -14,8 +81,8 @@ export class SiteCaptchaService {
 
             let image;
 
-            const emitResult = await bus.emit(
-                'captcha.create-answer-request.image-find-or-create',
+            const emitResult = await this.emit(
+                'create-answer-request.image-find-or-create',
                 { mgr, imageBase64 },
             );
 
@@ -51,7 +118,7 @@ export class SiteCaptchaService {
     }
 
     public async getFromRucaptchaCom(imageBase64: string) {
-        await bus.emit('captcha.requesting-answer');
+        await this.emit('rucaptcha.request-answer');
         try {
             const solver = new Captcha.Solver('0499f76849203ad92d5c3c642fde9d40');
             const result = await solver.imageCaptcha({
@@ -60,9 +127,9 @@ export class SiteCaptchaService {
                 min_len: 3,
                 max_len: 10,
             });
-            await bus.emit('captcha.answer-received', result.data);
+            await bus.emit('rucaptcha.answer-received', result.data);
         } catch (err) {
-            await bus.emit('captcha.rucaptcha-error', err);
+            await bus.emit('rucaptcha.error', err);
         }
     }
 
