@@ -62,6 +62,10 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
             return solveCaptchaResult;
         }
 
+        const rp = await searchSubmitResult.captchaForm.resultsPage;
+
+        console.log({ rp });
+
         await parsing.step('before-...');
 
         console.log({ solveCaptchaResult });
@@ -116,7 +120,7 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
         return {
             success: false,
-            err: 'out-of-attempts',
+            err: 'solve-captcha-stopped',
         };
     }
 

@@ -52,6 +52,7 @@ export class FsspSefizlicoParser extends ParserBase {
             let attemptEnt = await taskAttemptRepo.findOneBy({ id: 2 });
             const attemptHandler = new FsspSefizlicoAttemptHandler(this, attemptEnt, pwpage);
             const attemptResult = await attemptHandler.perform();
+            console.log('attemptResult:');
             console.log({ attemptResult });
             console.log('waiting...');
             await new Promise((resolve) => {
@@ -399,48 +400,48 @@ export class FsspSefizlicoParser extends ParserBase {
         return resultItems;
     }
 
-    protected async getCaptchaAnswer(): Promise<GetCaptchaAnswerResultType> {
-
-        await this.emit('waiting-for-captcha-image');
-        const captchaImage = await pwpage.waitForSelector('#capchaVisual');
-        const imageBase64 = await helpers.getImageBase64(pwpage, captchaImage, 5000);
-
-        if (!imageBase64) {
-            return {
-                answerRequestEntity: null,
-                success: false,
-                err: 'Error loading captcha image in headless page',
-            };
-        }
-
-        const ansreqEnt = await services.siteCaptcha
-            .createAnswerRequest(imageBase64);
-
-        const answerPromise = new Promise<string>((resolve, reject) => {
-            bus.once('captcha.answer-received', (appEvent: AppEvent<any>) => {
-                // console.log({ 'appEvent.payload': appEvent.payload });
-                resolve(appEvent.payload);
-            });
-            bus.once('captcha.rucaptcha-error', (appEvent: AppEvent<any>) => {
-                reject();
-            });
-        });
-
-        await services.siteCaptcha.getFromRucaptchaCom(imageBase64);
-
-        try {
-            const answer = await answerPromise;
-            return {
-                answerRequestEntity: ansreqEnt,
-                success: true,
-                answer,
-            };
-        } catch (err) {
-            return {
-                answerRequestEntity: ansreqEnt,
-                success: false,
-                err,
-            };
-        }
-    }
+    // protected async getCaptchaAnswer(): Promise<GetCaptchaAnswerResultType> {
+    //
+    //     await this.emit('waiting-for-captcha-image');
+    //     const captchaImage = await pwpage.waitForSelector('#capchaVisual');
+    //     const imageBase64 = await helpers.getImageBase64(pwpage, captchaImage, 5000);
+    //
+    //     if (!imageBase64) {
+    //         return {
+    //             answerRequestEntity: null,
+    //             success: false,
+    //             err: 'Error loading captcha image in headless page',
+    //         };
+    //     }
+    //
+    //     const ansreqEnt = await services.siteCaptcha
+    //         .createAnswerRequest(imageBase64);
+    //
+    //     const answerPromise = new Promise<string>((resolve, reject) => {
+    //         bus.once('captcha.answer-received', (appEvent: AppEvent<any>) => {
+    //             // console.log({ 'appEvent.payload': appEvent.payload });
+    //             resolve(appEvent.payload);
+    //         });
+    //         bus.once('captcha.rucaptcha-error', (appEvent: AppEvent<any>) => {
+    //             reject();
+    //         });
+    //     });
+    //
+    //     await services.siteCaptcha.getFromRucaptchaCom(imageBase64);
+    //
+    //     try {
+    //         const answer = await answerPromise;
+    //         return {
+    //             answerRequestEntity: ansreqEnt,
+    //             success: true,
+    //             answer,
+    //         };
+    //     } catch (err) {
+    //         return {
+    //             answerRequestEntity: ansreqEnt,
+    //             success: false,
+    //             err,
+    //         };
+    //     }
+    // }
 }

@@ -1,7 +1,7 @@
 import { ElementHandle } from 'playwright';
 import { EmitsToBus } from '../../classes/emits-to-bus.js';
 import { FsspGovRuSite } from './fssp-gov-ru.site.js';
-import { RaceResult } from '../../types/common.js';
+import { RaceResult, StdResult } from '../../types/common.js';
 
 const RESULTS_TBL = '.iss .results table.table';
 
@@ -45,5 +45,9 @@ export class FgrIisfResultsPage extends EmitsToBus {
             success: true,
             from,
         };
+    }
+
+    public async getPagination(): Promise<StdResult> {
+
     }
 }

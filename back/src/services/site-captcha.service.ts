@@ -23,17 +23,16 @@ export class SiteCaptchaService extends EmitsToBus{
     ): Promise<StdResult<{ answerText: string }>> {
 
         if (createAnswerRequestRecord) {
-            const ansreqEnt = await services.siteCaptcha
-                .createAnswerRequest(imageBase64);
+            // const ansreqEnt = await services.siteCaptcha
+            //     .createAnswerRequest(imageBase64);
         }
-
 
         const answerPromise = new Promise<StdResult<{ answerText: string }>>((resolve, reject) => {
             const handler = (eventName: string, arg) => {
                 console.log({ eventName, arg });
                 if (![
                     'captcha.answer-received',
-                    'captcha.rucaptcha-error',
+                    'rucaptcha.error',
                 ].includes(eventName)) {
                     return;
                 }
@@ -51,7 +50,7 @@ export class SiteCaptchaService extends EmitsToBus{
                         success: true,
                         answerText: appEvent.payload,
                     });
-                } else if (eventName === 'captcha.rucaptcha-error') {
+                } else if (eventName === 'rucaptcha.error') {
                     resolve({
                         success: false,
                         err: appEvent.payload,
@@ -66,7 +65,7 @@ export class SiteCaptchaService extends EmitsToBus{
         });
 
         if (!parsing.paused) {
-            // await services.siteCaptcha.getFromRucaptchaCom(imageBase64);
+            await services.siteCaptcha.getFromRucaptchaCom(imageBase64);
         }
 
         return answerPromise;
@@ -118,7 +117,7 @@ export class SiteCaptchaService extends EmitsToBus{
     }
 
     public async getFromRucaptchaCom(imageBase64: string) {
-        await this.emit('rucaptcha.request-answer');
+        await bus.emit('rucaptcha.request-answer');
         try {
             const solver = new Captcha.Solver('0499f76849203ad92d5c3c642fde9d40');
             const result = await solver.imageCaptcha({
@@ -127,7 +126,7 @@ export class SiteCaptchaService extends EmitsToBus{
                 min_len: 3,
                 max_len: 10,
             });
-            await bus.emit('rucaptcha.answer-received', result.data);
+            await bus.emit('captcha.answer-received', result.data);
         } catch (err) {
             await bus.emit('rucaptcha.error', err);
         }

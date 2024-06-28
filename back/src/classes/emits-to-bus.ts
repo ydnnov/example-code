@@ -6,4 +6,8 @@ export class EmitsToBus {
     public async emit(eventName: string, payload?: any) {
         return bus.emit(`${this.eventPrefix}.${eventName}`, payload);
     }
+
+    protected ep(eventName: string) {
+        return `${this.eventPrefix}.${eventName}`;
+    }
 }
