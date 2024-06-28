@@ -6,6 +6,16 @@ export class FrontService {
 
     public async getInitData(): Promise<FrontInitType> {
         return {
+            contexts: [
+                {
+                    id: 1,
+                    url: 'qwe',
+                },
+                {
+                    id: 2,
+                    url: 'asdf',
+                },
+            ],
             page: {
                 url: pwpage.url(),
             },

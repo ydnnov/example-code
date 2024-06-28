@@ -39,6 +39,9 @@ export class FsspSefizlicoParser extends ParserBase {
         let stop = false;
         // let paused = true;
         let i = 0;
+        bus.on('parsing.stop', () => {
+            stop = true;
+        });
         while(!stop) {
             // try {
             await this.emit('attempt', { num: i + 1 });
@@ -47,7 +50,7 @@ export class FsspSefizlicoParser extends ParserBase {
             // await taskAttemptRepo.save(attemptEnt);
             // attemptEnt = await taskAttemptRepo.findOneBy({ id: attemptEnt.id });
             let attemptEnt = await taskAttemptRepo.findOneBy({ id: 2 });
-            const attemptHandler = new FsspSefizlicoAttemptHandler(attemptEnt);
+            const attemptHandler = new FsspSefizlicoAttemptHandler(this, attemptEnt, pwpage);
             const attemptResult = await attemptHandler.perform();
             console.log({ attemptResult });
             console.log('waiting...');
