@@ -12,7 +12,15 @@ import { EmitsToBus } from '../classes/emits-to-bus.js';
 
 const createAnswerRequestRecord = false;
 
-export class SiteCaptchaService extends EmitsToBus{
+// const getFromRucaptchaHandler = (eventName: string) => {
+//     if (eventName !== 'parsing.load-from-rucaptcha') {
+//         return;
+//     }
+//     bus.emitter.offAny(getFromRucaptchaHandler);
+//     services.siteCaptcha.getFromRucaptchaCom(imageBase64);
+// };
+
+export class SiteCaptchaService extends EmitsToBus {
 
     protected eventPrefix = 'site-captcha.service';
 
@@ -22,14 +30,24 @@ export class SiteCaptchaService extends EmitsToBus{
         imageBase64: string,
     ): Promise<StdResult<{ answerText: string }>> {
 
+
+        const getFromRucaptchaHandler = (eventName: string) => {
+            if (eventName !== 'parsing.load-from-rucaptcha') {
+                return;
+            }
+            bus.emitter.offAny(getFromRucaptchaHandler);
+            services.siteCaptcha.getFromRucaptchaCom(imageBase64);
+        };
+
         if (createAnswerRequestRecord) {
             // const ansreqEnt = await services.siteCaptcha
             //     .createAnswerRequest(imageBase64);
         }
 
-        const answerPromise = new Promise<StdResult<{ answerText: string }>>((resolve, reject) => {
+        const answerPromise = new Promise<StdResult<{
+            answerText: string
+        }>>((resolve, reject) => {
             const handler = (eventName: string, arg) => {
-                console.log({ eventName, arg });
                 if (![
                     'captcha.answer-received',
                     'rucaptcha.error',
@@ -37,6 +55,8 @@ export class SiteCaptchaService extends EmitsToBus{
                     return;
                 }
                 bus.emitter.offAny(handler);
+                bus.emitter.offAny(getFromRucaptchaHandler);
+                console.log('siteCaptcha.getAnswer', { eventName, arg });
                 const appEvent = <AppEvent<any>>arg;
                 console.log({ appEvent });
                 if (eventName === 'captcha.answer-received') {
@@ -66,6 +86,16 @@ export class SiteCaptchaService extends EmitsToBus{
 
         if (!parsing.paused) {
             await services.siteCaptcha.getFromRucaptchaCom(imageBase64);
+        } else {
+            console.log(`setting handler ${imageBase64.length} bytes`);
+            const handler = (eventName: string) => {
+                if (eventName !== 'parsing.load-from-rucaptcha') {
+                    return;
+                }
+                bus.emitter.offAny(handler);
+                services.siteCaptcha.getFromRucaptchaCom(imageBase64);
+            };
+            bus.onAny(handler);
         }
 
         return answerPromise;
@@ -117,6 +147,7 @@ export class SiteCaptchaService extends EmitsToBus{
     }
 
     public async getFromRucaptchaCom(imageBase64: string) {
+        // console.log(`getFromRucaptchaCom ${imageBase64.length} bytes`);
         await bus.emit('rucaptcha.request-answer');
         try {
             const solver = new Captcha.Solver('0499f76849203ad92d5c3c642fde9d40');

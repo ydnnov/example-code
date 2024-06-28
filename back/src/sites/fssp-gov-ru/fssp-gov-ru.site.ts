@@ -24,7 +24,11 @@ export class FsspGovRuSite extends EmitsToBus {
 
     public async handleSomethingWentWrongMessage(): Promise<RaceResult> {
         const from = 'smth-wrong-msg';
-        await this.pwpage.waitForSelector(SMTH_WRONG_MSG, { state: 'attached' });
+        const el = await this.pwpage.waitForSelector(SMTH_WRONG_MSG, { state: 'attached' });
+        if (el) {
+            await el.scrollIntoViewIfNeeded({ timeout: 1000 }).catch(() => {
+            });
+        }
         return {
             success: false,
             err: from,

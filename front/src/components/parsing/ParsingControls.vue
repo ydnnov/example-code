@@ -22,6 +22,13 @@ const sendStep = () => {
   parsingInProgress.value = true;
   bus.emit('parsing.step');
 };
+const sendRestart = () => {
+  bus.emit('parsing.restart');
+};
+
+const sendLoadFromRuCaptchaCom = () => {
+  bus.emit('parsing.load-from-rucaptcha');
+};
 
 </script>
 
@@ -47,6 +54,18 @@ const sendStep = () => {
       <Button
           @click="sendStep()"
           icon="pi pi-step-forward"
+          class="ml-[15px]"
+      >
+      </Button>
+      <Button
+          @click="sendRestart()"
+          icon="pi pi-undo"
+          class="ml-[15px]"
+      >
+      </Button>
+      <Button
+          @click="sendLoadFromRuCaptchaCom()"
+          icon="pi pi-cloud-download"
           class="ml-[15px]"
       >
       </Button>

@@ -9,6 +9,13 @@ import { StdResult } from '../../types/common.js';
 import { parsing } from '../../helpers/parsing.js';
 import { FsspSefizlicoParser } from './fssp-sefizlico.parser.js';
 import { Page as PlaywrightPage } from 'playwright';
+import { helpers } from '../../helpers/helpers.js';
+import { bag } from '../../bag.js';
+
+const RESET_RESULT: StdResult = {
+    success: false,
+    err: 'parser-reset',
+};
 
 export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
@@ -32,30 +39,35 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
         const site = new FsspGovRuSite(pwpage, this.attemptEntity);
 
-        await parsing.step('open-page');
+        if (await parsing.step('open-page')) {
+            return RESET_RESULT;
+        }
 
         const issIpPageOpenResult = await site.issIpPage.open(60000);
         if (!issIpPageOpenResult.success) {
             return issIpPageOpenResult;
         }
 
-        await parsing.step('input-fields');
-
+        if (await parsing.step('input-fields')) {
+            return RESET_RESULT;
+        }
         await site.issIpPage.searchForm.inputFields(
             this.inputData['fio'],
             this.inputData['dob'],
             this.inputData['reg'],
         );
 
-        await parsing.step('submit-form');
-
+        if (await parsing.step('submit-form')) {
+            return RESET_RESULT;
+        }
         const searchSubmitResult = await site.issIpPage.searchForm.submitSearch(60000);
         if (!searchSubmitResult.success) {
             return searchSubmitResult;
         }
 
-        await parsing.step('solve-captcha');
-
+        if (await parsing.step('solve-captcha')) {
+            return RESET_RESULT;
+        }
         const solveCaptchaResult = await this.solveCaptcha(searchSubmitResult.captchaForm);
 
         if (!solveCaptchaResult.success) {
@@ -64,10 +76,15 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
         const rp = await searchSubmitResult.captchaForm.resultsPage;
 
+        bag['rp'] = rp;
+
         console.log({ rp });
+        const pag = await rp.getPagination();
+        console.log({ pag });
 
-        await parsing.step('before-...');
-
+        if (await parsing.step('before-...')) {
+            return RESET_RESULT;
+        }
         console.log({ solveCaptchaResult });
     }
 
@@ -79,10 +96,7 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
             stop = true;
         });
         while(!stop) {
-
             i++;
-
-            await parsing.step(`solve-captcha-attempt-${i}`);
 
             const captchaBase64Result = await captchaForm.getImageBase64(60000);
             if (!captchaBase64Result.success) {
@@ -104,24 +118,23 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
             await captchaForm.inputAnswer(answer.answerText);
 
             const result = await captchaForm.submit(60000);
-            console.log({ result });
-            if (result.success === true) {
-                return result;
-            }
 
-            // if (result.err === 'has-wrong-captcha-msg') {
-            //     continue;
-            // }
-            //
-            // // if (result.err === 'smth-wrong-msg' || result.err === 'timeout') {
-            // return result;
-            // // }
+            if (!result.success) {
+                if (result.from === 'has-wrong-captcha-msg') {
+                    if (await parsing.step(`solve-captcha-attempt-${i}`)) {
+                        return RESET_RESULT;
+                    }
+                    continue;
+                }
+            }
+            // console.log({ result });
+            return result;
         }
 
-        return {
-            success: false,
-            err: 'solve-captcha-stopped',
-        };
+        // return {
+        //     success: false,
+        //     err: 'solve-captcha-stopped',
+        // };
     }
 
     // protected async getCaptchaAnswer(

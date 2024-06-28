@@ -54,13 +54,14 @@ export class FsspSefizlicoParser extends ParserBase {
             const attemptResult = await attemptHandler.perform();
             console.log('attemptResult:');
             console.log({ attemptResult });
+
             console.log('waiting...');
             await new Promise((resolve) => {
                 const handler = (event: string, ...args) => {
-                    if (event === 'parsing-resume') {
+                    if (event === 'parsing.restart') {
                         bus.emitter.offAny(handler);
                         resolve();
-                    } else if (event === 'parsing-stop') {
+                    } else if (event === 'parsing.stop') {
                         bus.emitter.offAny(handler);
                         stop = true;
                         resolve();

@@ -12,25 +12,34 @@ bus.on('parsing.step', () => {
 
 const parsing = {
     paused: true,
+    get playing() {
+        return !parsing.paused;
+    },
     pause() {
         parsing.paused = true;
     },
     play() {
         parsing.paused = false;
     },
-    step(stepName: string) {
+    async step(stepName: string) {
         bus.emit('parsing.step.' + stepName);
-        if (!parsing.paused) {
-            console.log('playing');
+        if (parsing.playing) {
+            console.log('---> parsing.playing');
             return;
         }
-        console.log('paused');
-        const result = new Promise((resolve) => {
+        console.log('---> parsing.paused');
+        const result = await new Promise((resolve) => {
             bus.once('parsing.step', () => {
-                resolve();
+                console.log('---> parsing.step');
+                resolve(false);
             });
             bus.once('parsing.play', () => {
-                resolve();
+                console.log('---> parsing.play');
+                resolve(false);
+            });
+            bus.once('parsing.restart', () => {
+                console.log('---> parsing.restart');
+                resolve(true);
             });
         });
         return result;
