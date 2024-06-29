@@ -9,8 +9,8 @@ import { parserTaskRoutes } from './parser-task.routes.js';
 import { siteCaptchaRoutes } from './site-captcha.routes.js';
 import { tsDefinitionsRoutes } from './ts-definitions.routes.js';
 import { testsRoutes } from './tests.routes.js';
-import { parsing } from '../helpers/parsing.js';
-import { bus } from '../bus.js';
+// import { parsing } from '../helpers/parsing.js';
+// import { bus } from '../bus.js';
 
 // import nodemon from 'nodemon';
 

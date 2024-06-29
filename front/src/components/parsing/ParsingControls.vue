@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { bus } from '../../bus.js';
+// import { bus } from '../../bus.js';
 import {
   fasPause as pauseIcon,
   fasPlay as playIcon,
@@ -12,20 +12,20 @@ import {
 const paused = ref(false);
 const sendPause = () => {
   paused.value = true;
-  bus.emit('parsing.pause');
+  // bus.emit('parsing.pause');
 };
 const sendPlay = () => {
   paused.value = false;
-  bus.emit('parsing.play');
+  // bus.emit('parsing.play');
 };
 const sendStep = () => {
-  bus.emit('parsing.step');
+  // bus.emit('parsing.step');
 };
 const sendRestart = () => {
-  bus.emit('parsing.restart');
+  // bus.emit('parsing.restart');
 };
 const sendLoadFromRuCaptchaCom = () => {
-  bus.emit('parsing.load-from-rucaptcha');
+  // bus.emit('parsing.load-from-rucaptcha');
 };
 </script>
 

@@ -11,6 +11,7 @@ import {
 import ComponentPicker from 'components/panel/ComponentPicker.vue';
 import { useQuasar } from 'quasar';
 import { UiPanelSplitterType, UiPanelType } from 'src/schemas/ui-panel.schema.js';
+import HeadlessComponent from 'components/headless/HeadlessComponent.vue';
 
 const props = defineProps({
   id: {
@@ -37,8 +38,9 @@ const swapSplitterChildren = (splitterPanel: UiPanelSplitterType) => {
     <div v-else-if="panel.type === 'splitter'"
          class="h-full"
     >
-      <q-toolbar class="bg-primary text-white shadow-2 m-0 h-[50px]">
-
+      <div class="relative bg-primary text-white shadow-2 p-[2px]"
+           :class="panel.horizontal ? 'w-[50px] h-full' : 'h-[50px] w-full'"
+      >
         <q-btn
           @click="swapSplitterChildren(panel)"
           round
@@ -50,21 +52,27 @@ const swapSplitterChildren = (splitterPanel: UiPanelSplitterType) => {
           round
           color="primary"
           :icon="changePanelsHorizIcon"
-          class="ml-[10px]"
-          :class="panel.horizontal ? 'rotate-90' : ''"
+          :class="panel.horizontal ? 'rotate-90 mt-[10px]' : 'ml-[10px]'"
         />
 
-        <div class="w-[150px]"></div>
+        <ComponentPicker
+          :id="panel.children[0]"
+          class="absolute"
+          :style="panel.horizontal ? `top: 150px` : `left: 150px; top: 3px;`"
+        />
+        <!--        <div class="w-[150px]"></div>-->
+        <ComponentPicker
+          :id="panel.children[1]"
+          class="absolute"
+          :style="panel.horizontal ? `bottom: 50px` : `right: 50px; top: 3px;`"
+        />
 
-        <ComponentPicker :id="panel.children[0]" />
-        <div class="w-[150px]"></div>
-        <ComponentPicker :id="panel.children[1]" />
-
-      </q-toolbar>
+      </div>
       <q-splitter
         v-model="panel.position"
         :horizontal="panel.horizontal"
-        class="absolute inset-x-0 top-[50px] bottom-0"
+        class="absolute right-0 bottom-0"
+        :class="panel.horizontal ? 'left-[50px] top-0' : 'left-0 top-[50px]'"
       >
         <template v-slot:before>
           <PanelComponent :id="panel.children[0]" />
@@ -79,6 +87,9 @@ const swapSplitterChildren = (splitterPanel: UiPanelSplitterType) => {
     </div>
     <div v-else-if="panel.type==='event-bus'">
       <EventBus />
+    </div>
+    <div v-else-if="panel.type==='headless'">
+      <HeadlessComponent />
     </div>
   </div>
 </template>

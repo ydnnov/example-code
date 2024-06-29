@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import useClient from '~/composables/useClient.js';
-import { useFrontStore } from '~/stores/front.store.js';
-import { useHeadlessStore } from '~/stores/headless.store.js';
-
-const client = useClient();
+import ScreenshotsImage from 'components/headless/ScreenshotsImage.vue';
+// import useClient from '~/composables/useClient.js';
+// import { useFrontStore } from '~/stores/front.store.js';
+// import { useHeadlessStore } from '~/stores/headless.store.js';
+//
+// const client = useClient();
 // const { frontInitData } = useFrontStore();
 // const headless = useHeadlessStore();
 // console.log({ headless });
@@ -31,7 +32,7 @@ const client = useClient();
 
 <template>
 
-  <div>qwe</div>
+  <ScreenshotsImage />
 <!--
   <TabView>
     <TabPanel v-for="tab in headless.tabs" :key="tab.id" :header="tab.url">

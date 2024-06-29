@@ -35,60 +35,13 @@ const componentClicked = (key: UiPanelTypeNameType) => {
 </script>
 
 <template>
-  <q-btn :icon="emptyIcon"    @click="componentClicked('empty')"></q-btn>
-  <q-btn :icon="splitterIcon" @click="componentClicked('splitter')"></q-btn>
-  <q-btn :icon="codeExecIcon" @click="componentClicked('code-exec')"></q-btn>
-  <q-btn :icon="eventBusIcon" @click="componentClicked('event-bus')"></q-btn>
-  <q-btn :icon="headlessIcon" @click="componentClicked('headless')"></q-btn>
-
-  <!--
-    <q-btn-dropdown stretch flat :label="panel.type">
-      <q-list>
-        <q-item-label header>Components</q-item-label>
-        <q-item
-          v-for="c in allComponents"
-          :key="c.key"
-          clickable
-          v-close-popup
-          tabindex="0"
-          @click="componentClicked(c.key)"
-        >
-          <q-item-section avatar>
-            <q-avatar icon="folder" color="secondary" text-color="white" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>{{ c.key }}</q-item-label>
-            &lt;!&ndash;          <q-item-label caption>{{ c }}</q-item-label>&ndash;&gt;
-          </q-item-section>
-          <q-item-section side>
-            <q-icon name="info" />
-          </q-item-section>
-        </q-item>
-        <q-separator inset spaced />
-        <q-item-label header>Misc</q-item-label>
-        <q-item
-          clickable
-          v-close-popup
-          tabindex="0"
-          @click="componentClicked(emptyComponent.key)"
-        >
-          <q-item-section avatar>
-            <q-avatar icon="close" class="bg-[#bbb]" text-color="white" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>empty</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-icon name="info" />
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-btn-dropdown>
-
-    <q-btn @click="componentClicked('splitter')"
-    >Wrap
-    </q-btn>
-  -->
+  <div>
+    <q-btn :icon="emptyIcon" round @click="componentClicked('empty')"></q-btn>
+    <q-btn :icon="splitterIcon" round @click="componentClicked('splitter')"></q-btn>
+    <q-btn :icon="codeExecIcon" round @click="componentClicked('code-exec')"></q-btn>
+    <q-btn :icon="eventBusIcon" round @click="componentClicked('event-bus')"></q-btn>
+    <q-btn :icon="headlessIcon" round @click="componentClicked('headless')"></q-btn>
+  </div>
 </template>
 
 <style scoped lang="scss">
