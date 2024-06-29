@@ -6,7 +6,7 @@ import ParsingControls from '../parsing/ParsingControls.vue';
 
 <template>
   <div class="absolute flex flex-col inset-0 pl-[15px]">
-    <div class="my-[5px] text-lg">
+    <div class="mt-[15px] mb-[5px] text-lg">
       Events
     </div>
     <div class="mb-[10px]">

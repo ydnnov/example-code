@@ -45,11 +45,13 @@ const send = (side: 'front' | 'back') => {
       <q-btn
         color="primary"
         label="send front"
+        class="text-[12px]"
         @click="send('front')"
       />
       <q-btn
         color="primary"
         label="send back"
+        class="text-[12px] ml-[10px]"
         @click="send('back')"
       />
     </div>

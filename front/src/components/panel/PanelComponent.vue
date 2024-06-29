@@ -39,18 +39,20 @@ const swapSplitterChildren = (splitterPanel: UiPanelSplitterType) => {
          class="h-full"
     >
       <div class="relative bg-primary text-white shadow-2 p-[2px]"
-           :class="panel.horizontal ? 'w-[50px] h-full' : 'h-[50px] w-full'"
+           :class="panel.horizontal ? 'w-[35px] h-full' : 'h-[35px] w-full'"
       >
         <q-btn
           @click="swapSplitterChildren(panel)"
           round
           color="primary"
+          size="10px"
           :icon="panel.horizontal ? swapPanelsHIcon : swapPanelsVIcon"
         />
         <q-btn
           @click="panel.horizontal = !panel.horizontal"
           round
           color="primary"
+          size="10px"
           :icon="changePanelsHorizIcon"
           :class="panel.horizontal ? 'rotate-90 mt-[10px]' : 'ml-[10px]'"
         />
@@ -72,7 +74,7 @@ const swapSplitterChildren = (splitterPanel: UiPanelSplitterType) => {
         v-model="panel.position"
         :horizontal="panel.horizontal"
         class="absolute right-0 bottom-0"
-        :class="panel.horizontal ? 'left-[50px] top-0' : 'left-0 top-[50px]'"
+        :class="panel.horizontal ? 'left-[35px] top-0' : 'left-0 top-[35px]'"
       >
         <template v-slot:before>
           <PanelComponent :id="panel.children[0]" />

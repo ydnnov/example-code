@@ -34,7 +34,7 @@ const columns = ref([
         @click="eventBusStore.events.splice(0)"
         label="clear"
         color="red"
-        class="absolute z-[999] right-[5px] h-[40px] top-[-50px]"
+        class="absolute z-[999] right-[5px] h-[35px] top-[-50px] text-[10px]"
       />
 
       <q-table

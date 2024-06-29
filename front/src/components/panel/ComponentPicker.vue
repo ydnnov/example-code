@@ -32,15 +32,25 @@ const componentClicked = (key: UiPanelTypeNameType) => {
   }
   ui.setPanel(props.id, key);
 };
+const components = ref([
+  ['empty', emptyIcon],
+  ['splitter', splitterIcon],
+  ['code-exec', codeExecIcon],
+  ['event-bus', eventBusIcon],
+  ['headless', headlessIcon],
+]);
 </script>
 
 <template>
   <div>
-    <q-btn :icon="emptyIcon" round @click="componentClicked('empty')"></q-btn>
-    <q-btn :icon="splitterIcon" round @click="componentClicked('splitter')"></q-btn>
-    <q-btn :icon="codeExecIcon" round @click="componentClicked('code-exec')"></q-btn>
-    <q-btn :icon="eventBusIcon" round @click="componentClicked('event-bus')"></q-btn>
-    <q-btn :icon="headlessIcon" round @click="componentClicked('headless')"></q-btn>
+    <q-btn
+      :icon="c[1]"
+      size="10px"
+      round
+      @click="componentClicked(c[0])"
+      v-for="c in components"
+      :key="c[0]"
+    ></q-btn>
   </div>
 </template>
 

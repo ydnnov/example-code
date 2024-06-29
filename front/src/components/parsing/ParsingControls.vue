@@ -34,12 +34,13 @@ const sendLoadFromRuCaptchaCom = () => {
     <div class="mr-[25px]">
       Parsing:
     </div>
-    <div class="w-full">
+    <div class="">
       <q-btn
         @click="sendPause()"
         color="primary"
         round
         :icon="pauseIcon"
+        class="text-[10px]"
         v-if="true"
       />
       <q-btn
@@ -47,7 +48,7 @@ const sendLoadFromRuCaptchaCom = () => {
         color="primary"
         round
         :icon="playIcon"
-        class="ml-[15px]"
+        class="ml-[15px] text-[10px]"
         v-if="true"
       />
       <q-btn
@@ -55,21 +56,21 @@ const sendLoadFromRuCaptchaCom = () => {
         color="primary"
         round
         :icon="stepIcon"
-        class="ml-[15px]"
+        class="ml-[15px] text-[10px]"
       />
       <q-btn
         @click="sendRestart()"
         color="primary"
         round
         :icon="restartIcon"
-        class="ml-[15px]"
+        class="ml-[15px] text-[10px]"
       />
       <q-btn
         @click="sendLoadFromRuCaptchaCom()"
         color="primary"
         round
         :icon="loadRucaptchaIcon"
-        class="ml-[15px]"
+        class="ml-[15px] text-[10px]"
       />
     </div>
   </div>

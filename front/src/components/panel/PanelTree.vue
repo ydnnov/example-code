@@ -23,11 +23,13 @@ const go = () => {
     label-key="type"
     v-model:expanded="expanded"
     default-expand-all
-    class="text-[20px]"
+    class="text-[14px]"
   >
     <template #default-header="{node}">
       <div v-if="node.type === 'splitter'">
-        {{ node.type }} [{{ node.id }}], {{ node.horizontal ? 'horizontal' : 'vertical' }}, at {{ node.position }}%
+        {{ node.type }} [{{ node.id }}],
+        {{ node.horizontal ? 'horizontal' : 'vertical' }},
+        at {{ Math.round(node.position) }}%
       </div>
       <div v-else>
         {{ node.type }} [{{ node.id }}]
