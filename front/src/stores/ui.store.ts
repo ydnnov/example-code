@@ -1,45 +1,7 @@
 import { defineStore } from 'pinia';
-import { reactive } from 'vue';
+import { computed, reactive, ref, unref } from 'vue';
 import { Static, Type } from '@sinclair/typebox';
-
-export const uiPanelSplitterSchema = Type.Object({
-  type: Type.Literal('splitter'),
-  horizontal: Type.Boolean(),
-  position: Type.Number(),
-  children: Type.Object({
-    0: Type.Number(),
-    1: Type.Number(),
-  }),
-});
-export type UiPanelSplitterType = Static<typeof uiPanelSplitterSchema>
-
-export const uiPanelCodeExecSchema = Type.Object({
-  type: Type.Literal('code-exec'),
-});
-
-export const uiPanelEventBusSchema = Type.Object({
-  type: Type.Literal('event-bus'),
-});
-
-export const uiPanelHeadlessSchema = Type.Object({
-  type: Type.Literal('headless'),
-});
-
-export const anyPanelSchema = Type.Union([
-  uiPanelSplitterSchema,
-  uiPanelCodeExecSchema,
-  uiPanelEventBusSchema,
-  uiPanelHeadlessSchema,
-]);
-
-export const uiPanelSchema = Type.Intersect([
-  anyPanelSchema,
-  Type.Object({
-    id: Type.Number(),
-  }),
-]);
-
-export type UiPanelType = Static<typeof uiPanelSchema>
+import { UiPanelType, UiPanelTypeNameType } from 'src/schemas/ui-panel.schema.js';
 
 export const useUiStore = defineStore('ui', () => {
 
@@ -72,7 +34,155 @@ export const useUiStore = defineStore('ui', () => {
     },
   });
 
-  return { panels };
+  const nextPanelId = computed(() => {
+    const keys = Object.keys(panels);
+    if (!keys.length) {
+      return 1;
+    }
+    const result = Number(keys[keys.length - 1]) + 1;
+    return result;
+  });
+
+  const panelsTree = computed(() => {
+    const result = JSON.parse(JSON.stringify(panels));
+    const ids = Object.keys(result);
+    for (let i = 0; i < ids.length; i++) {
+      const panel = result[ids[i]];
+      if (panel.type === 'splitter') {
+        panel.children = [
+          result[panel.children[0]],
+          result[panel.children[1]],
+        ];
+      } else {
+        panel.children = [];
+      }
+    }
+    return result[1];
+  });
+
+  const wrapInSplitter = (id: number) => {
+    const oldPanel = panels[id];
+    if (oldPanel.type === 'splitter') {
+      return;
+    }
+    const keys = Object.keys(oldPanel);
+    const newPanel = {};
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (key === 'id') {
+        continue;
+      }
+      newPanel[key] = oldPanel[key];
+      delete oldPanel[key];
+    }
+    newPanel['id'] = unref(nextPanelId);
+    panels[newPanel['id']] = newPanel;
+    oldPanel.type = 'splitter';
+    oldPanel['horizontal'] = false;
+    oldPanel['position'] = 50;
+    const emptyPanel = {
+      id: unref(nextPanelId),
+      type: 'empty',
+    };
+    panels[emptyPanel['id']] = emptyPanel;
+    oldPanel['children'] = [newPanel['id'], emptyPanel['id']];
+  };
+
+  const findEmptyChild = (id: number) => {
+    const panel = panels[id];
+    if (panel.type !== 'splitter') {
+      throw new Error(`Panel id=${id} is not a splitter`);
+    }
+    for (let i = 0; i < 2; i++) {
+      const child = panels[panel.children[i]];
+      if (child.type === 'empty') {
+        return child;
+      }
+    }
+    return null;
+  };
+
+  const findNonEmptyChild = (id: number) => {
+    const panel = panels[id];
+    if (panel.type !== 'splitter') {
+      throw new Error(`Panel id=${id} is not a splitter`);
+    }
+    for (let i = 0; i < 2; i++) {
+      const child = panels[panel.children[i]];
+      if (child.type !== 'empty') {
+        return child;
+      }
+    }
+    return null;
+  };
+
+  const unwrapSplitter = (id: number) => {
+    if (!findEmptyChild(id)) {
+      return;
+    }
+    const panel = panels[id];
+    const childrenIds = [panel.children[0], panel.children[1]];
+    const nonEmptyChild = findNonEmptyChild(id);
+
+    const newPanel = {
+      id,
+      type: 'empty',
+    };
+
+    if (nonEmptyChild) {
+      const keys = Object.keys(nonEmptyChild);
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        if (key === 'id') {
+          continue;
+        }
+        newPanel[key] = nonEmptyChild[key];
+      }
+    }
+
+    panels[newPanel.id] = newPanel;
+    delete panels[childrenIds[0]];
+    delete panels[childrenIds[1]];
+  };
+
+  const leafPanelTypes = [
+    'code-exec',
+    'event-bus',
+    'headless',
+    'empty',
+  ];
+
+  const setPanel = (id: number, type: UiPanelTypeNameType) => {
+    const panel = panels[id];
+    if (panel.type === type) {
+      return;
+    }
+    if (type === 'splitter') {
+      wrapInSplitter(id);
+    } else if (leafPanelTypes.includes(type)) {
+      if (panel.type === 'splitter') {
+        unwrapSplitter(id);
+      } else {
+        panels[id] = {
+          id,
+          type,
+        };
+      }
+    }
+  };
+
+  // const canSetPanelType = (id: number, type: UiPanelTypeNameType) => {
+  // };
+
+  return {
+    panels,
+    panelsTree,
+    nextPanelId,
+    setPanel,
+    // canSetPanelType,
+    // wrapInSplitter,
+    // unwrapSplitter,
+  };
 }, {
-  persist: true,
+  persist: false,
 });

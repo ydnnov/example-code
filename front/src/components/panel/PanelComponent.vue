@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { UiPanelSplitterType, UiPanelType, useUiStore } from 'stores/ui.store.js';
+import { useUiStore } from 'stores/ui.store.js';
 import CodeExec from 'components/code-exec/CodeExec.vue';
 import EventBus from 'components/event-bus/EventBus.vue';
-
 import {
   fasArrowsLeftRight as swapPanelsVIcon,
   fasArrowsUpDown as swapPanelsHIcon,
   fasDesktop as changePanelsHorizIcon,
 } from '@quasar/extras/fontawesome-v6';
 import ComponentPicker from 'components/panel/ComponentPicker.vue';
+import { useQuasar } from 'quasar';
+import { UiPanelSplitterType, UiPanelType } from 'src/schemas/ui-panel.schema.js';
 
 const props = defineProps({
   id: {
@@ -30,7 +31,10 @@ const swapSplitterChildren = (splitterPanel: UiPanelSplitterType) => {
 
 <template>
   <div class="relative border-[0px] border-red-500 h-full">
-    <div v-if="panel.type === 'splitter'"
+    <div v-if="panel.type === 'empty'">
+      <div>Empty panel</div>
+    </div>
+    <div v-else-if="panel.type === 'splitter'"
          class="h-full"
     >
       <q-toolbar class="bg-primary text-white shadow-2 m-0 h-[50px]">
@@ -50,9 +54,12 @@ const swapSplitterChildren = (splitterPanel: UiPanelSplitterType) => {
           :class="panel.horizontal ? 'rotate-90' : ''"
         />
 
-        <div class="w-[100px]"></div>
+        <div class="w-[150px]"></div>
+
         <ComponentPicker :id="panel.children[0]" />
+        <div class="w-[150px]"></div>
         <ComponentPicker :id="panel.children[1]" />
+
       </q-toolbar>
       <q-splitter
         v-model="panel.position"
@@ -68,9 +75,7 @@ const swapSplitterChildren = (splitterPanel: UiPanelSplitterType) => {
       </q-splitter>
     </div>
     <div v-else-if="panel.type==='code-exec'">
-      <!--      <KeepAlive>-->
       <CodeExec />
-      <!--      </KeepAlive>-->
     </div>
     <div v-else-if="panel.type==='event-bus'">
       <EventBus />
