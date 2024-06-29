@@ -1,50 +1,20 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+// import CodeExec from 'components/code-exec/CodeExec.vue';
+import PanelComponent from 'components/panel/PanelComponent.vue';
+
+defineOptions({
+  name: 'IndexPage',
+});
+
+// const mainSplitterModel = ref(50);
+
+</script>
+
 <template>
-  <q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
-    <div class="border-[3px] border-red-500 px-[25px] py-[15px] text-[24px]">
-      tailwind
+  <q-page>
+    <div class="h-[calc(100vh-50px)]">
+      <PanelComponent :id="1" />
     </div>
   </q-page>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { Todo, Meta } from 'components/models';
-import ExampleComponent from 'components/ExampleComponent.vue';
-
-defineOptions({
-  name: 'IndexPage'
-});
-
-const todos = ref<Todo[]>([
-  {
-    id: 1,
-    content: 'ct1'
-  },
-  {
-    id: 2,
-    content: 'ct2'
-  },
-  {
-    id: 3,
-    content: 'ct3'
-  },
-  {
-    id: 4,
-    content: 'ct4'
-  },
-  {
-    id: 5,
-    content: 'ct5'
-  }
-]);
-
-const meta = ref<Meta>({
-  totalCount: 1200
-});
-</script>

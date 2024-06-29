@@ -11,13 +11,14 @@
     "build": "quasar build"
   },
   "dependencies": {
-    "@quasar/extras": "^1.16.4",
+    "@quasar/extras": "^1.16.11",
     "@sinclair/typebox": "^0.32.34",
     "@vueuse/core": "^10.11.0",
     "axios": "^1.2.1",
     "eventemitter2": "^6.4.9",
     "monaco-editor": "^0.50.0",
     "pinia": "^2.0.11",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "quasar": "^2.16.0",
     "socket.io-client": "^4.7.5",
     "vue": "^3.4.18",
