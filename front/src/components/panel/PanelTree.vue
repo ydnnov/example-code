@@ -2,7 +2,6 @@
 import { computed, ref, unref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useUiStore } from 'stores/ui.store.js';
-import PanelTreeNode from 'components/panel/PanelTreeNode.vue';
 
 const $q = useQuasar();
 const ui = useUiStore();
@@ -35,13 +34,6 @@ const go = () => {
       </div>
     </template>
   </q-tree>
-  <!--
-    <div
-      class="w-full h-full text-[20px] px-[0px] py-[0px] border-[3px] border-[#999]"
-    >
-      <PanelTreeNode :node="panelsTree[1]" :level="1" />
-    </div>
-  -->
 </template>
 
 <style scoped lang="scss">

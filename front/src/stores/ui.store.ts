@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { computed, reactive, ref, unref } from 'vue';
-import { Static, Type } from '@sinclair/typebox';
 import { UiPanelType, UiPanelTypeNameType } from 'src/schemas/ui-panel.schema.js';
 
 export const useUiStore = defineStore('ui', () => {
@@ -184,5 +183,7 @@ export const useUiStore = defineStore('ui', () => {
     // unwrapSplitter,
   };
 }, {
-  persist: false,
+  persist: {
+    paths: ['panels'],
+  },
 });
