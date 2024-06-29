@@ -4,8 +4,12 @@ import { reactive } from 'vue';
 export const useBagStore = defineStore('bag', () => {
 
   const bag = reactive({});
-
-  return { bag };
+  const btran = reactive<{
+    [k: string]: any
+  }>({});
+  return { bag, btran };
 }, {
-  persist: true,
+  persist: {
+    paths: ['bag'],
+  },
 });

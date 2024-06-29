@@ -7,10 +7,13 @@ import {
   fasPlus as addTabIcon,
   fasXmark as closeTabIcon,
 } from '@quasar/extras/fontawesome-v6';
+import { useBagStore } from 'stores/bag.store.js';
 
 // import useClient from '~/composables/useClient.js';
 
 // const client = useClient();
+
+const { btran } = useBagStore();
 
 let editor;
 const editorEl = ref();
@@ -80,7 +83,8 @@ const closeCurrentTab = () => {
   }
   editor?.focus();
 };
-onMounted(async () => {
+const monacoFirstInit = () => {
+  console.log('monacoFirstInit');
   if (!editorEl.value) return;
   ////////////////////////////////////////////////////////////////////////////////
 //   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
@@ -162,6 +166,60 @@ declare const page: Page, browser: Browser;
       e.stopPropagation();
     }
   });
+};
+const monacoReinit = () => {
+  console.log('monacoReinit');
+  if (!editorEl.value) return;
+  ////////////////////////////////////////////////////////////////////////////////
+  let code = getCurrentTab()?.code;
+  if (!code || !code.length) {
+    code = `import * as playwright from 'types';
+import { Browser, Page } from 'types';
+
+declare const page: Page, browser: Browser;
+
+`;
+  }
+  console.log({ code });
+  const models = monaco.editor.getModels();
+
+  console.log({models});
+  const model = models[0];
+  ////////////////////////////////////////////////////////////////////////////////
+
+  editor = monaco.editor.create(editorEl.value, {
+    // value: getCurrentTab()?.code,
+    fontSize: 18,
+    language: 'typescript',
+    automaticLayout: true,
+    model,
+  });
+
+  // editor.focus();
+
+  editor.getModel()?.onDidChangeContent((e) => {
+    const tab = getCurrentTab();
+    if (tab) {
+      tab.code = editor.getValue();
+    }
+  });
+
+  editor.onKeyDown(e => {
+    if (e.ctrlKey && e.code === 'Enter') {
+      codeExecSend();
+      e.stopPropagation();
+    }
+  });
+  // return;
+};
+onMounted(async () => {
+  // console.log('mounted');
+  if (btran['init-monaco']) {
+    monacoReinit();
+    return;
+  }
+  btran['init-monaco'] = true;
+  monacoFirstInit();
 });
 </script>
 

@@ -4,7 +4,6 @@ import { Static, Type } from '@sinclair/typebox';
 
 export const uiPanelSplitterSchema = Type.Object({
   type: Type.Literal('splitter'),
-  swapped: Type.Boolean(),
   horizontal: Type.Boolean(),
   position: Type.Number(),
   children: Type.Object({
@@ -12,6 +11,7 @@ export const uiPanelSplitterSchema = Type.Object({
     1: Type.Number(),
   }),
 });
+export type UiPanelSplitterType = Static<typeof uiPanelSplitterSchema>
 
 export const uiPanelCodeExecSchema = Type.Object({
   type: Type.Literal('code-exec'),
@@ -47,7 +47,6 @@ export const useUiStore = defineStore('ui', () => {
     1: {
       id: 1,
       type: 'splitter',
-      swapped: false,
       horizontal: true,
       position: 50,
       children: [2, 3],
@@ -59,7 +58,6 @@ export const useUiStore = defineStore('ui', () => {
     3: {
       id: 3,
       type: 'splitter',
-      swapped: false,
       horizontal: false,
       position: 50,
       children: [4, 5],
@@ -76,5 +74,5 @@ export const useUiStore = defineStore('ui', () => {
 
   return { panels };
 }, {
-  persist: false,
+  persist: true,
 });

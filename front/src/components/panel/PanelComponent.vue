@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { UiPanelType, useUiStore } from 'stores/ui.store.js';
+import { UiPanelSplitterType, UiPanelType, useUiStore } from 'stores/ui.store.js';
 import CodeExec from 'components/code-exec/CodeExec.vue';
 import EventBus from 'components/event-bus/EventBus.vue';
 
@@ -9,6 +9,7 @@ import {
   fasArrowsUpDown as swapPanelsHIcon,
   fasDesktop as changePanelsHorizIcon,
 } from '@quasar/extras/fontawesome-v6';
+import ComponentPicker from 'components/panel/ComponentPicker.vue';
 
 const props = defineProps({
   id: {
@@ -20,6 +21,11 @@ const props = defineProps({
 const ui = useUiStore();
 
 const panel = computed<UiPanelType>(() => ui.panels[props.id]);
+const swapSplitterChildren = (splitterPanel: UiPanelSplitterType) => {
+  const c = splitterPanel.children;
+  [c[0], c[1]] = [c[1], c[0]];
+  splitterPanel.position = 100 - splitterPanel.position;
+};
 </script>
 
 <template>
@@ -30,7 +36,7 @@ const panel = computed<UiPanelType>(() => ui.panels[props.id]);
       <q-toolbar class="bg-primary text-white shadow-2 m-0 h-[50px]">
 
         <q-btn
-          @click="panel.swapped = !panel.swapped"
+          @click="swapSplitterChildren(panel)"
           round
           color="primary"
           :icon="panel.horizontal ? swapPanelsHIcon : swapPanelsVIcon"
@@ -43,6 +49,10 @@ const panel = computed<UiPanelType>(() => ui.panels[props.id]);
           class="ml-[10px]"
           :class="panel.horizontal ? 'rotate-90' : ''"
         />
+
+        <div class="w-[100px]"></div>
+        <ComponentPicker :id="panel.children[0]" />
+        <ComponentPicker :id="panel.children[1]" />
       </q-toolbar>
       <q-splitter
         v-model="panel.position"
@@ -50,10 +60,10 @@ const panel = computed<UiPanelType>(() => ui.panels[props.id]);
         class="absolute inset-x-0 top-[50px] bottom-0"
       >
         <template v-slot:before>
-          <PanelComponent :id="panel.children[panel.swapped ? 1 : 0]" />
+          <PanelComponent :id="panel.children[0]" />
         </template>
         <template v-slot:after>
-          <PanelComponent :id="panel.children[panel.swapped ? 0 : 1]" />
+          <PanelComponent :id="panel.children[1]" />
         </template>
       </q-splitter>
     </div>
