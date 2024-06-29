@@ -4,6 +4,12 @@ import { UiPanelType, useUiStore } from 'stores/ui.store.js';
 import CodeExec from 'components/code-exec/CodeExec.vue';
 import EventBus from 'components/event-bus/EventBus.vue';
 
+import {
+  fasArrowsLeftRight as swapPanelsVIcon,
+  fasArrowsUpDown as swapPanelsHIcon,
+  fasDesktop as changePanelsHorizIcon,
+} from '@quasar/extras/fontawesome-v6';
+
 const props = defineProps({
   id: {
     type: Number,
@@ -18,20 +24,30 @@ const panel = computed<UiPanelType>(() => ui.panels[props.id]);
 
 <template>
   <div class="relative border-[0px] border-red-500 h-full">
-    <!--    <div class="absolute right-0">{{ panel }}</div>-->
-    <!--
-        <hr class="h-[20px] mb-[20px] border-b-[3px] border-red-500" />
-        {{ props.id }}
-        <hr class="h-[20px] mb-[20px] border-b-[3px] border-red-500" />
-        {{ ui.panels }}
-    -->
     <div v-if="panel.type === 'splitter'"
          class="h-full"
     >
+      <q-toolbar class="bg-primary text-white shadow-2 m-0 h-[50px]">
+
+        <q-btn
+          @click="panel.swapped = !panel.swapped"
+          round
+          color="primary"
+          :icon="panel.horizontal ? swapPanelsHIcon : swapPanelsVIcon"
+        />
+        <q-btn
+          @click="panel.horizontal = !panel.horizontal"
+          round
+          color="primary"
+          :icon="changePanelsHorizIcon"
+          class="ml-[10px]"
+          :class="panel.horizontal ? 'rotate-90' : ''"
+        />
+      </q-toolbar>
       <q-splitter
         v-model="panel.position"
         :horizontal="panel.horizontal"
-        class="h-full"
+        class="absolute inset-x-0 top-[50px] bottom-0"
       >
         <template v-slot:before>
           <PanelComponent :id="panel.children[panel.swapped ? 1 : 0]" />
@@ -42,9 +58,9 @@ const panel = computed<UiPanelType>(() => ui.panels[props.id]);
       </q-splitter>
     </div>
     <div v-else-if="panel.type==='code-exec'">
-<!--      <KeepAlive>-->
-        <CodeExec />
-<!--      </KeepAlive>-->
+      <!--      <KeepAlive>-->
+      <CodeExec />
+      <!--      </KeepAlive>-->
     </div>
     <div v-else-if="panel.type==='event-bus'">
       <EventBus />
