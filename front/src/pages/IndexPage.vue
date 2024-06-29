@@ -6,6 +6,9 @@
       :todos="todos"
       :meta="meta"
     ></example-component>
+    <div class="border-[3px] border-red-500 px-[25px] py-[15px] text-[24px]">
+      tailwind
+    </div>
   </q-page>
 </template>
 
