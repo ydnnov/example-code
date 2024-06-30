@@ -16,7 +16,7 @@ import { useQuasar } from 'quasar';
 // const client = useClient();
 const $q = useQuasar();
 
-const codeExecStore = useCodeExecStore();
+const ces = useCodeExecStore();
 
 const { btran } = useBagStore();
 
@@ -236,14 +236,14 @@ const deleteTab = (id: number | null) => {
     return;
   }
   $q.notify(`deleting id=${id}`);
-  const nid = codeExecStore.neighbourTabId(id);
+  const nid = ces.neighbourTabId(id);
   if (!nid) {
     $q.notify('no nid');
     return;
   }
   $q.notify(`nid=${nid}`);
-  codeExecStore.selectTab(nid);
-  codeExecStore.deleteTab(id);
+  ces.selectTab(nid);
+  ces.deleteTab(id);
 };
 
 </script>
@@ -251,21 +251,21 @@ const deleteTab = (id: number | null) => {
 <template>
   <div class="absolute left-0 right-[5px] inset-y-0">
     <q-tabs
-      :model-value="codeExecStore.tabs.currentId"
-      @update:model-value="codeExecStore.selectTab"
+      :model-value="ces.tabs.currentId"
+      @update:model-value="ces.selectTab"
       dense
     >
       <q-tab
-        v-for="(tab, i) in codeExecStore.tabs.items"
+        v-for="(tab, i) in ces.tabs.items"
         :name="tab.id"
       >
-        {{ codeExecStore.indexById(tab.id) }}. tab
-        [{{ tab.id }}-{{ codeExecStore.idByIndex(i - 1) }}/{{ i }}]
+        {{ ces.indexById(tab.id) }}. tab
+        [{{ tab.id }}-{{ ces.idByIndex(i - 1) }}/{{ i }}]
       </q-tab>
       <q-space />
-      <div class="text-[18px] px-[20px] py-[10px]">{{ codeExecStore.tabs.currentId }}</div>
+      <div class="text-[18px] px-[20px] py-[10px]">{{ ces.tabs.currentId }}</div>
       <q-btn
-        @click.stop="codeExecStore.addTab()"
+        @click="ces.addTab()"
         size="10px"
         round
       >
@@ -276,7 +276,7 @@ const deleteTab = (id: number | null) => {
         />
       </q-btn>
       <q-btn
-        @click.stop="deleteTab(codeExecStore.tabs.currentId)"
+        @click="deleteTab(ces.tabs.currentId)"
         size="10px"
         round
         class="mr-[5px] ml-[15px]"
@@ -291,15 +291,15 @@ const deleteTab = (id: number | null) => {
     <!--
         <div class="absolute left-[15px] right-0 top-[40px] h-[38px] flex bd z-20">
           <div
-            v-for="(tab, i) in codeExecStore.tabs"
+            v-for="(tab, i) in ces.tabs"
             :key="tab.id"
             class=""
           >
             <q-btn
               :label="`Tab ${i}`"
               class="mr-[5px] text-[11px]"
-              :color="tab.id === codeExecStore.currentTabId ? 'primary' : 'grey'"
-              @click="codeExecStore.currentTabId = tab.id"
+              :color="tab.id === ces.currentTabId ? 'primary' : 'grey'"
+              @click="ces.currentTabId = tab.id"
             />
           </div>
           <div class="border-[0px] border-cyan-500 border-dashed">
@@ -307,13 +307,13 @@ const deleteTab = (id: number | null) => {
               :icon="addTabIcon"
               class="text-[11px]"
               color="secondary"
-              @click="codeExecStore.addTab()"
+              @click="ces.addTab()"
             />
             <q-btn
               :icon="addTabIcon"
               class="text-[11px]"
               color="secondary"
-              @click="codeExecStore.$rehydrate()"
+              @click="ces.$rehydrate()"
             />
           </div>
           <div style="flex-grow: 1"></div>
@@ -323,7 +323,7 @@ const deleteTab = (id: number | null) => {
               :icon="closeTabIcon"
               color="red"
               round
-              @click="codeExecStore.removeCurrentTab()"
+              @click="ces.removeCurrentTab()"
             />
           </div>
         </div>
