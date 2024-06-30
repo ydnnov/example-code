@@ -8,6 +8,9 @@ import {
   fasArrowsUpDown as swapPanelsHIcon,
   fasDesktop as changePanelsHorizIcon,
 } from '@quasar/extras/fontawesome-v6';
+import {
+  biDiagram3 as toggleSidebarIcon,
+} from '@quasar/extras/bootstrap-icons';
 import ComponentPicker from 'components/panel/ComponentPicker.vue';
 import { useQuasar } from 'quasar';
 import { UiPanelSplitterType, UiPanelType } from 'src/schemas/ui-panel.schema.js';
@@ -42,33 +45,39 @@ const swapSplitterChildren = (splitterPanel: UiPanelSplitterType) => {
            :class="panel.horizontal ? 'w-[35px] h-full' : 'h-[35px] w-full'"
       >
         <q-btn
-          @click="swapSplitterChildren(panel)"
-          round
-          color="primary"
-          size="10px"
-          :icon="panel.horizontal ? swapPanelsHIcon : swapPanelsVIcon"
-        />
-        <q-btn
           @click="panel.horizontal = !panel.horizontal"
           round
           color="primary"
           size="10px"
           :icon="changePanelsHorizIcon"
+        />
+        <q-btn
+          @click="swapSplitterChildren(panel)"
+          round
+          color="primary"
+          size="10px"
+          :icon="panel.horizontal ? swapPanelsHIcon : swapPanelsVIcon"
           :class="panel.horizontal ? 'rotate-90 mt-[10px]' : 'ml-[10px]'"
         />
-
+        <q-btn
+          v-if="panel.isRoot"
+          @click="ui.sidebarVisible = !ui.sidebarVisible"
+          round
+          color="primary"
+          size="10px"
+          :icon="toggleSidebarIcon"
+          :class="panel.horizontal ? 'mt-[10px]' : 'ml-[10px]'"
+        />
         <ComponentPicker
           :id="panel.children[0]"
           class="absolute"
           :style="panel.horizontal ? `top: 150px` : `left: 150px; top: 3px;`"
         />
-        <!--        <div class="w-[150px]"></div>-->
         <ComponentPicker
           :id="panel.children[1]"
           class="absolute"
           :style="panel.horizontal ? `bottom: 50px` : `right: 50px; top: 3px;`"
         />
-
       </div>
       <q-splitter
         v-model="panel.position"

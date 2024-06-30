@@ -1,24 +1,34 @@
 <script setup lang="ts">
 import PanelComponent from 'components/panel/PanelComponent.vue';
 import PanelTree from 'components/panel/PanelTree.vue';
+import { useUiStore } from 'stores/ui.store.js';
 
 defineOptions({
   name: 'IndexPage',
 });
+
+const ui = useUiStore();
 </script>
 
 <template>
   <div class="relative w-[100vw] h-[100vh]">
-    <div class="absolute inset-y-0 left-0 w-[270px]">
-      <PanelTree />
-    </div>
-    <div class="absolute inset-y-0 left-[270px] right-[0px] border-l-[3px] border-[#bbb]">
+    <q-splitter
+      v-if="ui.sidebarVisible"
+      v-model="ui.sidebarWidth"
+      :horizontal="false"
+      class="absolute left-0 top-0 right-0 bottom-0"
+    >
+      <template v-slot:before>
+        <PanelTree />
+      </template>
+      <template v-slot:after>
+        <PanelComponent :id="1" />
+      </template>
+    </q-splitter>
+    <div v-else
+         class="absolute inset-y-0 left-[0px] right-[0px] border-l-[3px] border-[#bbb]"
+    >
       <PanelComponent :id="1" />
     </div>
   </div>
-  <!--
-    <div class="w-[100vw] h-[100vh]">
-      <PanelComponent :id="1" />
-    </div>
-  -->
 </template>

@@ -19,6 +19,7 @@ export const uiPanelSplitterSchema = Type.Object({
     0: Type.Number(),
     1: Type.Number(),
   }),
+  isRoot: Type.Optional(Type.Boolean()),
 });
 export type UiPanelSplitterType = Static<typeof uiPanelSplitterSchema>
 

@@ -11,6 +11,7 @@ export const useUiStore = defineStore('ui', () => {
       horizontal: true,
       position: 50,
       children: [2, 3],
+      isRoot: true,
     },
     2: {
       id: 2,
@@ -32,6 +33,9 @@ export const useUiStore = defineStore('ui', () => {
       type: 'headless',
     },
   });
+
+  const sidebarVisible = ref(true);
+  const sidebarWidth = ref(25);
 
   const nextPanelId = computed(() => {
     const keys = Object.keys(panels);
@@ -178,12 +182,14 @@ export const useUiStore = defineStore('ui', () => {
     panelsTree,
     nextPanelId,
     setPanel,
+    sidebarVisible,
+    sidebarWidth,
     // canSetPanelType,
     // wrapInSplitter,
     // unwrapSplitter,
   };
 }, {
   persist: {
-    paths: ['panels'],
+    paths: ['panels', 'sidebarVisible', 'sidebarWidth'],
   },
 });
