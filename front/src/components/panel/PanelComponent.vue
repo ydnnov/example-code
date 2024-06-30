@@ -61,7 +61,7 @@ const swapSplitterChildren = (splitterPanel: UiPanelSplitterType) => {
         />
         <q-btn
           v-if="panel.isRoot"
-          @click="ui.sidebarVisible = !ui.sidebarVisible"
+          @click="ui.sidebar.visible = !ui.sidebar.visible"
           round
           color="primary"
           size="10px"

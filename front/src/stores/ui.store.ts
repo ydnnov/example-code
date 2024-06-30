@@ -2,40 +2,56 @@ import { defineStore } from 'pinia';
 import { computed, reactive, ref, unref } from 'vue';
 import { UiPanelType, UiPanelTypeNameType } from 'src/schemas/ui-panel.schema.js';
 
+const RESET_PANELS: { [id: number]: UiPanelType } = {
+  1: {
+    id: 1,
+    type: 'splitter',
+    horizontal: true,
+    position: 50,
+    children: [2, 3],
+    isRoot: true,
+  },
+  2: {
+    id: 2,
+    type: 'splitter',
+    horizontal: false,
+    position: 50,
+    children: [4, 5],
+  },
+  3: {
+    id: 3,
+    type: 'splitter',
+    horizontal: false,
+    position: 50,
+    children: [6, 7],
+  },
+  4: {
+    id: 4,
+    type: 'code-exec',
+  },
+  5: {
+    id: 5,
+    type: 'headless',
+  },
+  6: {
+    id: 6,
+    type: 'event-bus',
+  },
+  7: {
+    id: 7,
+    type: 'empty',
+  },
+};
+
 export const useUiStore = defineStore('ui', () => {
 
-  const panels = reactive<{ [id: number]: UiPanelType }>({
-    1: {
-      id: 1,
-      type: 'splitter',
-      horizontal: true,
-      position: 50,
-      children: [2, 3],
-      isRoot: true,
-    },
-    2: {
-      id: 2,
-      type: 'event-bus',
-    },
-    3: {
-      id: 3,
-      type: 'splitter',
-      horizontal: false,
-      position: 50,
-      children: [4, 5],
-    },
-    4: {
-      id: 4,
-      type: 'code-exec',
-    },
-    5: {
-      id: 5,
-      type: 'headless',
-    },
-  });
+  const panels = reactive<{ [id: number]: UiPanelType }>(RESET_PANELS);
 
-  const sidebarVisible = ref(true);
-  const sidebarWidth = ref(25);
+  const sidebar = reactive({
+    visible: true,
+    width: 25,
+    panelTreeHeight: 35,
+  });
 
   const nextPanelId = computed(() => {
     const keys = Object.keys(panels);
@@ -182,14 +198,14 @@ export const useUiStore = defineStore('ui', () => {
     panelsTree,
     nextPanelId,
     setPanel,
-    sidebarVisible,
-    sidebarWidth,
+    sidebar,
     // canSetPanelType,
     // wrapInSplitter,
     // unwrapSplitter,
   };
 }, {
+  // persist: false,
   persist: {
-    paths: ['panels', 'sidebarVisible', 'sidebarWidth'],
+    paths: ['panels', 'sidebar'],
   },
 });

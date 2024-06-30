@@ -13,13 +13,22 @@ const ui = useUiStore();
 <template>
   <div class="relative w-[100vw] h-[100vh]">
     <q-splitter
-      v-if="ui.sidebarVisible"
-      v-model="ui.sidebarWidth"
+      v-if="ui.sidebar.visible"
+      v-model="ui.sidebar.width"
       :horizontal="false"
       class="absolute left-0 top-0 right-0 bottom-0"
     >
       <template v-slot:before>
-        <PanelTree />
+        <q-splitter
+          v-if="ui.sidebar.visible"
+          v-model="ui.sidebar.panelTreeHeight"
+          :horizontal="true"
+          class="absolute left-0 top-0 right-0 bottom-0"
+        >
+          <template v-slot:before>
+            <PanelTree />
+          </template>
+        </q-splitter>
       </template>
       <template v-slot:after>
         <PanelComponent :id="1" />
