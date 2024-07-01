@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, reactive, ref, unref } from 'vue';
 import { Static, Type } from '@sinclair/typebox';
+import { useQuasar } from 'quasar';
 
 export const codeExecTabSchema = Type.Object({
   id: Type.Number(),
@@ -74,6 +75,7 @@ export const useCodeExecStore = defineStore('code-exec', () => {
   //     code: '',
   //   },
   // });
+  const $q = useQuasar();
   const tabs = reactive<{
     items: {
       [id: number]: CodeExecTabType
@@ -173,7 +175,11 @@ export const useCodeExecStore = defineStore('code-exec', () => {
   };
 
   const deleteTab = (id: number) => {
-    delete tabs.items[id];
+    const items = JSON.parse(JSON.stringify(unref(tabs.items)));
+    $q.notify(JSON.stringify(items))
+    delete items[id];
+    $q.notify(JSON.stringify(items))
+    tabs.items = items;
   };
 
   return {
@@ -193,10 +199,11 @@ export const useCodeExecStore = defineStore('code-exec', () => {
   };
 }, {
   // persist: false,
-  persist: {
-    paths: ['tabs', 'currentTabId'],
-    beforeRestore: (context) => {
-      console.log('beforeRestore', context);
-    },
-  },
+  persist: true,
+  // persist: {
+  //   paths: ['tabs'],
+  //   beforeRestore: (context) => {
+  //     console.log('beforeRestore', context);
+  //   },
+  // },
 });
