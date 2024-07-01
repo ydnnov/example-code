@@ -10,7 +10,7 @@ import {
 import { useBagStore } from 'stores/bag.store.js';
 import { useCodeExecStore } from 'stores/code-exec.store.js';
 import { useQuasar } from 'quasar';
-import { MonacoInit, monacoInit } from 'components/code-exec/monaco-init.js';
+import { MonacoInit } from 'components/code-exec/monaco-init.js';
 
 // import useClient from '~/composables/useClient.js';
 
@@ -101,46 +101,6 @@ const monacoFirstInit = () => {
   // monacoInit.firstInit();
   // return;
 
-
-//   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-//     target: monaco.languages.typescript.ScriptTarget.ES2016,
-//     allowNonTsExtensions: true,
-//     moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-//     module: monaco.languages.typescript.ModuleKind.CommonJS,
-//     noEmit: true,
-//     typeRoots: ['node_modules/@types'],
-//   });
-//
-// // extra libraries
-//   monaco.languages.typescript.typescriptDefaults.addExtraLib(
-//       `export declare function next() : string`,
-//       'node_modules/@types/external/index.d.ts');
-//
-//   monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-//     noSemanticValidation: false,
-//     noSyntaxValidation: false,
-//   });
-//
-  // const tsDefinitions = await client.tsDefinitions.all();
-  //
-  // monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-  //   target: monaco.languages.typescript.ScriptTarget.ES2016,
-  //   allowNonTsExtensions: true,
-  //   moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-  //   module: monaco.languages.typescript.ModuleKind.CommonJS,
-  //   noEmit: true,
-  //   typeRoots: ['node_modules/@types'],
-  // });
-  //
-  // monaco.languages.typescript.typescriptDefaults.addExtraLib(
-  //   tsDefinitions,
-  //   'file:///node_modules/@types/types/index.d.ts',
-  // );
-  //
-  // monaco.languages.typescript.typescriptDefaults.addExtraLib(
-  //     tsDefinitions,
-  //     'file:///node_modules/@types/playwright/index.d.ts',
-  // );
   let code = getCurrentTab()?.code;
   if (!code || !code.length) {
     code = `import * as playwright from 'types';
