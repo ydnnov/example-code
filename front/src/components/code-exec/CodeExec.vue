@@ -11,6 +11,7 @@ import { useBagStore } from 'stores/bag.store.js';
 import { useCodeExecStore } from 'stores/code-exec.store.js';
 import { useQuasar } from 'quasar';
 import { MonacoInit } from 'components/code-exec/monaco-init.js';
+import { defaultCode } from 'components/code-exec/default-code.js';
 
 // import useClient from '~/composables/useClient.js';
 
@@ -103,14 +104,8 @@ const monacoFirstInit = () => {
 
   let code = getCurrentTab()?.code;
   if (!code || !code.length) {
-    code = `import * as playwright from 'types';
-import { Browser, Page } from 'types';
-
-declare const page: Page, browser: Browser;
-
-`;
+    code = defaultCode;
   }
-
   const model = monaco.editor.createModel(
     code,
     'typescript',
@@ -118,29 +113,7 @@ declare const page: Page, browser: Browser;
   );
   ////////////////////////////////////////////////////////////////////////////////
 
-  editor = monaco.editor.create(editorEl.value, {
-    // value: getCurrentTab()?.code,
-    fontSize: monacoFontSize,
-    language: 'typescript',
-    automaticLayout: true,
-    model,
-  });
-
-  editor.focus();
-
-  editor.getModel()?.onDidChangeContent((e) => {
-    const tab = getCurrentTab();
-    if (tab) {
-      tab.code = editor.getValue();
-    }
-  });
-
-  editor.onKeyDown(e => {
-    if (e.ctrlKey && e.code === 'Enter') {
-      codeExecSend();
-      e.stopPropagation();
-    }
-  });
+  monacoCreateEditor(model);
 };
 const monacoReinit = () => {
   console.log('monacoReinit');
@@ -148,12 +121,7 @@ const monacoReinit = () => {
   ////////////////////////////////////////////////////////////////////////////////
   let code = getCurrentTab()?.code;
   if (!code || !code.length) {
-    code = `import * as playwright from 'types';
-import { Browser, Page } from 'types';
-
-declare const page: Page, browser: Browser;
-
-`;
+    code = defaultCode;
   }
   console.log({ code });
   const models = monaco.editor.getModels();
@@ -162,6 +130,10 @@ declare const page: Page, browser: Browser;
   const model = models[0];
   ////////////////////////////////////////////////////////////////////////////////
 
+  monacoCreateEditor(model);
+};
+const monacoCreateEditor = (model) => {
+  console.log('monacoCreateEditor', model, model.constructor.name);
   editor = monaco.editor.create(editorEl.value, {
     // value: getCurrentTab()?.code,
     fontSize: monacoFontSize,
@@ -185,7 +157,6 @@ declare const page: Page, browser: Browser;
       e.stopPropagation();
     }
   });
-  // return;
 };
 onMounted(async () => {
   // console.log('mounted');

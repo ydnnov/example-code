@@ -103,7 +103,8 @@ export const useCodeExecStore = defineStore('code-exec', () => {
     deleteTab,
   };
 }, {
-  persist: {
-    paths: ['tabs'],
-  },
+  persist: false,
+  // persist: {
+  //   paths: ['tabs'],
+  // },
 });
