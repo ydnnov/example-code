@@ -20,20 +20,20 @@ export const useCodeExecStore = defineStore('code-exec', () => {
         id: 1,
         code: '',
       },
-      {
-        id: 2,
-        code: '',
-      },
-      {
-        id: 3,
-        code: '',
-      },
     ],
     currentId: 1,
   });
 
   const tabIds = computed(() => {
     return tabs.items.map(x => x.id);
+  });
+
+  const nextTabId = computed(() => {
+    const lastTab = tabs.items[tabs.items.length - 1];
+    if (lastTab) {
+      return lastTab.id + 1;
+    }
+    return 1;
   });
 
   const idByIndex = (index: number): number => {
@@ -43,41 +43,6 @@ export const useCodeExecStore = defineStore('code-exec', () => {
   const indexById = (id: number): number => {
     return tabs.items.findIndex(x => x.id === id);
   };
-
-  const tabById = (id: number): CodeExecTabType | undefined => {
-    return tabs.items.find(x => x.id === id);
-  };
-
-  const nextTabId = computed(() => {
-    return tabs.items[tabs.items.length - 1].id + 1;
-  });
-
-  const selectTab = (id: number) => {
-    $q.notify(`selectTab ${id}`);
-    tabs.currentId = id;
-  };
-
-  const addTab = (code: string = ''): number => {
-    const id = nextTabId.value;
-    tabs.items.push({ id, code });
-    return id;
-  };
-
-  // const removeCurrentTab = () => {
-  //   const ids = Object.keys(tabs);
-  //   const index = ids.findIndex(x => Number(x) === Number(currentTabId.value));
-  //   const deleteId = Number(currentTabId.value);
-  //   if (index >= ids.length - 1) {
-  //     if (index > 0) {
-  //       currentTabId.value = Number(ids[index - 1]);
-  //     } else {
-  //       currentTabId.value = null;
-  //     }
-  //   } else {
-  //     currentTabId.value = Number(ids[index + 1]);
-  //   }
-  //   delete tabs[deleteId];
-  // };
 
   const neighbourTabIndex = (id: number): number | -1 => {
     const index = indexById(id);
@@ -101,36 +66,44 @@ export const useCodeExecStore = defineStore('code-exec', () => {
     return tabs.items[idx].id;
   };
 
+  const addTab = (code: string = ''): number => {
+    const id = nextTabId.value;
+    tabs.items.push({ id, code });
+    return id;
+  };
+
+  const selectTab = (id: number) => {
+    $q.notify(`selectTab ${id}`);
+    tabs.currentId = id;
+  };
+
   const deleteTab = (id: number) => {
     const idx = indexById(id);
     if (idx >= 0) {
       tabs.items.splice(idx, 1);
     }
+    if (!tabs.items.length) {
+      tabs.currentId = null;
+    }
   };
 
   return {
     tabs,
-    selectTab,
     tabIds,
     nextTabId,
-    // removeCurrentTab,
+
+    idByIndex,
+    indexById,
 
     neighbourTabIndex,
     neighbourTabId,
 
     addTab,
+    selectTab,
     deleteTab,
-
-    idByIndex,
-    indexById,
   };
 }, {
-  // persist: false,
-  persist: true,
-  // persist: {
-  //   paths: ['tabs'],
-  //   beforeRestore: (context) => {
-  //     console.log('beforeRestore', context);
-  //   },
-  // },
+  persist: {
+    paths: ['tabs'],
+  },
 });
