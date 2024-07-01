@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor';
 
-export class MonacoInit {
-  firstInit() {
+class MonacoInit {
+  firstInit(code:string='') {
     console.log('MonacoInit::firstInit');
 //   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
 //     target: monaco.languages.typescript.ScriptTarget.ES2016,
@@ -42,7 +42,7 @@ export class MonacoInit {
     //     tsDefinitions,
     //     'file:///node_modules/@types/playwright/index.d.ts',
     // );
-    let code = getCurrentTab()?.code;
+    // let code = getCurrentTab()?.code;
     if (!code || !code.length) {
       code = `import * as playwright from 'types';
 import { Browser, Page } from 'types';
@@ -88,3 +88,5 @@ declare const page: Page, browser: Browser;
 
   }
 }
+
+export const monacoInit = new MonacoInit();

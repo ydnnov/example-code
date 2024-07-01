@@ -68,6 +68,7 @@ export const useCodeExecStore = defineStore('code-exec', () => {
 
   const addTab = (code: string = ''): number => {
     const id = nextTabId.value;
+    $q.notify(`adding tab with id=${id}`);
     tabs.items.push({ id, code });
     return id;
   };

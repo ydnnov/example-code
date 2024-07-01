@@ -10,7 +10,7 @@ import {
 import { useBagStore } from 'stores/bag.store.js';
 import { useCodeExecStore } from 'stores/code-exec.store.js';
 import { useQuasar } from 'quasar';
-import { MonacoInit } from 'components/code-exec/monaco-init.js';
+import { monacoInit } from 'components/code-exec/monaco-init.js';
 import { defaultCode } from 'components/code-exec/default-code.js';
 
 // import useClient from '~/composables/useClient.js';
@@ -47,74 +47,76 @@ const getTabIndexById = (id: number) => {
 };
 const getCurrentTab = () => getTabById(srcTabs.value.currentId);
 const getCurrentTabIndex = () => getTabIndexById(srcTabs.value.currentId);
-const updateEditorCodeFromCurrentTab = () => editor.getModel().setValue(getCurrentTab()?.code);
-const selectTabByIndex = (index: number) => {
-  const tab = srcTabs.value.items[index];
-  srcTabs.value.currentId = tab.id;
-  updateEditorCodeFromCurrentTab();
+const updateEditorCodeFromCurrentTab = () => () => {
+  editor.getModel().setValue(getCurrentTab()?.code);
 };
-const selectTabById = (id: number) => {
-  srcTabs.value.currentId = id;
-  updateEditorCodeFromCurrentTab();
-};
-const addTab = () => {
-  srcTabs.value.items.push({
-    id: srcTabs.value.nextId,
-    code: '',
-  });
-  selectTabById(srcTabs.value.nextId);
-  srcTabs.value.nextId++;
-  editor?.focus();
-};
-const selectTab = (tab) => {
-  srcTabs.value.currentId = tab.id;
-  if (!editor) {
-    return;
-  }
-  updateEditorCodeFromCurrentTab();
-  editor?.focus();
-};
-const closeCurrentTab = () => {
-  if (srcTabs.value.items.length <= 1) {
-    return;
-  }
-  const index = getCurrentTabIndex();
-  if (index < 0) {
-    return;
-  }
-  srcTabs.value.items.splice(index, 1);
-  if (index >= srcTabs.value.items.length) {
-    selectTabByIndex(index - 1);
-  } else {
-    selectTabByIndex(index);
-  }
-  editor?.focus();
-};
+// const selectTabByIndex = (index: number) => {
+//   const tab = srcTabs.value.items[index];
+//   srcTabs.value.currentId = tab.id;
+//   updateEditorCodeFromCurrentTab();
+// };
+// const selectTabById = (id: number) => {
+//   srcTabs.value.currentId = id;
+//   updateEditorCodeFromCurrentTab();
+// };
+// const addTab = () => {
+//   srcTabs.value.items.push({
+//     id: srcTabs.value.nextId,
+//     code: '',
+//   });
+//   selectTabById(srcTabs.value.nextId);
+//   srcTabs.value.nextId++;
+//   editor?.focus();
+// };
+// const selectTab = (tab) => {
+//   srcTabs.value.currentId = tab.id;
+//   if (!editor) {
+//     return;
+//   }
+//   updateEditorCodeFromCurrentTab();
+//   editor?.focus();
+// };
+// const closeCurrentTab = () => {
+//   if (srcTabs.value.items.length <= 1) {
+//     return;
+//   }
+//   const index = getCurrentTabIndex();
+//   if (index < 0) {
+//     return;
+//   }
+//   srcTabs.value.items.splice(index, 1);
+//   if (index >= srcTabs.value.items.length) {
+//     selectTabByIndex(index - 1);
+//   } else {
+//     selectTabByIndex(index);
+//   }
+//   editor?.focus();
+// };
 
 const monacoFontSize = 14;
 
-const monacoFirstInit = () => {
-  console.log('monacoFirstInit');
-  if (!editorEl.value) return;
-  ////////////////////////////////////////////////////////////////////////////////
-
-  // const monacoInit = new MonacoInit();
-  // monacoInit.firstInit();
-  // return;
-
-  let code = getCurrentTab()?.code;
-  if (!code || !code.length) {
-    code = defaultCode;
-  }
-  const model = monaco.editor.createModel(
-    code,
-    'typescript',
-    monaco.Uri.parse('file:///main.tsx'),
-  );
-  ////////////////////////////////////////////////////////////////////////////////
-
-  monacoCreateEditor(model);
-};
+// const monacoFirstInit = () => {
+//   console.log('monacoFirstInit');
+//   if (!editorEl.value) return;
+//   ////////////////////////////////////////////////////////////////////////////////
+//
+//   // const monacoInit = new MonacoInit();
+//   // monacoInit.firstInit();
+//   // return;
+//
+//   let code = getCurrentTab()?.code;
+//   if (!code || !code.length) {
+//     code = defaultCode;
+//   }
+//   const model = monaco.editor.createModel(
+//     code,
+//     'typescript',
+//     monaco.Uri.parse('file:///main.tsx'),
+//   );
+//   ////////////////////////////////////////////////////////////////////////////////
+//
+//   monacoCreateEditor(model);
+// };
 const monacoReinit = () => {
   console.log('monacoReinit');
   if (!editorEl.value) return;
@@ -165,7 +167,8 @@ onMounted(async () => {
     return;
   }
   btran['init-monaco'] = true;
-  monacoFirstInit();
+  // monacoFirstInit();
+  monacoInit.firstInit();
 });
 
 const deleteTab = (id: number | null) => {
