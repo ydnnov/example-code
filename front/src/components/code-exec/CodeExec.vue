@@ -245,7 +245,6 @@ const deleteTab = (id: number | null) => {
   ces.selectTab(nid);
   ces.deleteTab(id);
 };
-
 </script>
 
 <template>
@@ -259,8 +258,11 @@ const deleteTab = (id: number | null) => {
         v-for="(tab, i) in ces.tabs.items"
         :name="tab.id"
       >
-        {{ ces.indexById(tab.id) }}. tab
-        [{{ tab.id }}-{{ ces.idByIndex(i - 1) }}/{{ i }}]
+        {{ i + 1 }}. tab [{{ tab.id }}]
+        <!--
+                {{ ces.indexById(tab.id) }}. tab
+                [{{ tab.id }}-{{ ces.idByIndex(i - 1) }}/{{ i }}]
+        -->
       </q-tab>
       <q-space />
       <div class="text-[18px] px-[20px] py-[10px]">{{ ces.tabs.currentId }}</div>
@@ -362,7 +364,7 @@ const deleteTab = (id: number | null) => {
           </div>
         </div>
     -->
-    <div class="absolute top-[40px] bottom-[70px] inset-x-0">
+    <div class="absolute top-[50px] bottom-[70px] inset-x-0 border-[2px] border-[#cde]">
       <div ref="editorEl" style="width: 100%; height: 100%;"></div>
     </div>
     <div class="absolute left-[15px] bottom-0 h-[52px] z-20">
