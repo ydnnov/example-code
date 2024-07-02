@@ -25,7 +25,11 @@ export class FgrIssIpPage extends EmitsToBus {
     public async open(timeout: number): Promise<RaceResult> {
         const from = 'iss-ip-page.open';
         await this.emit('before-open', { timeout });
+        console.log('this.pwpage',this.pwpage);
+        console.log('this.pageUrl',this.pageUrl);
         await this.pwpage.goto(this.pageUrl);
+        console.log('goto---------------------');
+        // await this.emit('goto', { timeout });
         const result = Promise.race([
             this.searchForm.attach(timeout),
             this.site.handleSomethingWentWrongMessage(),

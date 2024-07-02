@@ -4,6 +4,8 @@ import { EmitsToBus } from '../../classes/emits-to-bus.js';
 import { FsspGovRuSite } from './fssp-gov-ru.site.js';
 import { FgrIisfResultsPage } from './fgr.iisf-results.page.js';
 import { RaceResult, StdResult } from '../../types/common.js';
+import { bus } from '../../bus.js';
+import { services } from '../../services/services.js';
 
 const CAPTCHA_IMG = '#capchaVisual';
 const ANSWER_INP = '#captcha-popup-code';
@@ -26,6 +28,14 @@ export class FgrCaptchaForm extends EmitsToBus {
         super();
 
         this.resultsPage = new FgrIisfResultsPage(site);
+
+        bus.on('captcha.request-rucaptcha', async () => {
+            const imageResult = await this.getImageBase64(5000);
+            if (!imageResult.success) {
+                return imageResult;
+            }
+            services.siteCaptcha.getFromRucaptchaCom(imageResult.data, 15000);
+        });
     }
 
     get pwpage() {
@@ -47,7 +57,7 @@ export class FgrCaptchaForm extends EmitsToBus {
             Promise.all(elementWait),
             new Promise((resolve) => {
                 setTimeout(() => {
-                    console.log('resolve(\'timeout\')');
+                    console.log('FgrCaptchaForm.attach resolve timeout');
                     resolve('timeout');
                 }, timeout);
             }),
@@ -77,7 +87,7 @@ export class FgrCaptchaForm extends EmitsToBus {
         try {
             this.captchaImageEl = await this.pwpage.$(CAPTCHA_IMG);
             const result = await helpers.getImageBase64(this.pwpage, this.captchaImageEl, timeout);
-            console.log({ result });
+            console.log(`captcha image base64 length: ${result.length}`);
             if (!result.length) {
                 return {
                     success: false,

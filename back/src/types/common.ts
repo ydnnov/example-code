@@ -22,6 +22,8 @@ export type RaceResult<TData = {}, TErr = any> = StdResult<TData, TErr> & {
     from: string
 }
 
+export type RaceResultSuccess<TData = {}> = StdResultSuccess<TData>;
+
 // export type GenericDictionary = {
 //     [k: string]: any
 // }

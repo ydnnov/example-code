@@ -3,7 +3,7 @@ import { db } from '../data-source.js';
 import { bus } from '../bus.js';
 import { CaptchaAnswerRequestEntity } from '../entities/captcha-answer-request.entity.js';
 import { CaptchaImageEntity } from '../entities/captcha-image.entity.js';
-import { StdResult } from '../types/common.js';
+import { RaceResult, StdResult } from '../types/common.js';
 import { services } from './services.js';
 import { AppEvent } from '../shared/classes/app-event.js';
 import { parsing } from '../helpers/parsing.js';
@@ -21,15 +21,16 @@ export class SiteCaptchaService extends EmitsToBus {
         const handler = (eventName: string, arg) => {
             // console.log({ eventName, arg });
             if (![
-                'captcha.provide-answer',
-                'rucaptcha.error',
-            ].includes(eventName)) {
+                    'captcha.provide-answer',
+                ].includes(eventName) &&
+                !eventName.startsWith('rucaptcha.')) {
                 return;
             }
             // console.log('siteCaptcha.getAnswer', { eventName, arg });
             const appEvent = <AppEvent<any>>arg;
             // console.log({ appEvent });
             if (eventName === 'captcha.provide-answer') {
+                console.log('captcha.provide-answer', appEvent);
                 if (!(appEvent.payload || '').length) {
                     this.emit('get-answer', {
                         success: false,
@@ -41,7 +42,7 @@ export class SiteCaptchaService extends EmitsToBus {
                     success: true,
                     answer: appEvent.payload,
                 });
-            } else if (eventName === 'rucaptcha.error') {
+            } else {
                 this.emit('get-answer', {
                     success: false,
                     err: 'error.rucaptcha',
@@ -51,102 +52,24 @@ export class SiteCaptchaService extends EmitsToBus {
         };
         bus.onAny(handler);
         console.log('!!!!! SiteCaptchaService bound handler ' + '!'.repeat(30));
-
-        bus.on('captcha.request-rucaptcha', (imageBase64: string) => {
-
-        });
     }
 
     public async waitForAnswer(
         parser: ParserBase,
         key: string,
         imageBase64: string,
-        timeout: number,
     ): Promise<StdResult<{ answerText: string }>> {
-
-        // const getFromRucaptchaHandler = (eventName: string) => {
-        //     if (eventName !== 'parsing.step') {
-        //         return;
-        //     }
-        //     console.log('getFromRucaptchaHandler');
-        //     bus.emitter.offAny(getFromRucaptchaHandler);
-        //     console.log(`unset handler ${imageBase64.length} bytes`);
-        //     services.siteCaptcha.getFromRucaptchaCom(imageBase64, timeout);
-        // };
-
         const answerPromise = new Promise<StdResult<{
             answerText: string
-        }>>((resolve, reject) => {
-            let getAnswerFired = false;
-            const listener = bus.once(
-                this.ep('get-answer'),
-                (appEvent: AppEvent<any>) => {
-                    console.log('------------> get-answer', appEvent);
-                    getAnswerFired = true;
-                    listener.off();
-                    resolve(appEvent.payload);
-                },
-                { objectify: true },
-            );
-            setTimeout(() => {
-                if (!getAnswerFired) {
-                    console.log('------------> timeout');
-                    listener.off();
-                    resolve({
-                        success: false,
-                        err: 'timeout',
-                    });
-                }
-            }, timeout);
-
-            // const handler = (eventName: string, arg) => {
-            //     if (![
-            //         'captcha.provide-answer',
-            //         'rucaptcha.error',
-            //     ].includes(eventName)) {
-            //         return;
-            //     }
-            //     bus.emitter.offAny(handler);
-            //     bus.emitter.offAny(getFromRucaptchaHandler);
-            //     console.log('siteCaptcha.getAnswer', { eventName, arg });
-            //     const appEvent = <AppEvent<any>>arg;
-            //     console.log({ appEvent });
-            //     if (eventName === 'captcha.provide-answer') {
-            //         if (!(appEvent.payload || '').length) {
-            //             resolve({
-            //                 success: false,
-            //                 err: 'empty-captcha-answer',
-            //             });
-            //         }
-            //         console.log(appEvent.payload);
-            //         resolve({
-            //             success: true,
-            //             answerText: appEvent.payload,
-            //         });
-            //     } else if (eventName === 'rucaptcha.error') {
-            //         resolve({
-            //             success: false,
-            //             err: appEvent.payload,
-            //         });
-            //     }
-            //     resolve({
-            //         success: false,
-            //         err: appEvent.payload,
-            //     });
-            // };
-            // bus.onAny(handler);
+        }>>(async (resolve, reject) => {
+            const listener = this.on('get-answer', (appEvent: AppEvent<any>) => {
+                console.log({ listener });
+                console.log('------------> get-answer', appEvent);
+                console.log(`this.on('get-answer', `, appEvent.payload);
+                listener.off();
+                resolve(appEvent.payload);
+            }, { objectify: true });
         });
-
-        // if (!parsing.paused) {
-        //     await services.siteCaptcha.getFromRucaptchaCom(imageBase64, timeout);
-        // } else {
-        //     console.log(`setting handler ${imageBase64.length} bytes`);
-        //     bus.onAny(getFromRucaptchaHandler);
-        // }
-        //
-        // await answerPromise;
-        // console.log({ answerPromise });
-
         return answerPromise;
     }
 
@@ -220,7 +143,6 @@ export class SiteCaptchaService extends EmitsToBus {
     //
     //     return answerPromise;
     // }
-
     public async createAnswerRequest(imageBase64: string)
         : Promise<CaptchaAnswerRequestEntity> {
 
@@ -266,7 +188,10 @@ export class SiteCaptchaService extends EmitsToBus {
         return ansreqEnt;
     }
 
-    public async getFromRucaptchaCom(imageBase64: string, timeout: number) {
+    public async getFromRucaptchaCom(
+        imageBase64: string,
+        timeout: number,
+    ): Promise<RaceResult> {
         console.log(`getFromRucaptchaCom ${imageBase64.length} bytes`);
         const race = [
             new Promise((resolve) => {
@@ -292,6 +217,7 @@ export class SiteCaptchaService extends EmitsToBus {
             }),
             new Promise((resolve) => {
                 setTimeout(() => {
+                    console.log('------------> rucaptcha timeout');
                     resolve({
                         success: false,
                         err: 'rucaptcha.timeout',
@@ -299,6 +225,17 @@ export class SiteCaptchaService extends EmitsToBus {
                 }, timeout);
             }),
         ];
+        // setTimeout(() => {
+        //     if (!getAnswerFired) {
+        //         console.log('------------> timeout');
+        //         listener.off();
+        //         resolve({
+        //             success: false,
+        //             err: 'timeout',
+        //         });
+        //     }
+        // }, timeout);
+
         await bus.emit('rucaptcha.request-answer');
         const result = await Promise.race(race);
         console.log({ result });

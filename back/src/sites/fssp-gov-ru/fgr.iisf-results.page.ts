@@ -33,7 +33,7 @@ export class FgrIisfResultsPage extends EmitsToBus {
             Promise.all(elementWait),
             new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    resolve('timeout');
+                    resolve('FgrIisfResultsPage.attach timeout');
                 }, timeout);
             }),
         ]);

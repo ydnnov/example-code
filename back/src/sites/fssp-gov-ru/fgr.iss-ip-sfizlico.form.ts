@@ -97,6 +97,10 @@ export class FgrIssIpSfizlicoForm extends EmitsToBus {
         await this.dobInputEl.click();
         await this.pwpage.keyboard.type(dob);
         await this.pwpage.keyboard.press('Enter');
+
+        return {
+            success: true,
+        };
     }
 
     public async submitSearch(timeout: number): Promise<RaceResult<{

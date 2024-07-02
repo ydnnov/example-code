@@ -37,22 +37,25 @@ export class FsspSefizlicoCaptchaSolver extends EmitsToBus {
     }
 
     async trySolve(captchaForm: FgrCaptchaForm): Promise<RaceResult> {
+        console.log('----------> trySolve started');
         const captchaBase64Result = await captchaForm.getImageBase64(20000);
         if (!captchaBase64Result.success) {
             return captchaBase64Result;
         }
 
-        const answer = await services.siteCaptcha.waitForAnswer(
-            this.parser,
-            'start',
-            captchaBase64Result.data,
-            15000,
-        );
-        // const answer = await this.getCaptchaAnswer(captchaBase64Result.data);
-        console.log('received captcha answer', answer);
+        let answer;
+        while(true) {
+            answer = await services.siteCaptcha.waitForAnswer(
+                this.parser,
+                'start',
+                captchaBase64Result.data,
+            );
+            // const answer = await this.getCaptchaAnswer(captchaBase64Result.data);
+            console.log('received captcha answer', answer);
 
-        if (!answer.success) {
-            return answer;
+            if (answer.success === true) {
+                break;
+            }
         }
 
         await captchaForm.inputAnswer(answer.answer);
