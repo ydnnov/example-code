@@ -81,11 +81,12 @@ export const useCodeExecStore = defineStore('code-exec', () => {
     return tabs.items[idx].id;
   };
 
-  const addTab = (code: string = ''): number => {
+  const addTab = (code: string = ''): CodeExecTabType => {
     const id = nextTabId.value;
     // $q.notify(`adding tab with id=${id}`);
-    tabs.items.push({ id, code });
-    return id;
+    const tab = { id, code };
+    tabs.items.push(tab);
+    return tab;
   };
 
   const selectTab = (id: number | null) => {

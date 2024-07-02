@@ -9,13 +9,9 @@ import {
 import { useBagStore } from 'stores/bag.store.js';
 import { useCodeExecStore } from 'stores/code-exec.store.js';
 import { useQuasar } from 'quasar';
-import { monacoInit } from 'components/code-exec/monaco-init.js';
 import { defaultCode } from 'components/code-exec/default-code.js';
 import { client } from 'src/client/client.js';
 
-// import useClient from '~/composables/useClient.js';
-
-// const client = useClient();
 const $q = useQuasar();
 
 const ces = useCodeExecStore();
@@ -28,66 +24,37 @@ const codeExecSend = () => {
   client.codeExec.exec(editor.getValue());
 };
 
-const monacoFontSize = 14;
-
 const monacoFirstInit = () => {
-  console.log('monacoFirstInit');
   if (!editorEl.value) return;
-  ////////////////////////////////////////////////////////////////////////////////
-
-  // const monacoInit = new MonacoInit();
-  // monacoInit.firstInit();
-  // return;
-
-  let code = ces.currentTab()?.code;
-  if (!code || !code.length) {
-    code = defaultCode;
-  }
+  let code = ces.currentTab()?.code || '';
   const model = monaco.editor.createModel(
     code,
     'typescript',
     monaco.Uri.parse('file:///main.tsx'),
   );
-  ////////////////////////////////////////////////////////////////////////////////
-
   monacoCreateEditor(model);
 };
 const monacoReinit = () => {
-  console.log('monacoReinit');
   if (!editorEl.value) return;
-  ////////////////////////////////////////////////////////////////////////////////
-  let code = ces.currentTab()?.code;
-  if (!code || !code.length) {
-    code = defaultCode;
-  }
-  console.log({ code });
   const models = monaco.editor.getModels();
-
-  console.log({ models });
   const model = models[0];
-  ////////////////////////////////////////////////////////////////////////////////
-
   monacoCreateEditor(model);
 };
 const monacoCreateEditor = (model) => {
-  console.log('monacoCreateEditor', model, model.constructor.name);
   editor = monaco.editor.create(editorEl.value, {
     // value: ces.currentTab()?.code,
-    fontSize: monacoFontSize,
+    fontSize: 14,
     language: 'typescript',
     automaticLayout: true,
     model,
   });
-
   // editor.focus();
-
   editor.getModel()?.onDidChangeContent((e) => {
     const tab = ces.currentTab();
     if (tab) {
       tab.code = editor.getValue();
     }
   });
-
   editor.onKeyDown(e => {
     if (e.ctrlKey && e.code === 'Enter') {
       codeExecSend();
@@ -96,14 +63,12 @@ const monacoCreateEditor = (model) => {
   });
 };
 onMounted(async () => {
-  // console.log('mounted');
   if (btran['init-monaco']) {
     monacoReinit();
     return;
   }
   btran['init-monaco'] = true;
   monacoFirstInit();
-  // monacoInit.firstInit();
 });
 watch(() => ces.tabs.currentId, (id, oldId) => {
   if (!id) {
@@ -112,6 +77,10 @@ watch(() => ces.tabs.currentId, (id, oldId) => {
   editor.getModel().setValue(ces.tabById(id)?.code);
 });
 
+const addTab = () => {
+  const tab = ces.addTab();
+  tab.code = defaultCode;
+};
 const deleteTab = (id: number | null) => {
   if (!id) {
     return;
@@ -138,7 +107,7 @@ const deleteTab = (id: number | null) => {
         <q-space />
         <div class="text-[18px] px-[20px] py-[10px]">{{ ces.tabs.currentId }}</div>
         <q-btn
-          @click="ces.addTab()"
+          @click="addTab()"
           size="10px"
           round
         >

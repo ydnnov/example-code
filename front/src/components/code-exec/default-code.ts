@@ -3,5 +3,4 @@ export const defaultCode =
 import { Browser, Page } from 'types';
 
 declare const page: Page, browser: Browser;
-qwe
 `;
