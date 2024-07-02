@@ -44,7 +44,22 @@ export const useCodeExecStore = defineStore('code-exec', () => {
     return tabs.items.findIndex(x => x.id === id);
   };
 
-  const neighbourTabIndex = (id: number): number | -1 => {
+  const tabById = (id: number): CodeExecTabType | null => {
+    const idx = indexById(id);
+    if (idx < 0) {
+      return null;
+    }
+    return tabs.items[idx];
+  };
+
+  const currentTab = (): CodeExecTabType | null => {
+    if (!tabs.currentId) {
+      return null;
+    }
+    return tabById(tabs.currentId);
+  };
+
+  const neighbourTabIndex = (id: number): number => {
     const index = indexById(id);
     if (index < 0) {
       return -1;
@@ -68,23 +83,21 @@ export const useCodeExecStore = defineStore('code-exec', () => {
 
   const addTab = (code: string = ''): number => {
     const id = nextTabId.value;
-    $q.notify(`adding tab with id=${id}`);
+    // $q.notify(`adding tab with id=${id}`);
     tabs.items.push({ id, code });
     return id;
   };
 
-  const selectTab = (id: number) => {
-    $q.notify(`selectTab ${id}`);
+  const selectTab = (id: number | null) => {
+    // $q.notify(`selecting tab with id=${id}`);
     tabs.currentId = id;
   };
 
   const deleteTab = (id: number) => {
     const idx = indexById(id);
     if (idx >= 0) {
+      // $q.notify(`deleting tab with id=${id}`);
       tabs.items.splice(idx, 1);
-    }
-    if (!tabs.items.length) {
-      tabs.currentId = null;
     }
   };
 
@@ -95,6 +108,8 @@ export const useCodeExecStore = defineStore('code-exec', () => {
 
     idByIndex,
     indexById,
+    tabById,
+    currentTab,
 
     neighbourTabIndex,
     neighbourTabId,
@@ -104,8 +119,8 @@ export const useCodeExecStore = defineStore('code-exec', () => {
     deleteTab,
   };
 }, {
-  persist: false,
-  // persist: {
-  //   paths: ['tabs'],
-  // },
+  // persist: false,
+  persist: {
+    paths: ['tabs'],
+  },
 });

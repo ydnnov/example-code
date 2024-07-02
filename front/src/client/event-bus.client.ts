@@ -1,8 +1,8 @@
-import { api } from 'boot/axios.js';
+import { ClientBase } from './client-base.js';
 
-export const eventBusClient = {
+export class EventBusClient extends ClientBase{
 
-  emit: (eventName: string, payload: string) => {
-    return api.post('event-bus/emit', { eventName, payload });
-  },
-};
+    emit(eventName: string, payload: string) {
+        return this.api.post('event-bus/emit', { eventName, payload });
+    }
+}

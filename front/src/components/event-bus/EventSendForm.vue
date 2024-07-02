@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useEventBusStore } from 'stores/event-bus.store.js';
 import { useQuasar } from 'quasar';
-import client from 'src/client/client.js';
+import { client } from 'src/client/client.js';
 import { bus } from 'boot/bus.js';
 
 const $q = useQuasar();
