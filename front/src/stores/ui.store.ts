@@ -165,10 +165,11 @@ export const useUiStore = defineStore('ui', () => {
   };
 
   const leafPanelTypes = [
+    'empty',
     'code-exec',
     'event-bus',
     'headless',
-    'empty',
+    'captcha',
   ];
 
   const setPanel = (id: number, type: UiPanelTypeNameType) => {

@@ -12,6 +12,7 @@ bus.on('parsing.step', () => {
 
 const parsing = {
     paused: true,
+    playingUntilStep: null,
     get playing() {
         return !parsing.paused;
     },
@@ -21,11 +22,20 @@ const parsing = {
     play() {
         parsing.paused = false;
     },
+    playUntilStep(step: string) {
+        parsing.playingUntilStep = step;
+    },
     async step(stepName: string) {
         bus.emit('parsing.step.' + stepName);
-        if (parsing.playing) {
-            console.log('---> parsing.playing');
-            return;
+        if (parsing.playingUntilStep) {
+            if (stepName !== parsing.playingUntilStep) {
+                return;
+            }
+        } else {
+            if (parsing.playing) {
+                console.log('---> parsing.playing');
+                return;
+            }
         }
         console.log('---> parsing.paused');
         const result = await new Promise((resolve) => {

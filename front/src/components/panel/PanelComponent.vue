@@ -6,6 +6,7 @@ import EventBus from 'components/event-bus/EventBus.vue';
 import { UiPanelType } from 'src/schemas/ui-panel.schema.js';
 import HeadlessComponent from 'components/headless/HeadlessComponent.vue';
 import SplitterComponent from 'components/panel/SplitterComponent.vue';
+import CaptchaInput from 'components/captcha-input/CaptchaInput.vue';
 
 const props = defineProps({
   id: {
@@ -27,14 +28,17 @@ const panel = computed<UiPanelType>(() => ui.panels[props.id]);
     <div v-else-if="panel.type === 'splitter'" class="h-full">
       <SplitterComponent :panel="ui.panels[id]" />
     </div>
-    <div v-else-if="panel.type==='code-exec'">
+    <div v-else-if="panel.type === 'code-exec'">
       <CodeExec />
     </div>
-    <div v-else-if="panel.type==='event-bus'">
+    <div v-else-if="panel.type === 'event-bus'">
       <EventBus />
     </div>
-    <div v-else-if="panel.type==='headless'">
+    <div v-else-if="panel.type === 'headless'">
       <HeadlessComponent />
+    </div>
+    <div v-else-if="panel.type === 'captcha'">
+      <CaptchaInput />
     </div>
   </div>
 </template>

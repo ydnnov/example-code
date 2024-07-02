@@ -15,76 +15,211 @@ export class SiteCaptchaService extends EmitsToBus {
 
     protected eventPrefix = 'site-captcha.service';
 
-    public async getAnswer(
+    constructor() {
+        super();
+
+        const handler = (eventName: string, arg) => {
+            // console.log({ eventName, arg });
+            if (![
+                'captcha.provide-answer',
+                'rucaptcha.error',
+            ].includes(eventName)) {
+                return;
+            }
+            // console.log('siteCaptcha.getAnswer', { eventName, arg });
+            const appEvent = <AppEvent<any>>arg;
+            // console.log({ appEvent });
+            if (eventName === 'captcha.provide-answer') {
+                if (!(appEvent.payload || '').length) {
+                    this.emit('get-answer', {
+                        success: false,
+                        err: 'error.empty-captcha-answer',
+                    });
+                }
+                // console.log(appEvent.payload);
+                this.emit('get-answer', {
+                    success: true,
+                    answer: appEvent.payload,
+                });
+            } else if (eventName === 'rucaptcha.error') {
+                this.emit('get-answer', {
+                    success: false,
+                    err: 'error.rucaptcha',
+                    errData: appEvent.payload,
+                });
+            }
+        };
+        bus.onAny(handler);
+        console.log('!!!!! SiteCaptchaService bound handler ' + '!'.repeat(30));
+
+        bus.on('captcha.request-rucaptcha', (imageBase64: string) => {
+
+        });
+    }
+
+    public async waitForAnswer(
         parser: ParserBase,
         key: string,
         imageBase64: string,
         timeout: number,
     ): Promise<StdResult<{ answerText: string }>> {
 
-        const getFromRucaptchaHandler = (eventName: string) => {
-            if (eventName !== 'parsing.step') {
-                return;
-            }
-            console.log('getFromRucaptchaHandler');
-            bus.emitter.offAny(getFromRucaptchaHandler);
-            console.log(`unset handler ${imageBase64.length} bytes`);
-            services.siteCaptcha.getFromRucaptchaCom(imageBase64, timeout);
-        };
+        // const getFromRucaptchaHandler = (eventName: string) => {
+        //     if (eventName !== 'parsing.step') {
+        //         return;
+        //     }
+        //     console.log('getFromRucaptchaHandler');
+        //     bus.emitter.offAny(getFromRucaptchaHandler);
+        //     console.log(`unset handler ${imageBase64.length} bytes`);
+        //     services.siteCaptcha.getFromRucaptchaCom(imageBase64, timeout);
+        // };
 
         const answerPromise = new Promise<StdResult<{
             answerText: string
         }>>((resolve, reject) => {
-            const handler = (eventName: string, arg) => {
-                if (![
-                    'captcha.answer-received',
-                    'rucaptcha.error',
-                ].includes(eventName)) {
-                    return;
-                }
-                bus.emitter.offAny(handler);
-                bus.emitter.offAny(getFromRucaptchaHandler);
-                console.log('siteCaptcha.getAnswer', { eventName, arg });
-                const appEvent = <AppEvent<any>>arg;
-                console.log({ appEvent });
-                if (eventName === 'captcha.answer-received') {
-                    if (!(appEvent.payload || '').length) {
-                        resolve({
-                            success: false,
-                            err: 'empty-captcha-answer',
-                        });
-                    }
-                    console.log(appEvent.payload);
-                    resolve({
-                        success: true,
-                        answerText: appEvent.payload,
-                    });
-                } else if (eventName === 'rucaptcha.error') {
+            let getAnswerFired = false;
+            const listener = bus.once(
+                this.ep('get-answer'),
+                (appEvent: AppEvent<any>) => {
+                    console.log('------------> get-answer', appEvent);
+                    getAnswerFired = true;
+                    listener.off();
+                    resolve(appEvent.payload);
+                },
+                { objectify: true },
+            );
+            setTimeout(() => {
+                if (!getAnswerFired) {
+                    console.log('------------> timeout');
+                    listener.off();
                     resolve({
                         success: false,
-                        err: appEvent.payload,
+                        err: 'timeout',
                     });
                 }
-                resolve({
-                    success: false,
-                    err: appEvent.payload,
-                });
-            };
-            bus.onAny(handler);
+            }, timeout);
+
+            // const handler = (eventName: string, arg) => {
+            //     if (![
+            //         'captcha.provide-answer',
+            //         'rucaptcha.error',
+            //     ].includes(eventName)) {
+            //         return;
+            //     }
+            //     bus.emitter.offAny(handler);
+            //     bus.emitter.offAny(getFromRucaptchaHandler);
+            //     console.log('siteCaptcha.getAnswer', { eventName, arg });
+            //     const appEvent = <AppEvent<any>>arg;
+            //     console.log({ appEvent });
+            //     if (eventName === 'captcha.provide-answer') {
+            //         if (!(appEvent.payload || '').length) {
+            //             resolve({
+            //                 success: false,
+            //                 err: 'empty-captcha-answer',
+            //             });
+            //         }
+            //         console.log(appEvent.payload);
+            //         resolve({
+            //             success: true,
+            //             answerText: appEvent.payload,
+            //         });
+            //     } else if (eventName === 'rucaptcha.error') {
+            //         resolve({
+            //             success: false,
+            //             err: appEvent.payload,
+            //         });
+            //     }
+            //     resolve({
+            //         success: false,
+            //         err: appEvent.payload,
+            //     });
+            // };
+            // bus.onAny(handler);
         });
 
-        if (!parsing.paused) {
-            await services.siteCaptcha.getFromRucaptchaCom(imageBase64, timeout);
-        } else {
-            console.log(`setting handler ${imageBase64.length} bytes`);
-            bus.onAny(getFromRucaptchaHandler);
-        }
-
-        await answerPromise;
-        console.log({ answerPromise });
+        // if (!parsing.paused) {
+        //     await services.siteCaptcha.getFromRucaptchaCom(imageBase64, timeout);
+        // } else {
+        //     console.log(`setting handler ${imageBase64.length} bytes`);
+        //     bus.onAny(getFromRucaptchaHandler);
+        // }
+        //
+        // await answerPromise;
+        // console.log({ answerPromise });
 
         return answerPromise;
     }
+
+    // public async getAnswer(
+    //     parser: ParserBase,
+    //     key: string,
+    //     imageBase64: string,
+    //     timeout: number,
+    // ): Promise<StdResult<{ answerText: string }>> {
+    //
+    //     const getFromRucaptchaHandler = (eventName: string) => {
+    //         if (eventName !== 'parsing.step') {
+    //             return;
+    //         }
+    //         console.log('getFromRucaptchaHandler');
+    //         bus.emitter.offAny(getFromRucaptchaHandler);
+    //         console.log(`unset handler ${imageBase64.length} bytes`);
+    //         services.siteCaptcha.getFromRucaptchaCom(imageBase64, timeout);
+    //     };
+    //
+    //     const answerPromise = new Promise<StdResult<{
+    //         answerText: string
+    //     }>>((resolve, reject) => {
+    //         const handler = (eventName: string, arg) => {
+    //             if (![
+    //                 'captcha.provide-answer',
+    //                 'rucaptcha.error',
+    //             ].includes(eventName)) {
+    //                 return;
+    //             }
+    //             bus.emitter.offAny(handler);
+    //             bus.emitter.offAny(getFromRucaptchaHandler);
+    //             console.log('siteCaptcha.getAnswer', { eventName, arg });
+    //             const appEvent = <AppEvent<any>>arg;
+    //             console.log({ appEvent });
+    //             if (eventName === 'captcha.provide-answer') {
+    //                 if (!(appEvent.payload || '').length) {
+    //                     resolve({
+    //                         success: false,
+    //                         err: 'empty-captcha-answer',
+    //                     });
+    //                 }
+    //                 console.log(appEvent.payload);
+    //                 resolve({
+    //                     success: true,
+    //                     answerText: appEvent.payload,
+    //                 });
+    //             } else if (eventName === 'rucaptcha.error') {
+    //                 resolve({
+    //                     success: false,
+    //                     err: appEvent.payload,
+    //                 });
+    //             }
+    //             resolve({
+    //                 success: false,
+    //                 err: appEvent.payload,
+    //             });
+    //         };
+    //         bus.onAny(handler);
+    //     });
+    //
+    //     if (!parsing.paused) {
+    //         await services.siteCaptcha.getFromRucaptchaCom(imageBase64, timeout);
+    //     } else {
+    //         console.log(`setting handler ${imageBase64.length} bytes`);
+    //         bus.onAny(getFromRucaptchaHandler);
+    //     }
+    //
+    //     await answerPromise;
+    //     console.log({ answerPromise });
+    //
+    //     return answerPromise;
+    // }
 
     public async createAnswerRequest(imageBase64: string)
         : Promise<CaptchaAnswerRequestEntity> {
@@ -146,7 +281,7 @@ export class SiteCaptchaService extends EmitsToBus {
                         success: true,
                         answer: result.data,
                     });
-                    bus.emit('captcha.answer-received', result.data);
+                    bus.emit('captcha.provide-answer', result.data);
                 }).catch((err) => {
                     resolve({
                         success: false,

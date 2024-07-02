@@ -11,6 +11,7 @@ import { FsspSefizlicoParser } from './fssp-sefizlico.parser.js';
 import { Page as PlaywrightPage } from 'playwright';
 import { helpers } from '../../helpers/helpers.js';
 import { bag } from '../../bag.js';
+import { FsspSefizlicoCaptchaSolver } from './fssp-sefizlico.captcha-solver.js';
 
 const RESET_RESULT: StdResult = {
     success: false,
@@ -34,6 +35,8 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
     }
 
     public async perform(): Promise<StdResult> {
+
+        parsing.playUntilStep('...');
 
         await pwpageRecreate();
 
@@ -61,15 +64,25 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
             return RESET_RESULT;
         }
         const searchSubmitResult = await site.issIpPage.searchForm.submitSearch(60000);
-        // if (!searchSubmitResult.success) {
+        if (!searchSubmitResult.success) {
             return searchSubmitResult;
-        // }
+        }
 
-        // const captchaForm=
+        if (await parsing.step('solve-captcha')) {
+            return RESET_RESULT;
+        }
 
-        // if (await parsing.step('solve-captcha')) {
-        //     return RESET_RESULT;
-        // }
+        bag['captchaForm'] = searchSubmitResult.captchaForm;
+        const captchaSolver = new FsspSefizlicoCaptchaSolver(this);
+        bag['captchaSolver'] = captchaSolver;
+        // const solveCaptchaResult = await captchaSolver
+        //     .trySolve(searchSubmitResult.captchaForm);
+
+        if (await parsing.step('...')) {
+            return RESET_RESULT;
+        }
+
+
         // const solveCaptchaResult = await this.solveCaptcha(searchSubmitResult.captchaForm);
         //
         // if (!solveCaptchaResult.success) {

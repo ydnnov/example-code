@@ -9,6 +9,7 @@ import {
   fasListUl as eventBusIcon,
   fabChrome as headlessIcon,
   farFile as emptyIcon,
+  fasKeyboard as captchaIcon,
 } from '@quasar/extras/fontawesome-v6';
 
 const props = defineProps({
@@ -38,6 +39,7 @@ const components = ref([
   ['code-exec', codeExecIcon],
   ['event-bus', eventBusIcon],
   ['headless', headlessIcon],
+  ['captcha', captchaIcon],
 ]);
 </script>
 

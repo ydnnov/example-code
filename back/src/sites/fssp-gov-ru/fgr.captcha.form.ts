@@ -36,18 +36,13 @@ export class FgrCaptchaForm extends EmitsToBus {
         'timeout' |
         'smth-wrong-msg'
     >> {
-        console.log('attach()');
         const from = 'fgr-captcha-form.attach';
         const state = 'visible';
         const elementWait = [
             this.pwpage.waitForSelector(CAPTCHA_IMG, { state, timeout }),
-            this.pwpage.waitForSelector(ANSWER_INP, { state, timeout }),
+            // this.pwpage.waitForSelector(ANSWER_INP, { state, timeout }),
             this.pwpage.waitForSelector(SUBMIT_BTN, { state, timeout }),
         ];
-        console.log({ elementWait });
-        setTimeout(() => {
-            console.log({ elementWait });
-        }, 5000);
         const result = await Promise.race([
             Promise.all(elementWait),
             new Promise((resolve) => {
@@ -57,7 +52,7 @@ export class FgrCaptchaForm extends EmitsToBus {
                 }, timeout);
             }),
         ]);
-        console.log({ result });
+        // console.log('FgrCaptchaForm.attach', { result });
         if (result === 'timeout') {
             return {
                 success: false,
@@ -66,21 +61,13 @@ export class FgrCaptchaForm extends EmitsToBus {
             };
         }
         this.captchaImageEl = result[0];
-        this.answerInputEl = result[1];
-        this.submitButtonEl = result[2];
-        console.log(this.captchaImageEl);
-        console.log(this.answerInputEl);
-        console.log(this.submitButtonEl);
-        // console.log('this.captchaImageEl');
+        // this.answerInputEl = result[1];
+        this.submitButtonEl = result[1];
         return {
             success: true,
             from,
         };
     }
-
-    // public async getImageBase64(timeout: number): Promise<string | null> {
-    //     return helpers.getImageBase64(this.pwpage, this.captchaImageEl, timeout);
-    // }
 
     public async getImageBase64(timeout: number): Promise<RaceResult<
         { data: string },
@@ -88,6 +75,7 @@ export class FgrCaptchaForm extends EmitsToBus {
     >> {
         const from = 'helpers.get-image-base64';
         try {
+            this.captchaImageEl = await this.pwpage.$(CAPTCHA_IMG);
             const result = await helpers.getImageBase64(this.pwpage, this.captchaImageEl, timeout);
             console.log({ result });
             if (!result.length) {
@@ -112,7 +100,7 @@ export class FgrCaptchaForm extends EmitsToBus {
         }
     }
 
-    public async inputAnswer(answer: string) {
+    public async inputAnswer(answer: string): Promise<RaceResult> {
         console.log('inputAnswer', answer);
         // const wrongMsgEl = await this.pwpage.$(WRONG_MSG);
         // console.log({ wrongMsgEl });
@@ -120,20 +108,34 @@ export class FgrCaptchaForm extends EmitsToBus {
         //     console.log('wrongMsgEl');
         //     await wrongMsgEl.click();
         // }
-        try {
-            console.log('attaching');
-            const result = await this.attach(5000);
-            console.log({ result });
-            if (!result.success) {
-
-            }
-            console.log('attached');
-            await this.answerInputEl.click();
-            console.log('click');
-            await this.pwpage.keyboard.type(answer);
-        } catch (err) {
-            console.log({ err });
+        // try {
+        const from = 'fgr-captcha.input-answer';
+        const wrongMsgEl = await this.pwpage.$(WRONG_MSG);
+        if (wrongMsgEl) {
+            await wrongMsgEl.click();
         }
+        const answerInputEl = await this.pwpage.$(ANSWER_INP);
+        if (!answerInputEl) {
+            return {
+                success: false,
+                err: 'no-element',
+                from,
+            };
+        }
+        console.log({ answerInputEl });
+        await answerInputEl.click();
+        await this.pwpage.keyboard.type(answer);
+
+        // if (!result.success) {
+        //     console.log('failed to attach');
+        // }
+        // console.log('attached');
+        // await this.answerInputEl.click();
+        // console.log('click');
+        // await this.pwpage.keyboard.type(answer);
+        // } catch (err) {
+        //     console.log({ err });
+        // }
     }
 
     public async submit(timeout: number): Promise<RaceResult<
