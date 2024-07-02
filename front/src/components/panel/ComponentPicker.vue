@@ -52,6 +52,7 @@ const components = ref([
       @click="componentClicked(c[0])"
       v-for="c in components"
       :key="c[0]"
+      :color="ui.panels[id].type === c[0] ? 'secondary' : 'primary'"
     ></q-btn>
   </div>
 </template>
