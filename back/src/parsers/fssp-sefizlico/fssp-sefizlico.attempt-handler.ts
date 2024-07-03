@@ -53,10 +53,10 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
     public async perform(): Promise<StdResult> {
 
-        parsing.playUntilStep('...');
+        // parsing.playUntilStep('...');
 
-        await pwpageRecreate();
-
+        // await pwpageRecreate();
+        console.log('perform');
         const steps = [
             'open-page',
             'input-fields',
@@ -66,7 +66,10 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
         ];
 
         for (let i = 0; i < steps.length; i++) {
-            if (await parsing.step(steps[i])) {
+            console.log();
+            const stepResult = await parsing.step(steps[i]);
+            console.log({ stepResult });
+            if (stepResult) {
                 return RESET_RESULT;
             }
             if (this[steps[i]]) {
@@ -159,11 +162,13 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
     }
 
     protected async 'submit-form'() {
+        console.log('>>>>>>>>>>>>>> submit-form');
         const result = await this.site.issIpPage.searchForm.submitSearch(60000);
         return result;
     }
 
     protected async 'solve-captcha'() {
+        console.log('>>>>>>>>>>>>>> solve-captcha');
         bag['captchaForm'] = this.searchSubmitResult.captchaForm;
         const captchaSolver = new FsspSefizlicoCaptchaSolver(this);
         bag['captchaSolver'] = captchaSolver;
@@ -173,6 +178,7 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
     }
 
     protected async '...'() {
+        console.log('>>>>>>>>>>>>>> ...');
         this.issIpPageOpenResult = await this.site.issIpPage.open(60000);
     }
 
