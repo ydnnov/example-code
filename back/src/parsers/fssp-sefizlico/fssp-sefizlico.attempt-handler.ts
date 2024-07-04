@@ -13,6 +13,7 @@ import { Page as PlaywrightPage } from 'playwright';
 import { bag } from '../../bag.js';
 import { FsspSefizlicoCaptchaSolver } from './fssp-sefizlico.captcha-solver.js';
 import { FgrIssIpPage } from '../../sites/fssp-gov-ru/fgr.iss-ip.page.js';
+import { FgrIisfResultsPage } from '../../sites/fssp-gov-ru/fgr.iisf-results.page.js';
 
 const RESET_RESULT: StdResult = {
     success: false,
@@ -23,19 +24,20 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
     protected eventPrefix = 'fssp-sefizlico.attempt-handler';
 
-    public  site: FsspGovRuSite;
+    public site: FsspGovRuSite;
 
     // protected fgrCaptchaForm: FgrCaptchaForm;
 
     public issIpPageOpenResult: RaceResult<{ page: FgrIssIpPage }>;
     public searchSubmitResult: RaceResult<{ captchaForm: FgrCaptchaForm }>;
+    public solveCaptchaResult: RaceResult<{ resultPage: FgrIisfResultsPage }>;
     // protected issIpPageOpenResult: RaceResultSuccess<{ page: FgrIssIpPage }>;
     // protected searchSubmitResult: RaceResultSuccess<{ captchaForm: FgrCaptchaForm }>;
 
     constructor(
-        public  parser: FsspSefizlicoParser,
-        public  attemptEntity: ParserTaskAttemptEntity,
-        public  pwpage: PlaywrightPage,
+        public parser: FsspSefizlicoParser,
+        public attemptEntity: ParserTaskAttemptEntity,
+        public pwpage: PlaywrightPage,
     ) {
         super();
         this.site = new FsspGovRuSite(pwpage, this.attemptEntity);
@@ -55,7 +57,6 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
     public async perform(): Promise<StdResult> {
         // parsing.playUntilStep('...');
-        console.log('perform');
         const steps = [
             'open-page',
             'input-fields',
@@ -65,7 +66,7 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
         ];
 
         for (let i = 0; i < steps.length; i++) {
-            console.log();
+            console.log(`-- Parsing step: ${steps[i]} ` + '-'.repeat(50));
             const stepResult = await parsing.step(steps[i]);
             console.log({ stepResult });
             if (stepResult) {
