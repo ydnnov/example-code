@@ -67,8 +67,7 @@ export class HeadlessScreenshotsService {
             // }
             const screenshot = await pwpage.screenshot({
                 type: 'png',
-                // encoding: 'base64',
-                encoding: 'binary',
+                fullPage: true,
             });
             // const screenshotGm = gm(screenshot);
             // // const screenshotGm = gm(1000, 800, 'rgb(255,255,255)');
