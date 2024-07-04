@@ -165,13 +165,10 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
     }
 
     public async 'solve-captcha'() {
-        // this.searchSubmitResult
-        // bag['captchaForm'] = this.searchSubmitResult.success
-        // bag['captchaForm'] = this.searchSubmitResult.captchaForm;
         const captchaSolver = new FsspSefizlicoCaptchaSolver(this);
-        // bag['captchaSolver'] = captchaSolver;
         const result = await captchaSolver
             .trySolve(this.searchSubmitResult.captchaForm);
+        console.log('solve-captcha result', result);
         return result;
     }
 
