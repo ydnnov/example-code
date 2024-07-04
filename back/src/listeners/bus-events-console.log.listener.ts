@@ -3,9 +3,8 @@ import { AppEvent } from '../shared/classes/app-event.js';
 
 export const busEventsConsoleLogListener = {
     bind() {
-
         bus.onAny(async (eventName: string, appEvent: AppEvent<any>) => {
-            console.log(eventName);
+            console.log(`BUS: ${eventName}`);
         });
     },
 };
