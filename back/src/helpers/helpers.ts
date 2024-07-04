@@ -1,6 +1,6 @@
 import { Page } from 'playwright';
 import { ElementHandle } from 'playwright';
-import { StdResult } from '../types/common.js';
+import { RaceResult, StdResult } from '../types/common.js';
 import { bus } from '../bus.js';
 
 const helpers = {
@@ -57,7 +57,10 @@ const helpers = {
         });
     },
 
-    raceTimeout: async (from: string, timeout: number) => {
+    raceTimeout: async <TData = {}, TErr = any>(
+        from: string,
+        timeout: number,
+    ): Promise<RaceResult<TData, TErr>> => {
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve({
