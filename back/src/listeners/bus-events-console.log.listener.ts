@@ -4,7 +4,14 @@ import { AppEvent } from '../shared/classes/app-event.js';
 export const busEventsConsoleLogListener = {
     bind() {
         bus.onAny(async (eventName: string, appEvent: AppEvent<any>) => {
-            console.log(`BUS: ${eventName}`);
+            let text = eventName;
+            const payloadTxt = JSON.stringify(appEvent.payload);
+            if (payloadTxt) {
+                text += `, ${payloadTxt}`;
+            }
+            let result = `##### BUS: ${text} `;
+            result += '#'.repeat(80 - result.length);
+            console.log(result);
         });
     },
 };
