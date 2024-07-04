@@ -10,6 +10,7 @@ import { helpers } from '../../helpers/helpers.js';
 import { FsspSefizlicoAttemptHandler } from './fssp-sefizlico.attempt-handler.js';
 import { ParserTaskAttemptEntity } from '../../entities/parser-task-attempt.entity.js';
 import { db } from '../../data-source.js';
+import { bag } from '../../bag.js';
 
 type GetCaptchaAnswerResultType = {
     answerRequestEntity: CaptchaAnswerRequestEntity,
@@ -50,6 +51,7 @@ export class FsspSefizlicoParser extends ParserBase {
             // attemptEnt = await taskAttemptRepo.findOneBy({ id: attemptEnt.id });
             let attemptEnt = await taskAttemptRepo.findOneBy({ id: 3 });
             const attemptHandler = new FsspSefizlicoAttemptHandler(this, attemptEnt, pwpage);
+            bag['attemptHandler'] = attemptHandler;
             const attemptResult = await attemptHandler.perform();
             console.log('attempt finished with result', { attemptResult });
             await new Promise((resolve) => {

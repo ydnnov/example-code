@@ -22,31 +22,22 @@ export class FgrIssIpPage extends EmitsToBus {
         return this.site.pwpage;
     }
 
-    public async open(timeout: number): Promise<RaceResult> {
+    public async open(timeout: number): Promise<RaceResult<{ page: FgrIssIpPage }>> {
         const from = 'iss-ip-page.open';
         await this.emit('before-open', { timeout });
-        // console.log('this.pwpage', this.pwpage);
-        // console.log('this.pageUrl', this.pageUrl);
-        this.pwpage.goto(this.pageUrl)
-            .then((...args) => {
-                console.log(`this.pwpage.goto(this.pageUrl) THEN`, { args });
-            })
-            .catch((...args) => {
-                console.log(`this.pwpage.goto(this.pageUrl) CATCH`, { args });
-            });
-        // console.log('goto---------------------');
-        // await this.emit('goto', { timeout });
-        const result = Promise.race([
+        await this.pwpage.goto(this.pageUrl);
+        const result = await Promise.race<RaceResult>([
             this.searchForm.attach(timeout),
             this.site.handleSomethingWentWrongMessage(),
             helpers.raceTimeout(from, timeout),
         ]);
-        // console.log('#'.repeat(100));
-        // console.log('#'.repeat(100));
-        // console.log('#'.repeat(100));
-        // console.log('#'.repeat(100));
-        // console.log('#'.repeat(100));
-        // console.log('open result', await result);
-        return result;
+        if (!result.success) {
+            return <RaceResult<{ page: FgrIssIpPage }>>result;
+        }
+        return {
+            success:true,
+            from,
+            page: this,
+        };
     }
 }

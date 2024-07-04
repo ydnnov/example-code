@@ -1,15 +1,15 @@
+// import { services } from '../../services/services.js';
+// import { bus } from '../../bus.js';
+// import { helpers } from '../../helpers/helpers.js';
+// import { FgrIssIpPage } from '../../sites/fssp-gov-ru/fgr.iss-ip.page.js';
 import { ParserTaskAttemptEntity } from '../../entities/parser-task-attempt.entity.js';
-import { pwpage, pwpageRecreate } from '../../pwpage.js';
 import { FsspGovRuSite } from '../../sites/fssp-gov-ru/fssp-gov-ru.site.js';
 import { EmitsToBus } from '../../classes/emits-to-bus.js';
-import { services } from '../../services/services.js';
-import { bus } from '../../bus.js';
 import { FgrCaptchaForm } from '../../sites/fssp-gov-ru/fgr.captcha.form.js';
 import { RaceResult, RaceResultSuccess, StdResult } from '../../types/common.js';
 import { parsing } from '../../helpers/parsing.js';
 import { FsspSefizlicoParser } from './fssp-sefizlico.parser.js';
 import { Page as PlaywrightPage } from 'playwright';
-import { helpers } from '../../helpers/helpers.js';
 import { bag } from '../../bag.js';
 import { FsspSefizlicoCaptchaSolver } from './fssp-sefizlico.captcha-solver.js';
 import { FgrIssIpPage } from '../../sites/fssp-gov-ru/fgr.iss-ip.page.js';
@@ -23,17 +23,19 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
 
     protected eventPrefix = 'fssp-sefizlico.attempt-handler';
 
-    protected site: FsspGovRuSite;
+    public  site: FsspGovRuSite;
 
-    protected fgrCaptchaForm: FgrCaptchaForm;
+    // protected fgrCaptchaForm: FgrCaptchaForm;
 
-    protected issIpPageOpenResult: RaceResultSuccess<{ page: FgrIssIpPage }>;
-    protected searchSubmitResult: RaceResultSuccess<{ captchaForm: FgrCaptchaForm }>;
+    public issIpPageOpenResult: RaceResult<{ page: FgrIssIpPage }>;
+    public searchSubmitResult: RaceResult<{ captchaForm: FgrCaptchaForm }>;
+    // protected issIpPageOpenResult: RaceResultSuccess<{ page: FgrIssIpPage }>;
+    // protected searchSubmitResult: RaceResultSuccess<{ captchaForm: FgrCaptchaForm }>;
 
     constructor(
-        public readonly parser: FsspSefizlicoParser,
-        public readonly attemptEntity: ParserTaskAttemptEntity,
-        public readonly pwpage: PlaywrightPage,
+        public  parser: FsspSefizlicoParser,
+        public  attemptEntity: ParserTaskAttemptEntity,
+        public  pwpage: PlaywrightPage,
     ) {
         super();
         this.site = new FsspGovRuSite(pwpage, this.attemptEntity);
@@ -52,15 +54,12 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
     }
 
     public async perform(): Promise<StdResult> {
-
         // parsing.playUntilStep('...');
-
-        // await pwpageRecreate();
         console.log('perform');
         const steps = [
             'open-page',
             'input-fields',
-            'submit-form',
+            'search-submit',
             'solve-captcha',
             '...',
         ];
@@ -73,6 +72,7 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
                 return RESET_RESULT;
             }
             if (this[steps[i]]) {
+                console.log(`>>>>>>>>>>>>>>>>>>>> ${steps[i]}`);
                 const stepResult = await this[steps[i]]();
                 console.log('stepResult', stepResult);
                 if (!stepResult.success) {
@@ -80,7 +80,6 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
                 }
             }
         }
-
         // if (await parsing.step('open-page')) {
         //     return RESET_RESULT;
         // }
@@ -99,7 +98,7 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
         //     this.inputData['reg'],
         // );
         //
-        // if (await parsing.step('submit-form')) {
+        // if (await parsing.step('search-submit')) {
         //     return RESET_RESULT;
         // }
         // const searchSubmitResult = await this.site.issIpPage.searchForm.submitSearch(60000);
@@ -120,8 +119,8 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
         // if (await parsing.step('...')) {
         //     return RESET_RESULT;
         // }
-
-
+        //
+        //
         // const solveCaptchaResult = await this.solveCaptcha(searchSubmitResult.captchaForm);
         //
         // if (!solveCaptchaResult.success) {
@@ -145,14 +144,12 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
         // console.log({ solveCaptchaResult });
     }
 
-    protected async 'open-page'() {
-        console.log('>>>>>>>>>>>>>> open-page');
-        const result = await this.site.issIpPage.open(60000);
-        return result;
+    public async 'open-page'() {
+        this.issIpPageOpenResult = await this.site.issIpPage.open(60000);
+        return this.issIpPageOpenResult;
     }
 
-    protected async 'input-fields'() {
-        console.log('>>>>>>>>>>>>>> input-fields');
+    public async 'input-fields'() {
         const result = await this.site.issIpPage.searchForm.inputFields(
             this.inputData['fio'],
             this.inputData['dob'],
@@ -161,25 +158,24 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
         return result;
     }
 
-    protected async 'submit-form'() {
-        console.log('>>>>>>>>>>>>>> submit-form');
-        const result = await this.site.issIpPage.searchForm.submitSearch(60000);
-        return result;
+    public async 'search-submit'() {
+        this.searchSubmitResult = await this.site.issIpPage.searchForm.submitSearch(60000);
+        return this.searchSubmitResult;
     }
 
-    protected async 'solve-captcha'() {
-        console.log('>>>>>>>>>>>>>> solve-captcha');
-        bag['captchaForm'] = this.searchSubmitResult.captchaForm;
+    public async 'solve-captcha'() {
+        // this.searchSubmitResult
+        // bag['captchaForm'] = this.searchSubmitResult.success
+        // bag['captchaForm'] = this.searchSubmitResult.captchaForm;
         const captchaSolver = new FsspSefizlicoCaptchaSolver(this);
-        bag['captchaSolver'] = captchaSolver;
+        // bag['captchaSolver'] = captchaSolver;
         const result = await captchaSolver
             .trySolve(this.searchSubmitResult.captchaForm);
         return result;
     }
 
-    protected async '...'() {
-        console.log('>>>>>>>>>>>>>> ...');
-        this.issIpPageOpenResult = await this.site.issIpPage.open(60000);
+    public async '...'() {
+        // console.log('>>>>>>>>>>>>>> ...');
     }
 
     // protected async solveCaptcha(captchaForm: FgrCaptchaForm): Promise<StdResult> {
