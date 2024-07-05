@@ -33,22 +33,22 @@ const parsing = {
             }
         } else {
             if (parsing.playing) {
-                console.log('---> parsing.playing');
+                console.log('----------> parsing.playing');
                 return;
             }
         }
         console.log('---> parsing.paused');
         const result = await new Promise((resolve) => {
             bus.once('parsing.step', () => {
-                console.log('---> parsing.step');
+                console.log('----------> parsing.step');
                 resolve(false);
             });
             bus.once('parsing.play', () => {
-                console.log('---> parsing.play');
+                console.log('----------> parsing.play');
                 resolve(false);
             });
             bus.once('parsing.restart', () => {
-                console.log('---> parsing.restart');
+                console.log('----------> parsing.restart');
                 resolve(true);
             });
         });

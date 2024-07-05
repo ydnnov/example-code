@@ -66,7 +66,7 @@ export class FsspSefizlicoAttemptHandler extends EmitsToBus {
         ];
 
         for (let i = 0; i < steps.length; i++) {
-            console.log(`-- Parsing step: ${steps[i]} ` + '-'.repeat(50));
+            console.log(`----- FsspSefizlicoAttemptHandler -----> Parsing step: ${steps[i]} ` + '-'.repeat(15));
             const stepResult = await parsing.step(steps[i]);
             console.log({ stepResult });
             if (stepResult) {

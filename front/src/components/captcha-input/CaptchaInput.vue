@@ -22,7 +22,7 @@ const requestRucaptchaComAnswer = () => {
 
 <template>
   <div
-    class="px-[10px] py-[10px] border-[1px] border-red-500"
+    class="px-[10px] py-[10px]"
     v-if="imageBase64.length > 0 || true"
   >
     <img
