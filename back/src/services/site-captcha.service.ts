@@ -62,13 +62,23 @@ export class SiteCaptchaService extends EmitsToBus {
         const answerPromise = new Promise<StdResult<{
             answerText: string
         }>>(async (resolve, reject) => {
-            const listener = this.on('get-answer', (appEvent: AppEvent<any>) => {
-                console.log({ listener });
-                console.log('------------> get-answer', appEvent);
-                console.log(`this.on('get-answer', `, appEvent.payload);
-                listener.off();
-                resolve(appEvent.payload);
-            }, { objectify: true });
+            // const listener = this.on('get-answer', (appEvent: AppEvent<any>) => {
+            //     console.log({ listener });
+            //     console.log('------------> get-answer', appEvent);
+            //     console.log(`this.on('get-answer', `, appEvent.payload);
+            //     listener.off();
+            //     console.log('resolving');
+            //     resolve(appEvent.payload);
+            // }, { objectify: true });
+            const answerPromise = new Promise<StdResult<{
+                answerText: string
+            }>>(async (resolve, reject) => {
+                this.once('get-answer', (appEvent: AppEvent<any>) => {
+                    console.log(`got-answer: "${appEvent.payload}"`, appEvent.payload);
+                    resolve(appEvent.payload);
+                });
+            });
+            return answerPromise;
         });
         return answerPromise;
     }

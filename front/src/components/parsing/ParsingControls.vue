@@ -6,8 +6,10 @@ import {
   fasPlay as playIcon,
   fasForwardStep as stepIcon,
   fasArrowRotateLeft as restartIcon,
-  fasCloudArrowDown as loadRucaptchaIcon,
+  fasEraser as consoleClearIcon,
+  // fasCloudArrowDown as loadRucaptchaIcon,
 } from '@quasar/extras/fontawesome-v6';
+import { client } from 'src/client/client.js';
 
 const paused = ref(false);
 const sendPause = () => {
@@ -22,11 +24,18 @@ const sendStep = () => {
   bus.emit('parsing.step');
 };
 const sendRestart = () => {
-  bus.emit('parsing.restart');
+  // bus.emit('process-restart');
+  client.api.post('process-restart');
 };
+const sendConsoleClear = () => {
+  // bus.emit('console-clear');
+  client.api.post('console-clear');
+};
+/*
 const sendLoadFromRuCaptchaCom = () => {
   bus.emit('parsing.load-from-rucaptcha');
 };
+*/
 </script>
 
 <template>
@@ -66,12 +75,21 @@ const sendLoadFromRuCaptchaCom = () => {
         class="ml-[15px] text-[10px]"
       />
       <q-btn
-        @click="sendLoadFromRuCaptchaCom()"
+        @click="sendConsoleClear()"
         color="primary"
         round
-        :icon="loadRucaptchaIcon"
+        :icon="consoleClearIcon"
         class="ml-[15px] text-[10px]"
       />
+      <!--
+            <q-btn
+              @click="sendLoadFromRuCaptchaCom()"
+              color="primary"
+              round
+              :icon="loadRucaptchaIcon"
+              class="ml-[15px] text-[10px]"
+            />
+      -->
     </div>
   </div>
 </template>

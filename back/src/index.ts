@@ -16,6 +16,8 @@ import fs from 'node:fs';
 import { ParserTaskEntity } from './entities/parser-task.entity.js';
 import { ParserFactory } from './factories/parser.factory.js';
 import { ParsingError } from './errors/parsing/parsing.error.js';
+import { exec } from 'node:child_process';
+import { FastifyInstance } from 'fastify';
 
 listeners.bindAll();
 
@@ -60,6 +62,24 @@ process.on('unhandledRejection', async (error) => {
 
     await pwpageReadyPromise;
 
+    fastify.register((fastify: FastifyInstance, options, done) => {
+        fastify.post('/console-clear', () => {
+            console.clear();
+        });
+        fastify.post('/process-restart', () => {
+            exec('touch restart-file.ts');
+        });
+        done();
+    });
+
+    // bus.on('process-restart', () => {
+    //     exec('touch restart-file.ts');
+    // });
+    //
+    // bus.on('console-clear', () => {
+    //     console.clear();
+    // });
+
     const onServerStart = async (err, address) => {
         if (err) {
             console.error(err);
@@ -94,7 +114,7 @@ process.on('unhandledRejection', async (error) => {
         // parser.run();
         const mgr = db.createEntityManager();
         const taskRepo = mgr.getRepository(ParserTaskEntity);
-        const taskEnt = await taskRepo.findOneBy({ id: 145 });
+        const taskEnt = await taskRepo.findOneBy({ id: 144 });
         const parserFactory = new ParserFactory();
         const parser = parserFactory.create(taskEnt);
         // console.log({ taskEnt });
