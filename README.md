@@ -15,7 +15,7 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://gitlab.com/shp634410/shp-parsing.git
+git remote add origin git@github.com:ydnnov/example-code.git
 git branch -M main
 git push -uf origin main
 ```
